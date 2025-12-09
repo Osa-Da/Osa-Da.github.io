@@ -2,54 +2,21 @@
 <html lang="ru">
     <head>
         <meta charset="UTF-8" />
-
-        <!-- САМЫЕ ВАЖНЫЕ МЕТА-ТЕГИ ДЛЯ ОТКЛЮЧЕНИЯ ЗУМА -->
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"
-        />
-
-        <!-- Дополнительные теги для полного отключения масштабирования -->
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-        <meta name="format-detection" content="telephone=no" />
-
-        <title>ВОПРОСЫ БЛЯД</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>РАССКАЖИ О СЕБЕ!</title>
         <link
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
         />
         <style>
-            /* Обеспечивает кликабельность на iOS */
-            button,
-            .btn {
-                cursor: pointer;
-                -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-                -webkit-tap-highlight-color: transparent;
-                min-height: 44px;
-                min-width: 44px;
-                z-index: 9;
-            }
-
-            /* Отключаем для текстовых полей */
-            input,
-            textarea {
-                -webkit-user-select: text;
-                user-select: text;
-            }
             * {
                 margin: 0;
                 padding: 0;
                 box-sizing: border-box;
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                -webkit-touch-callout: none; /* Отключаем контекстное меню при долгом нажатии */
-                -webkit-user-select: none; /* Запрещаем выделение текста */
-                user-select: none;
             }
 
             body {
-                max-height: 100vh;
-                overflow: hidden;
                 background-color: #121212;
                 color: #e0e0e0;
                 line-height: 1.6;
@@ -76,6 +43,8 @@
                 text-align: center;
                 transition: transform 0.5s, opacity 0.5s;
                 display: none;
+                width: 100%;
+                min-width: 90vw;
             }
 
             .screen.active {
@@ -112,12 +81,33 @@
             }
 
             .btn {
-
+                background-color: #4caf50;
+                color: white;
+                border: none;
+                padding: 16px 40px;
+                font-size: 18px;
+                border-radius: 50px;
+                cursor: pointer;
+                transition: all 0.3s;
+                font-weight: 600;
+                box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+                display: inline-block;
+                margin: 5px;
             }
 
             .red {
                 background-color: brown;
                 box-shadow: 0 4px 15px rgba(175, 76, 76, 0.3);
+            }
+
+            .btn:hover {
+                background-color: #3d8b40;
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+            }
+
+            .btn:active {
+                transform: translateY(0);
             }
 
             .btn-small {
@@ -128,6 +118,10 @@
             .btn-more {
                 background-color: #ffc107;
                 color: #333;
+            }
+
+            .btn-more:hover {
+                background-color: #ffb300;
             }
 
             .btn-list {
@@ -446,6 +440,10 @@
                 gap: 10px;
             }
 
+            .hidden {
+                display: none;
+            }
+
             .question-item {
                 background-color: #3a3a3a;
                 border-radius: 10px;
@@ -604,25 +602,85 @@
                     font-size: 26px;
                 }
 
+                .password-screen {
+                }
+
+                .password-input {
+                    background: none;
+                    box-shadow: none;
+                    border: none;
+                    padding: 10px;
+                    font-size: 25px;
+                    text-align: center;
+                    color: white;
+                }
+
+                .password-input-container {
+                }
+
+                .btn-auth {
+                    margin-top: 20px;
+                }
+
                 .stars {
                     font-size: 35px;
+                }
+
+                #timerWrapper {
+                    width: 100%;
                 }
             }
         </style>
     </head>
     <body>
-        <div style="display: flex; flex-direction: column; width: 100%">
+        <!-- Экран ввода пароля -->
+        <div class="screen password-screen" id="passwordScreen">
+            <div class="password-input-container">
+                <input
+                    type="text"
+                    class="password-input"
+                    id="passwordInput"
+                    placeholder="Как вас зовут ?"
+                />
+                <button class="btn btn-auth" id="loginBtn">Войти</button>
+                <button
+                    class="btn btn-auth"
+                    id="logoutBtn"
+                    style="display: none; margin-top: 10px; background-color: #666"
+                >
+                    Выйти
+                </button>
+            </div>
+            <div id="passwordError" style="color: red; margin-top: 10px; display: none">
+                Неверный пароль!
+            </div>
+        </div>
+
+        <!-- Экран приветствия -->
+        <div class="screen welcome-screen" id="welcomeScreen">
+            <h1 id="welcomeTitle"></h1>
+            <div style="margin-bottom: 20px; color: #888; font-size: 14px">
+                <i class="fas fa-info-circle"></i> Ваш прогресс автоматически сохраняется
+            </div>
+            <button class="btn btn-auth" id="startQuizBtn">Ага</button>
+            <button class="btn red" id="resetProgressBtn" style="margin-top: 10px">
+                <i class="fas fa-trash-alt"></i> Выйти
+            </button>
+        </div>
+
+        <!-- Остальная часть кода -->
+        <div>
             <div class="question-category" id="questionCategory">Вопросы от других участников</div>
 
             <div class="container">
-                <!-- Начальный экран -->
-                <div class="screen start-screen active" id="startScreen">
-                    <h1>ВОПРОСЫЫЫЫ 565</h1>
+                <!-- Начальный экран викторины -->
+                <div class="screen start-screen" id="startScreen">
+                    <h1>СУТЬ</h1>
                     <p>
-                        Проверьте свои знания, ответив на вопросы. У вас есть 10 минут на выполнение
-                        задания.
+                        Просто кайфуйте, отвечая на вопросы, пока снимаете свою рубрику, наматывая
+                        минимальные 10 минут
                     </p>
-                    <button class="btn" id="startBtn">Начать</button>
+                    <button class="btn" id="startBtn">Ага</button>
                 </div>
 
                 <!-- Экран вопросов -->
@@ -631,8 +689,11 @@
                         <div class="counter" id="counter">
                             <i class="fas fa-list-ol"></i> <span id="counterText">1/10</span>
                         </div>
-                        <div class="timer" id="timer">
-                            <i class="fas fa-clock"></i> <span id="timerDisplay">10:00</span>
+                        <!-- Обертка для таймера -->
+                        <div id="timerWrapper">
+                            <div class="timer" id="timer">
+                                <i class="fas fa-clock"></i> <span id="timerDisplay">10:00</span>
+                            </div>
                         </div>
                     </div>
 
@@ -680,7 +741,7 @@
                         Вы прошли все 100 вопросов! Это невероятное достижение. Вы не просто
                         ответили на вопросы - вы открыли новые грани своей личности, задумались над
                         важными темами и, возможно, узнали о себе что-то новое. Вы настоящий философ
-                        и исследователь человеческой души!
+                        и исследователь человеческой души! КРАСАВА
                     </p>
                     <div class="btn-group">
                         <button class="btn btn-list" id="finalListBtn">Список вопросов</button>
@@ -694,7 +755,7 @@
         <div class="modal-overlay" id="confirmationModal1">
             <div class="modal">
                 <h2>ВЫ УВЕРЕНЫ ЧТО ГОТОВЫ ОТВЕЧАТЬ НА ВОПРОСЫ?</h2>
-                <p>После начала у вас будет 10 минут на выполнение задания.</p>
+                <p>Обратного пути не будет, тут что-то типо сохранения прогресса</p>
                 <div class="btn-group">
                     <button class="btn" id="confirmYes1">Да, готов</button>
                     <button class="btn red" id="confirmNo1">Нет, не готов</button>
@@ -707,9 +768,9 @@
                 <h2>ВЫ УЖЕ СНИМАЕТЕ РУБРИКУ?</h2>
                 <p>Мы хотим видеть ваши эмоции, делайте это на видео</p>
                 <div class="note">
-                    Пожалуйста, убедитесь, что ваша камера включена и вы находитесь в хорошо
-                    освещенном месте. Это поможет нам лучше увидеть ваши эмоции во время ответов на
-                    вопросы.
+                    Пожалуйста, убедитесь, что ваша камера включена. Постарайтесь сделать всё одним
+                    дублем, самые яркие и красочные эмоции - это первые) Косячьте, запинайтесь,
+                    путайтесь - ничего страшного, это весело, помните - вы прекрасны
                 </div>
                 <div class="btn-group">
                     <button class="btn btn-yes" id="confirmYes2">Да, снимаю</button>
@@ -738,21 +799,98 @@
         </div>
 
         <script>
-            // Основные вопросы от других участников
-            const mainQuestions = [
-                'В чем для тебя смысл жизни?',
-                'Как считаешь, кто лучше: кошки или собаки и почему?',
-                'Что для тебя важнее: счастье или успех?',
-                'Как ты думаешь, существует ли свобода воли или все предопределено?',
-                'Что такое настоящая любовь по-твоему?',
-                'Если бы у тебя был один день, чтобы прожить его заново, какой бы это был день?',
-                'Что страшнее: смерть или бессмысленная жизнь?',
-                'Есть ли что-то, ради чего ты готов умереть?',
-                'Какой самый важный урок ты вынес из жизни?',
-                'Что делает человека по-настоящему счастливым?',
-            ];
+            // Пароли и настройки пользователей
+            const USER_CONFIG = {
+                Лиза: {
+                    name: 'Лиза',
+                    mainQuestions: [
+                        'Напиши сюда вопросы для Лизы',
+                        'Типо вопрос1',
+                        'Типо вопрос2',
+                        'И так все',
+                    ],
+                },
+                Аркаша: {
+                    name: 'Аркаша',
+                    mainQuestions: ['и в том же духе', 'и в том же духе'],
+                },
+                Серёжа: {
+                    name: 'Серёжа',
+                    mainQuestions: ['и в том же духе', 'и в том же духе'],
+                },
+                Кристина: {
+                    name: 'Кристина',
+                    mainQuestions: ['и в том же духе', 'и в том же духе'],
+                },
+                0000: {
+                    name: 'Тест',
+                    mainQuestions: [
+                        'ТЕКСТ ВОПРОСА 1',
+                        'ТЕКСТ ВОПРОСА 2',
+                        'ВСЁ, ДАЛЬШЕ НЕ ЧАКАЙ, ПЕРЕЗАГРУЖАЙ',
+                        'Я серьёзно, ПЕРЕЗАГРУЖАЙ',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                        'перезагружай...',
+                    ],
+                },
+            };
 
-            // Все вопросы по категориям
+            // Все вопросы по категориям (общие для всех)
             const allQuestions = [
                 {
                     category: 'Философские/Глубокие вопросы',
@@ -803,7 +941,7 @@
                     category: 'О жизни и отношениях',
                     questions: [
                         'Что для тебя важнее в отношениях: страсть или стабильность?',
-                        'Можно ли простить измену?',
+                        'Можно ли прочить измену?',
                         'Веришь ли ты в дружбу между мужчиной и женщиной?',
                         'Что для тебя сложнее: прочить или забыть?',
                         'Можно ли быть счастливым в одиночестве?',
@@ -870,7 +1008,7 @@
                         'Можно ли изменить человека?',
                         'Что важнее: говорить правду или быть тактичным?',
                         'Существует ли абсолютное добро и зло?',
-                        'Можно ли простить все?',
+                        'Можно ли прочить все?',
                         'Что такое успех по-твоему?',
                     ],
                 },
@@ -906,12 +1044,34 @@
                 },
             ];
 
+            // Переменные состояния
+            let currentUser = null;
+            let userQuestions = [];
+            let currentQuestionIndex = 0;
+            let currentQuestions = [];
+            let isAllQuestionsMode = false;
+            let answeredQuestions = new Set();
+            let timerInterval;
+            let startTime = null;
+            let elapsedTime = 0;
+            let totalTime = 10 * 60;
+
             // Элементы DOM
+            const timerWrapper = document.getElementById('timerWrapper');
+            const passwordScreen = document.getElementById('passwordScreen');
+            const welcomeScreen = document.getElementById('welcomeScreen');
             const startScreen = document.getElementById('startScreen');
             const questionsScreen = document.getElementById('questionsScreen');
             const finishScreen = document.getElementById('finishScreen');
             const finalScreen = document.getElementById('finalScreen');
             const questionsListModal = document.getElementById('questionsListModal');
+            const passwordInput = document.getElementById('passwordInput');
+            const loginBtn = document.getElementById('loginBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const passwordError = document.getElementById('passwordError');
+            const welcomeTitle = document.getElementById('welcomeTitle');
+            const startQuizBtn = document.getElementById('startQuizBtn');
+            const resetProgressBtn = document.getElementById('resetProgressBtn');
             const startBtn = document.getElementById('startBtn');
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
@@ -942,41 +1102,76 @@
             const confirmNo2 = document.getElementById('confirmNo2');
             const timeoutOkBtn = document.getElementById('timeoutOkBtn');
 
-            // Переменные состояния
-            let currentQuestionIndex = 0;
-            let currentQuestions = mainQuestions;
-            let currentCategoryIndex = 0;
-            let currentQuestionInCategory = 0;
-            let isAllQuestionsMode = false;
-            let answeredQuestions = new Set();
-            let timerInterval;
-            let startTime = null;
-            let elapsedTime = 0;
-            let totalTime = 10 * 60; // 10 минут в секундах
-
-            // Функция сохранения состояния в localStorage
-            function saveState() {
-                const state = {
-                    currentQuestionIndex,
-                    currentQuestions: isAllQuestionsMode ? 'all' : 'main',
-                    isAllQuestionsMode,
-                    answeredQuestions: Array.from(answeredQuestions),
-                    startTime: startTime ? startTime.getTime() : null,
-                    elapsedTime,
-                    totalTime,
-                    timestamp: Date.now(),
-                };
-                localStorage.setItem('quizState', JSON.stringify(state));
+            // Функция для сохранения текущего пользователя
+            function saveCurrentUser(user) {
+                localStorage.setItem(
+                    'currentQuizUser',
+                    JSON.stringify({
+                        name: user.name,
+                        timestamp: Date.now(),
+                    })
+                );
             }
 
-            // Функция загрузки состояния из localStorage
-            function loadState() {
-                const savedState = localStorage.getItem('quizState');
+            // Функция для загрузки текущего пользователя
+            function loadCurrentUser() {
+                const savedUser = localStorage.getItem('currentQuizUser');
+                if (savedUser) {
+                    const userData = JSON.parse(savedUser);
+                    const oneWeek = 7 * 24 * 60 * 60 * 1000;
+
+                    if (Date.now() - userData.timestamp < oneWeek) {
+                        return userData.name;
+                    } else {
+                        localStorage.removeItem('currentQuizUser');
+                    }
+                }
+                return null;
+            }
+
+            // Функция для удаления текущего пользователя
+            function clearCurrentUser() {
+                localStorage.removeItem('currentQuizUser');
+                localStorage.removeItem(`quizState_${currentUser}`);
+                currentUser = null;
+            }
+
+            // Функция для проверки авторизации при загрузке страницы
+            function checkAuthOnLoad() {
+                const savedUserName = loadCurrentUser();
+                if (savedUserName) {
+                    // Находим пользователя по имени
+                    for (const [password, userConfig] of Object.entries(USER_CONFIG)) {
+                        if (userConfig.name === savedUserName) {
+                            currentUser = savedUserName;
+                            userQuestions = userConfig.mainQuestions;
+                            currentQuestions = userQuestions;
+
+                            welcomeTitle.textContent = `С возвращением, ${currentUser}!`;
+                            showScreen(welcomeScreen);
+                            logoutBtn.style.display = 'inline-block';
+                            return true;
+                        }
+                    }
+                }
+                // Если пользователь не найден, показываем экран входа
+                showScreen(passwordScreen);
+                return false;
+            }
+
+            // Функция для показа экрана
+            function showScreen(screen) {
+                document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'));
+                screen.classList.add('active');
+            }
+
+            // Функция для загрузки состояния викторины
+            function loadQuizState() {
+                const savedState = localStorage.getItem(`quizState_${currentUser}`);
                 if (savedState) {
                     const state = JSON.parse(savedState);
-
-                    // Проверяем, не прошло ли больше 2 часов с момента сохранения
                     const twoHours = 2 * 60 * 60 * 1000;
+
                     if (Date.now() - state.timestamp < twoHours) {
                         currentQuestionIndex = state.currentQuestionIndex || 0;
                         isAllQuestionsMode = state.isAllQuestionsMode || false;
@@ -984,7 +1179,6 @@
                         elapsedTime = state.elapsedTime || 0;
                         totalTime = state.totalTime || 10 * 60;
 
-                        // Восстанавливаем время
                         if (state.startTime) {
                             startTime = new Date(state.startTime);
                             const now = new Date();
@@ -993,37 +1187,37 @@
                             );
                             elapsedTime = state.elapsedTime + timePassed;
 
-                            // Если время истекло
                             if (elapsedTime >= totalTime) {
                                 elapsedTime = totalTime;
                             }
                         }
 
-                        // Восстанавливаем соответствующий массив вопросов
                         if (state.currentQuestions === 'all') {
                             currentQuestions = getAllQuestionsFlattened();
                             isAllQuestionsMode = true;
                         } else {
-                            currentQuestions = mainQuestions;
+                            currentQuestions = userQuestions;
                             isAllQuestionsMode = false;
                         }
 
-                        // Восстанавливаем экран в зависимости от состояния
                         const allQuestionsCount = getAllQuestionsFlattened().length;
 
                         if (isAllQuestionsMode && answeredQuestions.size >= allQuestionsCount) {
                             showScreen(finalScreen);
+                            updateQuestionCategory();
                         } else if (
                             !isAllQuestionsMode &&
-                            answeredQuestions.size >= mainQuestions.length
+                            answeredQuestions.size >= userQuestions.length
                         ) {
                             showScreen(finishScreen);
+                            updateQuestionCategory();
                         } else if (currentQuestionIndex >= currentQuestions.length) {
                             if (isAllQuestionsMode) {
                                 showScreen(finalScreen);
                             } else {
                                 showScreen(finishScreen);
                             }
+                            updateQuestionCategory();
                         } else {
                             showScreen(questionsScreen);
                             updateQuestion();
@@ -1033,12 +1227,11 @@
                             } else if (elapsedTime >= totalTime) {
                                 timerElement.classList.add('expired');
                             }
+                            updateQuestionCategory();
                         }
-
                         return true;
                     } else {
-                        // Удаляем устаревшие данные
-                        localStorage.removeItem('quizState');
+                        localStorage.removeItem(`quizState_${currentUser}`);
                     }
                 }
                 return false;
@@ -1057,7 +1250,7 @@
 
             // Функция для получения текущей категории вопроса
             function getCurrentCategory() {
-                if (!isAllQuestionsMode) return 'Вопросы от других участников';
+                if (!isAllQuestionsMode) return `${currentUser}`;
 
                 let questionCount = 0;
                 for (let i = 0; i < allQuestions.length; i++) {
@@ -1066,15 +1259,20 @@
                         return allQuestions[i].category;
                     }
                 }
-                return 'Вопросы от других участников';
+                return `${currentUser}`;
             }
 
-            // Функция для показа экрана
-            function showScreen(screen) {
-                document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'));
-                screen.classList.add('active');
-            }
+            // Функция для обновления заголовка категории
+            function updateQuestionCategory() {
+                questionCategory.textContent = getCurrentCategory();
 
+                // Скрыть таймер для 100 вопросов
+                if (isAllQuestionsMode) {
+                    timerWrapper.classList.add('hidden');
+                } else {
+                    timerWrapper.classList.remove('hidden');
+                }
+            }
             // Функция для показа/скрытия модального окна
             function toggleQuestionsList() {
                 questionsListModal.classList.toggle('active');
@@ -1089,41 +1287,32 @@
             function renderQuestionsList() {
                 questionsList.innerHTML = '';
 
-                // Основные вопросы (10 вопросов)
                 const mainQuestionsTitle = document.createElement('div');
                 mainQuestionsTitle.className = 'stage-title';
-                mainQuestionsTitle.textContent = 'Основные вопросы (10)';
+                mainQuestionsTitle.textContent = `Основные вопросы для ${currentUser} (10)`;
                 questionsList.appendChild(mainQuestionsTitle);
 
-                mainQuestions.forEach((question, index) => {
+                userQuestions.forEach((question, index) => {
                     const questionItem = document.createElement('div');
                     questionItem.className = `question-item ${
                         answeredQuestions.has(index) ? 'answered' : 'unanswered'
                     } ${index === currentQuestionIndex && !isAllQuestionsMode ? 'current' : ''}`;
                     questionItem.dataset.index = index;
-                    questionItem.dataset.stage = 'main';
 
                     questionItem.innerHTML = `
-                    <div class="question-number">${index + 1}</div>
-                    <div class="question-text-short">${
-                        question.length > 50 ? question.substring(0, 50) + '...' : question
-                    }</div>
-                    <div class="question-status">
-                        <i class="fas ${
-                            answeredQuestions.has(index) ? 'fa-check-circle' : 'fa-circle'
-                        }"></i>
-                    </div>
-                `;
+                        <div class="question-number">${index + 1}</div>
+                        <div class="question-text-short">${
+                            question.length > 50 ? question.substring(0, 50) + '...' : question
+                        }</div>
+                        <div class="question-status">
+                            <i class="fas ${
+                                answeredQuestions.has(index) ? 'fa-check-circle' : 'fa-circle'
+                            }"></i>
+                        </div>
+                    `;
 
                     questionItem.addEventListener('click', () => {
                         if (!isAllQuestionsMode) {
-                            currentQuestionIndex = parseInt(questionItem.dataset.index);
-                            updateQuestion();
-                            toggleQuestionsList();
-                        } else {
-                            // Если мы в режиме всех вопросов, переключаемся на основные
-                            currentQuestions = mainQuestions;
-                            isAllQuestionsMode = false;
                             currentQuestionIndex = parseInt(questionItem.dataset.index);
                             updateQuestion();
                             toggleQuestionsList();
@@ -1133,48 +1322,41 @@
                     questionsList.appendChild(questionItem);
                 });
 
-                // Дополнительные вопросы (100 вопросов)
-                // Показываем только если игрок прошел первые 10 вопросов
-                if (answeredQuestions.size >= mainQuestions.length) {
+                if (answeredQuestions.size >= userQuestions.length) {
                     const allQuestionsTitle = document.createElement('div');
                     allQuestionsTitle.className = 'stage-title';
                     allQuestionsTitle.textContent = 'Дополнительные вопросы (100)';
-                    allQuestionsTitle.style.marginTop = '20px';
                     questionsList.appendChild(allQuestionsTitle);
 
                     const allQuestionsFlattened = getAllQuestionsFlattened();
-
                     allQuestionsFlattened.forEach((question, index) => {
-                        // Для дополнительных вопросов используем смещение индекса
-                        const adjustedIndex = index + mainQuestions.length;
+                        const adjustedIndex = index + userQuestions.length;
                         const questionItem = document.createElement('div');
                         questionItem.className = `question-item ${
                             answeredQuestions.has(adjustedIndex) ? 'answered' : 'unanswered'
                         } ${
-                            index === currentQuestionIndex - mainQuestions.length &&
+                            index === currentQuestionIndex - userQuestions.length &&
                             isAllQuestionsMode
                                 ? 'current'
                                 : ''
                         }`;
                         questionItem.dataset.index = index;
-                        questionItem.dataset.stage = 'all';
 
                         questionItem.innerHTML = `
-                        <div class="question-number">${index + 1}</div>
-                        <div class="question-text-short">${
-                            question.length > 50 ? question.substring(0, 50) + '...' : question
-                        }</div>
-                        <div class="question-status">
-                            <i class="fas ${
-                                answeredQuestions.has(adjustedIndex)
-                                    ? 'fa-check-circle'
-                                    : 'fa-circle'
-                            }"></i>
-                        </div>
-                    `;
+                            <div class="question-number">${index + 1}</div>
+                            <div class="question-text-short">${
+                                question.length > 50 ? question.substring(0, 50) + '...' : question
+                            }</div>
+                            <div class="question-status">
+                                <i class="fas ${
+                                    answeredQuestions.has(adjustedIndex)
+                                        ? 'fa-check-circle'
+                                        : 'fa-circle'
+                                }"></i>
+                            </div>
+                        `;
 
                         questionItem.addEventListener('click', () => {
-                            // Переходим к дополнительным вопросам
                             currentQuestions = allQuestionsFlattened;
                             isAllQuestionsMode = true;
                             currentQuestionIndex = index;
@@ -1191,20 +1373,17 @@
             function updateQuestion() {
                 if (currentQuestionIndex < currentQuestions.length) {
                     questionText.textContent = currentQuestions[currentQuestionIndex];
-                    questionCategory.textContent = getCurrentCategory();
+                    updateQuestionCategory();
                     counter.textContent = `${currentQuestionIndex + 1}/${currentQuestions.length}`;
                     showScreen(questionsScreen);
-                    // Добавляем текущий вопрос в отвеченные
                     const questionId = isAllQuestionsMode
-                        ? currentQuestionIndex + mainQuestions.length
+                        ? currentQuestionIndex + userQuestions.length
                         : currentQuestionIndex;
                     answeredQuestions.add(questionId);
                 }
 
-                // Обновляем состояние кнопок
                 prevBtn.disabled = currentQuestionIndex === 0;
 
-                // Меняем кнопку "Далее" на "Завершить" на последнем вопросе
                 if (currentQuestionIndex === currentQuestions.length - 1) {
                     nextBtn.innerHTML = '<i class="fas fa-check"></i>';
                     nextBtn.classList.add('submit-btn');
@@ -1213,8 +1392,22 @@
                     nextBtn.classList.remove('submit-btn');
                 }
 
-                // Сохраняем состояние
-                saveState();
+                saveQuizState();
+            }
+
+            // Функция сохранения состояния викторины
+            function saveQuizState() {
+                const state = {
+                    currentQuestionIndex,
+                    currentQuestions: isAllQuestionsMode ? 'all' : 'user',
+                    isAllQuestionsMode,
+                    answeredQuestions: Array.from(answeredQuestions),
+                    startTime: startTime ? startTime.getTime() : null,
+                    elapsedTime,
+                    totalTime,
+                    timestamp: Date.now(),
+                };
+                localStorage.setItem(`quizState_${currentUser}`, JSON.stringify(state));
             }
 
             // Функция обновления отображения таймера
@@ -1246,7 +1439,6 @@
                     const now = new Date();
                     elapsedTime = Math.floor((now.getTime() - startTime.getTime()) / 1000);
 
-                    // Если время истекло
                     if (elapsedTime >= totalTime) {
                         clearInterval(timerInterval);
                         elapsedTime = totalTime;
@@ -1255,16 +1447,14 @@
                     }
 
                     updateTimerDisplay();
-                    saveState();
+                    saveQuizState();
                 }, 1000);
             }
 
-            // Функция сброса состояния
-            function resetState() {
+            // Функция сброса состояния викторины
+            function resetQuizState() {
                 currentQuestionIndex = 0;
-                currentQuestions = mainQuestions;
-                currentCategoryIndex = 0;
-                currentQuestionInCategory = 0;
+                currentQuestions = userQuestions;
                 isAllQuestionsMode = false;
                 answeredQuestions.clear();
                 startTime = null;
@@ -1274,7 +1464,20 @@
                 updateTimerDisplay();
                 updateQuestion();
                 clearInterval(timerInterval);
-                localStorage.removeItem('quizState');
+                localStorage.removeItem(`quizState_${currentUser}`);
+            }
+
+            // Функция для полного сброса прогресса
+            function resetAllProgress() {
+                if (
+                    confirm(
+                        'Вы уверены, что хотите сбросить весь прогресс? Это действие нельзя отменить.'
+                    )
+                ) {
+                    clearCurrentUser();
+                    currentUser = null;
+                    showScreen(passwordScreen);
+                }
             }
 
             // Функция для показа модального окна
@@ -1287,19 +1490,60 @@
                 modal.classList.remove('active');
             }
 
-            // Инициализация при загрузке страницы
-            window.addEventListener('load', () => {
-                if (!loadState()) {
-                    // Если нет сохраненного состояния, показываем начальный экран
+            // Обработчик входа
+            loginBtn.addEventListener('click', () => {
+                const password = passwordInput.value;
+
+                if (USER_CONFIG[password]) {
+                    currentUser = USER_CONFIG[password].name;
+                    userQuestions = USER_CONFIG[password].mainQuestions;
+                    currentQuestions = userQuestions;
+
+                    // Сохраняем пользователя
+                    saveCurrentUser(USER_CONFIG[password]);
+
+                    // Очищаем поле и скрываем ошибку
+                    passwordInput.value = '';
+                    passwordError.style.display = 'none';
+
+                    // Показываем приветствие
+                    welcomeTitle.textContent = `Привет, ${currentUser}!`;
+                    showScreen(welcomeScreen);
+                    logoutBtn.style.display = 'inline-block';
+                } else {
+                    passwordError.style.display = 'block';
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                }
+            });
+
+            // Обработчик выхода
+            logoutBtn.addEventListener('click', () => {
+                clearCurrentUser();
+                currentUser = null;
+                showScreen(passwordScreen);
+                logoutBtn.style.display = 'none';
+            });
+
+            // Ввод пароля по нажатию Enter
+            passwordInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    loginBtn.click();
+                }
+            });
+
+            // Обработчики событий
+            startQuizBtn.addEventListener('click', () => {
+                if (!loadQuizState()) {
                     showScreen(startScreen);
                 }
             });
 
-            document.addEventListener('DOMContentLoaded', (event) => {
-                // Обработчики событий
-                startBtn.addEventListener('click', () => {
-                    showModal(confirmationModal1);
-                });
+            // Кнопка сброса прогресса
+            resetProgressBtn.addEventListener('click', resetAllProgress);
+
+            startBtn.addEventListener('click', () => {
+                showModal(confirmationModal1);
             });
 
             confirmYes1.addEventListener('click', () => {
@@ -1332,11 +1576,9 @@
 
             nextBtn.addEventListener('click', () => {
                 if (currentQuestionIndex < currentQuestions.length - 1) {
-                    // Переход к следующему вопросу
                     currentQuestionIndex++;
                     updateQuestion();
                 } else {
-                    // Завершение викторины
                     clearInterval(timerInterval);
 
                     if (isAllQuestionsMode) {
@@ -1345,8 +1587,7 @@
                         showScreen(finishScreen);
                     }
 
-                    // Очищаем состояние после завершения
-                    localStorage.removeItem('quizState');
+                    localStorage.removeItem(`quizState_${currentUser}`);
                 }
             });
 
@@ -1366,6 +1607,8 @@
                 startTime = new Date();
                 timerElement.classList.remove('expired');
 
+                timerWrapper.classList.add('hidden');
+
                 showScreen(questionsScreen);
                 updateQuestion();
                 startTimer();
@@ -1373,12 +1616,12 @@
 
             // Перезапуск викторины
             restartBtn.addEventListener('click', () => {
-                resetState();
+                resetQuizState();
                 showScreen(startScreen);
             });
 
             finalRestartBtn.addEventListener('click', () => {
-                resetState();
+                resetQuizState();
                 showScreen(startScreen);
             });
 
@@ -1390,7 +1633,14 @@
                 } else {
                     showScreen(finishScreen);
                 }
-                localStorage.removeItem('quizState');
+                localStorage.removeItem(`quizState_${currentUser}`);
+            });
+
+            // Инициализация при загрузке страницы
+            window.addEventListener('DOMContentLoaded', () => {
+                if (!checkAuthOnLoad()) {
+                    passwordInput.focus();
+                }
             });
         </script>
     </body>
