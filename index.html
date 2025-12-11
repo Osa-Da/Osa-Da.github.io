@@ -2,7 +2,10 @@
 <html lang="ru">
     <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=1.0, user-scalable=no" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0 maximum-scale=1.0, user-scalable=no"
+        />
         <title>РАССКАЖИ О СЕБЕ!</title>
         <link
             rel="stylesheet"
@@ -487,6 +490,7 @@
                 text-align: left;
                 font-size: 14px;
                 line-height: 1.4;
+                overflow-wrap: anywhere;
             }
 
             .question-status {
@@ -642,7 +646,7 @@
                     type="text"
                     class="password-input"
                     id="passwordInput"
-                    placeholder="Как вас зовут !!!"
+                    placeholder="Как вас зовут ?"
                 />
                 <button class="btn btn-auth" id="loginBtn">Войти</button>
                 <button
@@ -727,10 +731,9 @@
                     <p>Вы успешно ответили на все вопросы от других участников!</p>
                     <div class="btn-group">
                         <button class="btn btn-more" id="moreQuestionsBtn">БОЛЬШЕ ВОПРОСОВ</button>
-                        <button class="btn btn-list" id="finishListBtn" href="./index2.html">
-                            Список вопросов
-                        </button>
+                        <button class="btn btn-list" id="finishListBtn">Список вопросов</button>
                         <button class="btn" id="restartBtn">Начать заново</button>
+                        <button class="btn" href="./index2.html">href</button>
                     </div>
                 </div>
 
