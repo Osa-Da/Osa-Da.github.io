@@ -14,6 +14,7 @@
                 padding: 0;
                 box-sizing: border-box;
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                touch-action: manipulation;
             }
 
             body {
@@ -288,6 +289,7 @@
                 justify-content: center;
                 padding: 0 10px;
                 width: 100%;
+                overflow-wrap: anywhere;
             }
 
             .navigation {
@@ -640,7 +642,7 @@
                     type="text"
                     class="password-input"
                     id="passwordInput"
-                    placeholder="Как вас зовут !!?"
+                    placeholder="Как вас зовут !!!"
                 />
                 <button class="btn btn-auth" id="loginBtn">Войти</button>
                 <button
