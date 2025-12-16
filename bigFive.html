@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест личности «Большая пятерка»</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #6d28d9;
+            --secondary: #10b981;
+            --dark-bg: #0f172a;
+            --darker-bg: #0a0f1c;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --border: #334155;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--darker-bg) 0%, var(--dark-bg) 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            border-radius: 16px;
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .progress-container {
+            margin: 30px 0;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .question-container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 32px var(--shadow);
+            animation: slideIn 0.5s ease-out;
+            min-height: 320px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .question-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .trait-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.5rem;
+        }
+
+        .trait-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .trait-desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            margin-bottom: 40px;
+            line-height: 1.5;
+            color: var(--text);
+        }
+
+        .scale-container {
+            margin: 30px 0;
+        }
+
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .scale-slider {
+            width: 100%;
+            height: 10px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .scale-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: 3px solid var(--dark-bg);
+            box-shadow: 0 0 10px rgba(124, 58, 237, 0.5);
+            transition: all 0.2s;
+        }
+
+        .scale-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(124, 58, 237, 0.8);
+        }
+
+        .selected-value {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            height: 50px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 16px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(124, 58, 237, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .results-container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 32px var(--shadow);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .result-item {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .result-bar {
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .result-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 6px;
+            width: 0%;
+            transition: width 1.5s ease-out;
+        }
+
+        .result-score {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .result-interpretation {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-top: 8px;
+        }
+
+        .copy-section {
+            text-align: center;
+            margin-top: 40px;
+            padding: 25px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, var(--secondary), #0da271);
+            color: white;
+            padding: 18px 40px;
+            font-size: 1.2rem;
+            margin-top: 15px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--secondary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .question-counter {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { 
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .question-text {
+                font-size: 1.2rem;
+            }
+            
+            .btn {
+                padding: 14px 20px;
+                font-size: 1rem;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+        }
+
+        .welcome-screen {
+            text-align: center;
+            padding: 40px 20px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .welcome-icon {
+            font-size: 4rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .welcome-text {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .start-btn {
+            font-size: 1.3rem;
+            padding: 18px 50px;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-brain"></i> Тест «Большая пятерка»</h1>
+            <p class="subtitle">Откройте для себя свои сильные стороны и зоны роста</p>
+        </header>
+
+        <!-- Приветственный экран -->
+        <div id="welcomeScreen" class="question-container welcome-screen">
+            <div class="welcome-icon">
+                <i class="fas fa-user-astronaut"></i>
+            </div>
+            <h2>Добро пожаловать!</h2>
+            <p class="welcome-text">
+                Этот тест оценивает 5 ключевых черт вашей личности: Открытость, Добросовестность, Экстраверсию, Доброжелательность и Нейротизм.
+                <br><br>
+                Вам будет представлено 25 утверждений. Для каждого выберите значение от 1 (совсем не обо мне) до 5 (полностью обо мне).
+                <br><br>
+                В конце вы получите подробный разбор вашей личности.
+            </p>
+            <button id="startBtn" class="btn btn-primary start-btn">
+                <i class="fas fa-play"></i> Начать тест
+            </button>
+        </div>
+
+        <!-- Прогресс -->
+        <div id="progressContainer" class="progress-container hidden">
+            <div class="progress-header">
+                <span>Прогресс</span>
+                <span id="progressText">0/25</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="question-counter">
+                <span id="currentTraitName">-</span> • Вопрос <span id="currentQuestionNum">0</span>/5
+            </div>
+        </div>
+
+        <!-- Контейнер для вопросов -->
+        <div id="questionScreen" class="hidden">
+            <div class="question-container">
+                <div class="question-header">
+                    <div class="trait-icon" id="traitIcon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div>
+                        <div class="trait-name" id="traitName">Открытость опыту</div>
+                        <div class="trait-desc" id="traitDesc">Креативность, любознательность, широта интересов</div>
+                    </div>
+                </div>
+                
+                <div class="question-text" id="questionText">
+                    Загрузка вопроса...
+                </div>
+                
+                <div class="scale-container">
+                    <div class="scale-labels">
+                        <span>Совсем не обо мне</span>
+                        <span>Полностью обо мне</span>
+                    </div>
+                    <input type="range" min="1" max="5" value="3" class="scale-slider" id="answerSlider">
+                    <div class="selected-value" id="selectedValue">3</div>
+                </div>
+            </div>
+            
+            <div class="buttons">
+                <button id="prevBtn" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Назад
+                </button>
+                <button id="nextBtn" class="btn btn-primary">
+                    Далее <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Экран результатов -->
+        <div id="resultsScreen" class="results-container hidden">
+            <div class="results-header">
+                <h2><i class="fas fa-chart-line"></i> Ваши результаты</h2>
+                <p class="subtitle">Интерпретация вашего профиля личности</p>
+            </div>
+            
+            <div id="resultsContent">
+                <!-- Результаты будут добавлены сюда динамически -->
+            </div>
+            
+            <div class="copy-section">
+                <h3><i class="fas fa-clipboard"></i> Поделитесь результатами</h3>
+                <p>Нажмите кнопку ниже, чтобы скопировать результаты. Затем вставьте их в чат для получения персонального разбора.</p>
+                <button id="copyBtn" class="btn copy-btn">
+                    <i class="fas fa-copy"></i> Скопировать результаты
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification">
+        <i class="fas fa-check-circle"></i>
+        <span>Результаты скопированы в буфер обмена!</span>
+    </div>
+
+    <script>
+        // Данные теста
+        const testData = {
+            traits: [
+                { 
+                    code: 'O', 
+                    name: 'Открытость опыту', 
+                    desc: 'Креативность, любознательность, широта интересов',
+                    icon: 'fas fa-lightbulb',
+                    color: '#7c3aed',
+                    questions: [
+                        'Мне легко приходят в голову новые, необычные идеи.',
+                        'Я ценю искусство, красоту и эстетические впечатления.',
+                        'У меня яркое воображение.',
+                        'Я предпочитаю разнообразие рутине и привычным делам.',
+                        'Мне интересны абстрактные, философские идеи.'
+                    ]
+                },
+                { 
+                    code: 'C', 
+                    name: 'Добросовестность', 
+                    desc: 'Самодисциплина, организованность, целеустремленность',
+                    icon: 'fas fa-tasks',
+                    color: '#10b981',
+                    questions: [
+                        'Я всегда готов(а) к работе/учебе.',
+                        'Я выполняю задачи тщательно и до конца.',
+                        'Я слежу за порядком вокруг себя.',
+                        'Я ставлю цели и систематически их достигаю.',
+                        'Я много работаю для достижения успеха.'
+                    ]
+                },
+                { 
+                    code: 'E', 
+                    name: 'Экстраверсия', 
+                    desc: 'Общительность, активность, энергичность',
+                    icon: 'fas fa-users',
+                    color: '#f59e0b',
+                    questions: [
+                        'Я заряжаюсь энергией в компании людей.',
+                        'Мне нравится быть в центре внимания.',
+                        'Я разговорчив(а) и общителен(на).',
+                        'У меня широкий круг общения.',
+                        'Я часто испытываю положительные эмоции (радость, энтузиазм).'
+                    ]
+                },
+                { 
+                    code: 'A', 
+                    name: 'Доброжелательность', 
+                    desc: 'Сотрудничество, доверие, эмпатия',
+                    icon: 'fas fa-hands-helping',
+                    color: '#3b82f6',
+                    questions: [
+                        'Я верю в хорошие намерения других людей.',
+                        'Мне важно помогать окружающим.',
+                        'Я сочувствую чужим проблемам.',
+                        'Я стараюсь избегать конфликтов и искать компромисс.',
+                        'Я скромен(на) и не люблю хвастаться.'
+                    ]
+                },
+                { 
+                    code: 'N', 
+                    name: 'Нейротизм', 
+                    desc: 'Склонность к переживанию негативных эмоций',
+                    icon: 'fas fa-cloud',
+                    color: '#ef4444',
+                    questions: [
+                        'Я часто испытываю тревогу или беспокойство.',
+                        'Я легко впадаю в уныние или грусть.',
+                        'Я часто раздражаюсь по пустякам.',
+                        'Я остро реагирую на стресс.',
+                        'Моё настроение может резко меняться.'
+                    ]
+                }
+            ]
+        };
+
+        // Состояние теста
+        let currentTraitIndex = 0;
+        let currentQuestionIndex = 0;
+        let answers = {};
+        
+        // Инициализация объекта ответов
+        testData.traits.forEach(trait => {
+            answers[trait.code] = [3, 3, 3, 3, 3]; // По умолчанию все 3
+        });
+
+        // Элементы DOM
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        const progressContainer = document.getElementById('progressContainer');
+        const questionScreen = document.getElementById('questionScreen');
+        const resultsScreen = document.getElementById('resultsScreen');
+        
+        const progressText = document.getElementById('progressText');
+        const progressFill = document.getElementById('progressFill');
+        const currentTraitName = document.getElementById('currentTraitName');
+        const currentQuestionNum = document.getElementById('currentQuestionNum');
+        
+        const traitIcon = document.getElementById('traitIcon');
+        const traitName = document.getElementById('traitName');
+        const traitDesc = document.getElementById('traitDesc');
+        const questionText = document.getElementById('questionText');
+        const answerSlider = document.getElementById('answerSlider');
+        const selectedValue = document.getElementById('selectedValue');
+        
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const startBtn = document.getElementById('startBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        
+        const notification = document.getElementById('notification');
+
+        // Начало теста
+        startBtn.addEventListener('click', () => {
+            welcomeScreen.classList.add('hidden');
+            progressContainer.classList.remove('hidden');
+            questionScreen.classList.remove('hidden');
+            
+            updateQuestion();
+            updateProgress();
+        });
+
+        // Обновление слайдера
+        answerSlider.addEventListener('input', function() {
+            selectedValue.textContent = this.value;
+            
+            // Сохраняем ответ
+            answers[testData.traits[currentTraitIndex].code][currentQuestionIndex] = parseInt(this.value);
+        });
+
+        // Следующий вопрос
+        nextBtn.addEventListener('click', () => {
+            // Сохраняем текущий ответ
+            answers[testData.traits[currentTraitIndex].code][currentQuestionIndex] = parseInt(answerSlider.value);
+            
+            // Переход к следующему вопросу или черте
+            if (currentQuestionIndex < 4) {
+                currentQuestionIndex++;
+            } else if (currentTraitIndex < testData.traits.length - 1) {
+                currentTraitIndex++;
+                currentQuestionIndex = 0;
+            } else {
+                // Тест завершен
+                showResults();
+                return;
+            }
+            
+            updateQuestion();
+            updateProgress();
+        });
+
+        // Предыдущий вопрос
+        prevBtn.addEventListener('click', () => {
+            // Переход к предыдущему вопросу или черте
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+            } else if (currentTraitIndex > 0) {
+                currentTraitIndex--;
+                currentQuestionIndex = 4;
+            }
+            
+            updateQuestion();
+            updateProgress();
+        });
+
+        // Обновление отображения вопроса
+        function updateQuestion() {
+            const trait = testData.traits[currentTraitIndex];
+            const question = trait.questions[currentQuestionIndex];
+            
+            // Обновляем иконку и цвет
+            traitIcon.innerHTML = `<i class="${trait.icon}"></i>`;
+            traitIcon.style.background = `linear-gradient(135deg, ${trait.color}, ${trait.color}99)`;
+            
+            // Обновляем текст
+            traitName.textContent = trait.name;
+            traitDesc.textContent = trait.desc;
+            questionText.textContent = question;
+            
+            // Устанавливаем значение слайдера
+            const currentAnswer = answers[trait.code][currentQuestionIndex];
+            answerSlider.value = currentAnswer;
+            selectedValue.textContent = currentAnswer;
+            
+            // Обновляем состояние кнопок
+            prevBtn.disabled = currentTraitIndex === 0 && currentQuestionIndex === 0;
+            
+            // Текст кнопки "Далее"
+            if (currentTraitIndex === testData.traits.length - 1 && currentQuestionIndex === 4) {
+                nextBtn.innerHTML = '<i class="fas fa-flag-checkered"></i> Завершить тест';
+            } else {
+                nextBtn.innerHTML = 'Далее <i class="fas fa-arrow-right"></i>';
+            }
+            
+            // Обновляем счетчик
+            currentTraitName.textContent = trait.name;
+            currentQuestionNum.textContent = currentQuestionIndex + 1;
+        }
+
+        // Обновление прогресса
+        function updateProgress() {
+            const totalQuestions = 25;
+            const answeredQuestions = (currentTraitIndex * 5) + currentQuestionIndex;
+            const progressPercent = (answeredQuestions / totalQuestions) * 100;
+            
+            progressText.textContent = `${answeredQuestions}/${totalQuestions}`;
+            progressFill.style.width = `${progressPercent}%`;
+        }
+
+        // Показать результаты
+        function showResults() {
+            progressContainer.classList.add('hidden');
+            questionScreen.classList.add('hidden');
+            resultsScreen.classList.remove('hidden');
+            
+            // Рассчитываем результаты
+            const results = {};
+            testData.traits.forEach(trait => {
+                const sum = answers[trait.code].reduce((a, b) => a + b, 0);
+                results[trait.code] = {
+                    sum: sum,
+                    avg: sum / 5,
+                    name: trait.name,
+                    color: trait.color,
+                    icon: trait.icon
+                };
+            });
+            
+            // Отображаем результаты
+            const resultsContent = document.getElementById('resultsContent');
+            resultsContent.innerHTML = '';
+            
+            testData.traits.forEach(trait => {
+                const result = results[trait.code];
+                const percent = (result.sum / 25) * 100;
+                
+                // Определяем интерпретацию
+                let interpretation = '';
+                if (result.sum >= 20) {
+                    interpretation = 'Очень высокий уровень';
+                } else if (result.sum >= 16) {
+                    interpretation = 'Выше среднего';
+                } else if (result.sum >= 11) {
+                    interpretation = 'Средний уровень';
+                } else if (result.sum >= 7) {
+                    interpretation = 'Ниже среднего';
+                } else {
+                    interpretation = 'Очень низкий уровень';
+                }
+                
+                const resultHTML = `
+                    <div class="result-item">
+                        <div class="result-header">
+                            <span><i class="${trait.icon}"></i> ${trait.name}</span>
+                            <span class="result-score">${result.sum}/25</span>
+                        </div>
+                        <div class="result-bar">
+                            <div class="result-fill" style="width: ${percent}%"></div>
+                        </div>
+                        <div class="result-interpretation">
+                            ${interpretation} • Средний балл: ${result.avg.toFixed(1)}
+                        </div>
+                    </div>
+                `;
+                
+                resultsContent.innerHTML += resultHTML;
+            });
+            
+            // Прокрутка к началу результатов
+            resultsScreen.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Копирование результатов
+        copyBtn.addEventListener('click', () => {
+            // Формируем текст для копирования
+            let resultText = "Мои результаты теста «Большая пятерка»:\n\n";
+            
+            testData.traits.forEach(trait => {
+                const sum = answers[trait.code].reduce((a, b) => a + b, 0);
+                resultText += `${trait.code} (${sum}/25): ${answers[trait.code].join(' ')}\n`;
+            });
+            
+            resultText += "\nПрошу сделать подробный разбор моей личности!";
+            
+            // Копируем в буфер обмена
+            navigator.clipboard.writeText(resultText).then(() => {
+                // Показываем уведомление
+                notification.classList.add('show');
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            });
+        });
+
+        // Инициализация иконок
+        document.querySelectorAll('.trait-icon i').forEach(icon => {
+            icon.style.color = 'white';
+        });
+    </script>
+</body>
+</html>
