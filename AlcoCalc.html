@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>🍸 Алко-калькулятор</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+                    sans-serif;
+            }
+
+            body {
+                background: #0f1419;
+                color: #ffffff;
+                min-height: 100vh;
+                padding: 0;
+            }
+
+            .app {
+                max-width: 500px;
+                margin: 0 auto;
+                padding: 20px;
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .header {
+                text-align: center;
+                padding: 20px 0 30px 0;
+            }
+
+            .title {
+                font-size: 32px;
+                font-weight: 300;
+                color: #7bb3ff;
+                letter-spacing: 1px;
+                margin-bottom: 5px;
+            }
+
+            .section {
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 20px;
+                padding: 24px;
+                margin-bottom: 16px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .section-title {
+                font-size: 14px;
+                color: #8b9bab;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .input-group {
+                margin-bottom: 20px;
+            }
+
+            .input-label {
+                display: block;
+                font-size: 15px;
+                color: #a8b6c4;
+                margin-bottom: 8px;
+                font-weight: 400;
+            }
+
+            input,
+            select {
+                width: 100%;
+                padding: 16px 18px;
+                background: rgba(255, 255, 255, 0.08);
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                border-radius: 14px;
+                color: #e7e7e7;
+                font-size: 17px;
+                transition: all 0.2s;
+					 font-weight: 600;
+            }
+
+            option {
+                color: black;
+            }
+
+            input:focus,
+            select:focus {
+                outline: none;
+                border-color: #7bb3ff;
+                background: rgba(255, 255, 255, 0.12);
+            }
+
+            .alcohol-item {
+                background: rgba(255, 255, 255, 0.04);
+                border-radius: 16px;
+                padding: 20px;
+                margin-bottom: 12px;
+                position: relative;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+            }
+
+            .remove-btn {
+                position: absolute;
+                top: 5px;
+                right: 15px;
+                width: 36px;
+                height: 36px;
+                background: rgba(255, 107, 107, 0.1);
+                border: 1px solid rgba(255, 107, 107, 0.3);
+                border-radius: 50%;
+                color: #ff6b6b;
+                font-size: 22px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s;
+                padding-bottom: 4px;
+            }
+
+            .remove-btn:hover {
+                background: rgba(255, 107, 107, 0.2);
+            }
+
+            .buttons {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                margin-top: 10px;
+            }
+
+            .btn {
+                padding: 18px;
+                border: none;
+                border-radius: 14px;
+                font-size: 17px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .btn-primary {
+                background: linear-gradient(135deg, #7bb3ff, #4d8eff);
+                color: white;
+            }
+
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(123, 179, 255, 0.3);
+            }
+
+            .btn-secondary {
+                background: rgba(255, 255, 255, 0.07);
+                color: #a8b6c4;
+                border: 1px solid rgba(255, 255, 255, 0.15);
+            }
+
+            .btn-secondary:hover {
+                background: rgba(255, 255, 255, 0.1);
+            }
+
+            /* Модальные окна */
+            .modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(15, 20, 25, 0.98);
+                z-index: 1000;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .modal-content {
+                min-height: 100vh;
+                padding: 0px 20px 30px;
+                max-width: 500px;
+                margin: 0 auto;
+            }
+
+            .close-btn {
+                position: fixed;
+                top: 25px;
+                right: 25px;
+                width: 50px;
+                height: 50px;
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 50%;
+                color: #ffffff;
+                font-size: 32px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1001;
+                transition: all 0.2s;
+            }
+
+            .close-btn:hover {
+                background: rgba(255, 255, 255, 0.15);
+                transform: rotate(90deg);
+            }
+
+            .modal-title {
+                font-size: 40px;
+                font-weight: 300;
+                color: #7bb3ff;
+                margin-bottom: 40px;
+                text-align: center;
+            }
+
+            .results {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+                margin-bottom: 40px;
+            }
+
+            .result-item {
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 20px;
+                padding: 25px;
+                border: 1px solid rgba(123, 179, 255, 0.2);
+            }
+
+            .result-name {
+                font-size: 16px;
+                color: #8b9bab;
+                margin-bottom: 10px;
+            }
+
+            .result-value {
+                font-size: 36px;
+                font-weight: 300;
+                color: #7bb3ff;
+            }
+
+            .result-unit {
+                font-size: 20px;
+                color: #8b9bab;
+                margin-left: 5px;
+            }
+
+            .history-item {
+                background: rgba(255, 255, 255, 0.04);
+                border-radius: 20px;
+                padding: 22px;
+                margin-bottom: 15px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .history-item:hover {
+                background: rgba(255, 255, 255, 0.07);
+                border-color: rgba(123, 179, 255, 0.3);
+            }
+
+            .history-time {
+                font-size: 14px;
+                color: #8b9bab;
+                margin-bottom: 10px;
+            }
+
+            .history-info {
+                font-size: 18px;
+                color: #ffffff;
+                margin-bottom: 5px;
+            }
+
+            .history-details {
+                font-size: 15px;
+                color: #8b9bab;
+            }
+
+            .custom-name-input {
+                margin-top: 10px;
+                display: none;
+            }
+
+            .custom-name-input.show {
+                display: block;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="app">
+            <div class="header">
+                <div class="title">Алко-калькулятор</div>
+                <div style="color: #8b9bab; font-size: 15px; margin-top: 5px">
+                    Рассчитай идеальный микс
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">
+                    <span>🎯 Цель</span>
+                </div>
+                <div class="input-group">
+                    <div class="input-label">Крепость напитка (%)</div>
+                    <input
+                        type="number"
+                        id="target-strength"
+                        value="22"
+                        min="1"
+                        max="95"
+                        step="0.1"
+                    />
+                </div>
+                <div class="input-group">
+                    <div class="input-label">Объём напитка (литры)</div>
+                    <input
+                        type="number"
+                        id="total-volume"
+                        value="0.5"
+                        min="0.1"
+                        max="10"
+                        step="0.1"
+                    />
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">
+                    <span>🧃 Разбавитель</span>
+                </div>
+                <div class="input-group">
+                    <div class="input-label">Название (сок, вода, кола...)</div>
+                    <input type="text" id="mixer-name" value="Апельсиновый сок" />
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">
+                    <span>🥃 Алкоголь</span>
+                </div>
+                <div id="alcohol-list"></div>
+                <button class="btn btn-secondary" onclick="addAlcohol()">
+                    + Добавить алкоголь
+                </button>
+            </div>
+
+            <div class="buttons">
+                <button class="btn btn-primary" onclick="calculate()">Рассчитать</button>
+                <button class="btn btn-secondary" onclick="showHistory()">История</button>
+            </div>
+        </div>
+
+        <!-- Модальное окно результатов -->
+        <div id="results-modal" class="modal">
+            <button class="close-btn" onclick="closeModal('results-modal')">×</button>
+            <div class="modal-content">
+                <div class="modal-title">Результат</div>
+                <div id="results-content" class="results"></div>
+            </div>
+        </div>
+
+        <!-- Модальное окно истории -->
+        <div id="history-modal" class="modal">
+            <button class="close-btn" onclick="closeModal('history-modal')">×</button>
+            <div class="modal-content">
+                <div class="modal-title">История</div>
+                <div id="history-content"></div>
+                <button
+                    class="btn btn-danger"
+                    onclick="clearHistory()"
+                    style="
+                        margin-top: 30px;
+                        background: rgba(255, 107, 107, 0.1);
+                        color: #ff6b6b;
+                        border: 1px solid rgba(255, 107, 107, 0.3);
+                    "
+                >
+                    Очистить историю
+                </button>
+            </div>
+        </div>
+
+        <script>
+            // Данные по умолчанию
+            const presetAlcohols = [
+                { name: 'Водка', strength: 40 },
+                { name: 'Виски', strength: 40 },
+                { name: 'Ром', strength: 40 },
+                { name: 'Текила', strength: 38 },
+                { name: 'Джин', strength: 40 },
+                { name: 'Вино', strength: 12 },
+                { name: 'Пиво', strength: 5 },
+                { name: 'Коньяк', strength: 40 },
+                { name: 'Самбука', strength: 38 },
+                { name: 'Абсент', strength: 70 },
+            ];
+
+            let history = JSON.parse(localStorage.getItem('drinkHistory') || '[]');
+
+            // Инициализация
+            function init() {
+                addAlcohol();
+                loadLastCalculation();
+            }
+
+            // Загрузка последнего расчета
+            function loadLastCalculation() {
+                const last = history[0];
+                if (last) {
+                    document.getElementById('target-strength').value = last.targetStrength || 22;
+                    document.getElementById('total-volume').value = last.totalVolume || 0.5;
+                    document.getElementById('mixer-name').value =
+                        last.mixerName || 'Апельсиновый сок';
+
+                    const alcoholList = document.getElementById('alcohol-list');
+                    alcoholList.innerHTML = '';
+
+                    if (last.alcohols && last.alcohols.length > 0) {
+                        last.alcohols.forEach((alcohol) => {
+                            addAlcohol(alcohol.name, alcohol.strength);
+                        });
+                    } else {
+                        addAlcohol();
+                    }
+                } else {
+                    addAlcohol();
+                }
+            }
+
+            // Добавление алкогольного напитка
+            function addAlcohol(name = 'Водка', strength = 40) {
+                const alcoholList = document.getElementById('alcohol-list');
+                const div = document.createElement('div');
+                div.className = 'alcohol-item';
+
+                const id = 'alcohol-' + Date.now();
+
+                div.innerHTML = `
+                <div class="input-group">
+                    <div class="input-label">Напиток</div>
+                    <select class="alcohol-select" onchange="onAlcoholSelectChange(this)">
+                        ${presetAlcohols
+                            .map(
+                                (preset) =>
+                                    `<option value="${preset.name}" data-strength="${
+                                        preset.strength
+                                    }" ${preset.name === name ? 'selected' : ''}>
+                                ${preset.name} (${preset.strength}%)
+                            </option>`
+                            )
+                            .join('')}
+                        <option value="custom" ${
+                            !presetAlcohols.find((p) => p.name === name) ? 'selected' : ''
+                        }>Другой...</option>
+                    </select>
+                    <input type="text" class="custom-name-input" placeholder="Введите название напитка" value="${
+                        !presetAlcohols.find((p) => p.name === name) ? name : ''
+                    }">
+                </div>
+                <div class="input-group">
+                    <div class="input-label">Крепость (%)</div>
+                    <input type="number" class="alcohol-strength" value="${strength}" min="1" max="95" step="0.1">
+                </div>
+                <button class="remove-btn" onclick="removeAlcohol(this)">×</button>
+            `;
+
+                alcoholList.appendChild(div);
+
+                // Показываем/скрываем поле для ввода названия
+                const select = div.querySelector('.alcohol-select');
+                const customInput = div.querySelector('.custom-name-input');
+                if (select.value === 'custom') {
+                    customInput.classList.add('show');
+                }
+            }
+
+            // Обработка выбора напитка
+            function onAlcoholSelectChange(select) {
+                const customInput = select.parentElement.querySelector('.custom-name-input');
+                const strengthInput = select
+                    .closest('.alcohol-item')
+                    .querySelector('.alcohol-strength');
+
+                if (select.value === 'custom') {
+                    customInput.classList.add('show');
+                    customInput.focus();
+                } else {
+                    customInput.classList.remove('show');
+                    const selectedOption = select.options[select.selectedIndex];
+                    strengthInput.value = selectedOption.dataset.strength;
+                }
+            }
+
+            // Удаление алкогольного напитка
+            function removeAlcohol(button) {
+                const items = document.querySelectorAll('.alcohol-item');
+                if (items.length > 1) {
+                    button.closest('.alcohol-item').remove();
+                } else {
+                    alert('Должен остаться хотя бы один алкогольный напиток');
+                }
+            }
+
+            // Расчет
+            function calculate() {
+                const targetStrength = parseFloat(document.getElementById('target-strength').value);
+                const totalVolume = parseFloat(document.getElementById('total-volume').value);
+                const mixerName = document.getElementById('mixer-name').value || 'Разбавитель';
+
+                // Проверка
+                if (isNaN(targetStrength) || targetStrength <= 0) {
+                    alert('Укажите корректную крепость');
+                    return;
+                }
+
+                if (isNaN(totalVolume) || totalVolume <= 0) {
+                    alert('Укажите корректный объем');
+                    return;
+                }
+
+                // Сбор данных об алкоголе
+                const alcohols = [];
+
+                document.querySelectorAll('.alcohol-item').forEach((item) => {
+                    const select = item.querySelector('.alcohol-select');
+                    const strengthInput = item.querySelector('.alcohol-strength');
+                    const customNameInput = item.querySelector('.custom-name-input');
+
+                    let name;
+                    if (select.value === 'custom') {
+                        name = customNameInput.value.trim() || 'Алкоголь';
+                    } else {
+                        name = select.value;
+                    }
+
+                    const strength = parseFloat(strengthInput.value);
+
+                    if (!isNaN(strength) && strength > 0) {
+                        alcohols.push({ name, strength });
+                    }
+                });
+
+                if (alcohols.length === 0) {
+                    alert('Добавьте хотя бы один алкогольный напиток');
+                    return;
+                }
+
+                // Расчет
+                const totalAlcoholStrength = alcohols.reduce((sum, alc) => sum + alc.strength, 0);
+                const avgStrength = totalAlcoholStrength / alcohols.length;
+                const alcoholPart = targetStrength / avgStrength;
+
+                if (alcoholPart > 1) {
+                    alert('Невозможно достичь такой крепости с этими напитками');
+                    return;
+                }
+
+                const mixerPart = 1 - alcoholPart;
+                const alcoholVolume = totalVolume * alcoholPart;
+                const mixerVolume = totalVolume * mixerPart;
+
+                // Показ результатов
+                showResults(
+                    alcohols,
+                    alcoholVolume,
+                    mixerVolume,
+                    mixerName,
+                    targetStrength,
+                    totalVolume
+                );
+
+                // Сохранение в историю
+                saveToHistory(
+                    alcohols,
+                    mixerName,
+                    targetStrength,
+                    totalVolume,
+                    alcoholVolume,
+                    mixerVolume
+                );
+            }
+
+            // Показать результаты
+            function showResults(
+                alcohols,
+                alcoholVolume,
+                mixerVolume,
+                mixerName,
+                targetStrength,
+                totalVolume
+            ) {
+                const content = document.getElementById('results-content');
+                let html = '';
+
+                alcohols.forEach((alcohol, index) => {
+                    const volume = alcoholVolume / alcohols.length;
+                    html += `
+                    <div class="result-item">
+                        <div class="result-name">${alcohol.name} (${alcohol.strength}%)</div>
+                        <div class="result-value">${volume.toFixed(
+                            2
+                        )}<span class="result-unit">л</span></div>
+                    </div>
+                `;
+                });
+
+                html += `
+                <div class="result-item">
+                    <div class="result-name">${mixerName}</div>
+                    <div class="result-value">${mixerVolume.toFixed(
+                        2
+                    )}<span class="result-unit">л</span></div>
+                </div>
+                <div class="result-item" style="border-color: rgba(123, 179, 255, 0.4); background: rgba(123, 179, 255, 0.05);">
+                    <div class="result-name">Итоговый напиток</div>
+                    <div class="result-value">${totalVolume.toFixed(
+                        2
+                    )}<span class="result-unit">л, ${targetStrength}%</span></div>
+                </div>
+            `;
+
+                content.innerHTML = html;
+                showModal('results-modal');
+            }
+
+            // Показать историю
+            function showHistory() {
+                const content = document.getElementById('history-content');
+
+                if (history.length === 0) {
+                    content.innerHTML =
+                        '<div style="text-align: center; color: #8b9bab; font-size: 18px; padding: 40px 0;">История пуста</div>';
+                } else {
+                    let html = '';
+                    history.forEach((entry, index) => {
+                        const alcoholNames = entry.alcohols.map((a) => a.name).join(', ');
+                        const totalAlcohol = entry.alcoholVolume;
+                        const totalMixer = entry.mixerVolume;
+
+                        html += `
+                        <div class="history-item" onclick="showHistoryDetails(${index})">
+                            <div class="history-time">${entry.timestamp}</div>
+                            <div class="history-info">${alcoholNames} + ${entry.mixerName}</div>
+                            <div class="history-details">${entry.totalVolume}л, ${entry.targetStrength}% крепости</div>
+                        </div>
+                    `;
+                    });
+                    content.innerHTML = html;
+                }
+
+                showModal('history-modal');
+            }
+
+            // Показать детали истории
+            function showHistoryDetails(index) {
+                const entry = history[index];
+                const alcohols = entry.alcohols;
+                const alcoholVolume = entry.alcoholVolume;
+                const mixerVolume = entry.mixerVolume;
+
+                const content = document.getElementById('results-content');
+                let html = `
+                <div style="color: #8b9bab; text-align: center; margin-bottom: 30px; font-size: 16px;">
+                    ${entry.timestamp}
+                </div>
+            `;
+
+                alcohols.forEach((alcohol, i) => {
+                    const volume = alcoholVolume / alcohols.length;
+                    html += `
+                    <div class="result-item">
+                        <div class="result-name">${alcohol.name} (${alcohol.strength}%)</div>
+                        <div class="result-value">${volume.toFixed(
+                            2
+                        )}<span class="result-unit">л</span></div>
+                    </div>
+                `;
+                });
+
+                html += `
+                <div class="result-item">
+                    <div class="result-name">${entry.mixerName}</div>
+                    <div class="result-value">${mixerVolume.toFixed(
+                        2
+                    )}<span class="result-unit">л</span></div>
+                </div>
+                <div class="result-item" style="border-color: rgba(123, 179, 255, 0.4); background: rgba(123, 179, 255, 0.05);">
+                    <div class="result-name">Итоговый напиток</div>
+                    <div class="result-value">${entry.totalVolume}<span class="result-unit">л, ${
+                    entry.targetStrength
+                }%</span></div>
+                </div>
+            `;
+
+                content.innerHTML = html;
+                closeModal('history-modal');
+                setTimeout(() => showModal('results-modal'), 300);
+            }
+
+            // Сохранить в историю
+            function saveToHistory(
+                alcohols,
+                mixerName,
+                targetStrength,
+                totalVolume,
+                alcoholVolume,
+                mixerVolume
+            ) {
+                const entry = {
+                    timestamp: new Date().toLocaleString('ru-RU', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                    }),
+                    alcohols: alcohols,
+                    mixerName: mixerName,
+                    targetStrength: targetStrength,
+                    totalVolume: totalVolume,
+                    alcoholVolume: alcoholVolume,
+                    mixerVolume: mixerVolume,
+                };
+
+                history.unshift(entry);
+                if (history.length > 20) history = history.slice(0, 20);
+                localStorage.setItem('drinkHistory', JSON.stringify(history));
+            }
+
+            // Очистить историю
+            function clearHistory() {
+                if (confirm('Очистить всю историю расчетов?')) {
+                    history = [];
+                    localStorage.removeItem('drinkHistory');
+                    closeModal('history-modal');
+                }
+            }
+
+            // Показать модальное окно
+            function showModal(modalId) {
+                document.getElementById(modalId).style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+
+            // Закрыть модальное окно
+            function closeModal(modalId) {
+                document.getElementById(modalId).style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+
+            // Инициализация
+            window.onload = init;
+        </script>
+    </body>
+</html>
