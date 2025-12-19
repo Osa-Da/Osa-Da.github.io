@@ -3,231 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📱 Мои приложения</title>
+    <title>Навигация по приложениям</title>
+    <link rel="stylesheet" href="index.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Arial, sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        header {
-            text-align: center;
-            color: white;
-            margin-bottom: 40px;
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-        }
-        
-        h1 {
-            font-size: 2.8rem;
-            margin-bottom: 10px;
-        }
-        
-        .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-        
-        .stats {
-            display: inline-flex;
-            gap: 30px;
-            margin-top: 20px;
-            padding: 15px 30px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 50px;
-        }
-        
-        .stat {
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-        }
-        
-        .apps-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
-        }
-        
-        .app-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-        }
-        
-        .app-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
-        
-        .app-number {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: #6a11cb;
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-        
-        .app-icon {
-            font-size: 3rem;
-            margin: 20px 0;
-        }
-        
-        .app-title {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 1.5rem;
-        }
-        
-        .app-filename {
-            color: #666;
-            font-family: monospace;
-            background: #f5f5f5;
-            padding: 5px 10px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-        }
-        
-        .app-button {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 50px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            width: 100%;
-        }
-        
-        .app-button:hover {
-            transform: scale(1.05);
-        }
-        
-        footer {
-            text-align: center;
-            color: white;
-            margin-top: 50px;
-            padding: 20px;
-            opacity: 0.8;
-        }
-        
-        @media (max-width: 768px) {
-            .apps-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
-        }
-    </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1><i class="fas fa-th-large"></i> Мои приложения</h1>
-            <p class="subtitle">Все мои веб-приложения в одном месте</p>
-            <div class="stats">
-                <div class="stat">
-                    <div class="stat-value">3</div>
-                    <div>приложений</div>
+        <!-- Заголовок -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-rocket"></i>
+                    <h1>Apps Navigator</h1>
                 </div>
-                <div class="stat">
-                    <div class="stat-value"><i class="fas fa-sync-alt"></i></div>
-                    <div>авто-обновление</div>
-                </div>
+                <p class="subtitle">Быстрый доступ ко всем приложениям</p>
+            </div>
+            <div class="header-badge">
+                <span id="total-apps">0</span> приложений
             </div>
         </header>
-        
-        <div class="apps-grid">
-            
-    <div class="app-card" onclick="window.location.href='App/AlcoCalc.html'">
-        <div class="app-number">1</div>
-        <div class="app-icon">📱</div>
-        <h3 class="app-title">AlcoCalc</h3>
-        <p class="app-filename">AlcoCalc.html</p>
-        <button class="app-button">Открыть →</button>
-    </div>
-    <div class="app-card" onclick="window.location.href='App/BigFive.html'">
-        <div class="app-number">2</div>
-        <div class="app-icon">📱</div>
-        <h3 class="app-title">BigFive</h3>
-        <p class="app-filename">BigFive.html</p>
-        <button class="app-button">Открыть →</button>
-    </div>
-    <div class="app-card" onclick="window.location.href='App/Questing.html'">
-        <div class="app-number">3</div>
-        <div class="app-icon">📱</div>
-        <h3 class="app-title">Questing</h3>
-        <p class="app-filename">Questing.html</p>
-        <button class="app-button">Открыть →</button>
-    </div>
-        </div>
-        
-        <footer>
-            <p>🚀 Навигация создана автоматически • 19.12.2025</p>
+
+        <!-- Основной контент -->
+        <main class="main-content">
+            <!-- Левая панель - История -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <h3><i class="fas fa-history"></i> История посещений</h3>
+                    <div class="history-list" id="history-list">
+                        <div class="history-empty">
+                            <i class="fas fa-clock"></i>
+                            <p>История пуста</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3><i class="fas fa-filter"></i> Фильтры</h3>
+                    <div class="filters">
+                        <button class="filter-btn active" onclick="filterApps('all')">
+                            <i class="fas fa-th"></i> Все
+                        </button>
+                        <button class="filter-btn" onclick="filterApps('recent')">
+                            <i class="fas fa-star"></i> Недавние
+                        </button>
+                        <button class="filter-btn" onclick="filterApps('alpha')">
+                            <i class="fas fa-flask"></i> Alpha
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="sidebar-info">
+                    <p><i class="fas fa-info-circle"></i> Нажмите на карточку для открытия приложения</p>
+                    <p><i class="fas fa-database"></i> История сохраняется локально</p>
+                </div>
+            </aside>
+
+            <!-- Правая панель - Приложения -->
+            <section class="apps-section">
+                <!-- Поиск и управление -->
+                <div class="apps-header">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search" placeholder="Поиск приложений..." 
+                               oninput="searchApps()">
+                        <button class="clear-search" onclick="clearSearch()" title="Очистить">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="view-controls">
+                        <span>Сортировка:</span>
+                        <select id="sort" onchange="sortApps()">
+                            <option value="name">По названию</option>
+                            <option value="recent">По дате</option>
+                            <option value="history">По истории</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Сетка приложений -->
+                <div class="apps-grid" id="apps-grid">
+                    <!-- Приложения загружаются динамически -->
+                    <div class="loading-state">
+                        <div class="spinner">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                        <p>Загрузка приложений...</p>
+                    </div>
+                </div>
+
+                <!-- Информация -->
+                <div class="apps-footer">
+                    <div class="stats">
+                        <div class="stat">
+                            <i class="fas fa-layer-group"></i>
+                            <span>Всего: <strong id="stats-total">0</strong></span>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-eye"></i>
+                            <span>Открыто: <strong id="stats-history">0</strong></span>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-clock"></i>
+                            <span>Обновлено: <strong id="last-updated">-</strong></span>
+                        </div>
+                    </div>
+                    
+                    <button class="refresh-btn" onclick="loadApps()" title="Обновить список">
+                        <i class="fas fa-sync-alt"></i> Обновить
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Футер -->
+        <footer class="footer">
+            <p>© 2025 Apps Navigator • Автоматически обновляется</p>
+            <p class="footer-hint">
+                <i class="fas fa-code-branch"></i>
+                Система сканирует папку apps/ при каждом обновлении
+            </p>
         </footer>
     </div>
-    
-    <script>
-        // Простой поиск (можно добавить позже)
-        console.log('Добро пожаловать! Доступно 3 приложений');
-        
-        // Добавляем анимацию появления
-        document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.app-card');
-            cards.forEach((card, index) => {
-                card.style.animationDelay = (index * 0.1) + 's';
-                card.style.animation = 'fadeIn 0.5s ease forwards';
-            });
-        });
-        
-        // Добавляем стили для анимации
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(20px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-            .app-card { opacity: 0; }
-        `;
-        document.head.appendChild(style);
-    </script>
+
+    <script src="index.js"></script>
 </body>
 </html>
