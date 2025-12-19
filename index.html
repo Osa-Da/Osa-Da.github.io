@@ -1,131 +1,882 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Навигация по приложениям</title>
-    <link rel="stylesheet" href="index.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
-    <div class="container">
-        <!-- Заголовок -->
-        <header class="header">
-            <div class="header-content">
-                <div class="logo">
-                    <i class="fas fa-rocket"></i>
-                    <h1>Apps Navigator</h1>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Мои приложения</title>
+
+        <!-- Подключаем иконки Font Awesome -->
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+
+        <style>
+            /* СБРОС СТИЛЕЙ */
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            /* ТЁМНО-ЖЁЛТАЯ ТЕМА */
+            :root {
+                --dark-bg: #1a1a1a;
+                --card-bg: #222222;
+                --yellow: #ffd700;
+                --yellow-dark: #b8860b;
+                --yellow-light: #fffacd;
+                --text-light: #ffffff;
+                --text-gray: #cccccc;
+                --border-dark: #333;
+                --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                --transition: all 0.3s ease;
+            }
+
+            body {
+                background: linear-gradient(135deg, #0f0f0f 0%, var(--dark-bg) 100%);
+                color: var(--text-light);
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                min-height: 100vh;
+                padding: 20px;
+                line-height: 1.6;
+            }
+
+            .container {
+                max-width: 1400px;
+                margin: 0 auto;
+            }
+
+            /* ЗАГОЛОВОК */
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 40px 20px;
+                margin-bottom: 30px;
+                position: relative;
+            }
+
+            .header::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 200px;
+                height: 3px;
+                background: linear-gradient(90deg, transparent, var(--yellow), transparent);
+            }
+
+            .logo {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .logo i {
+                font-size: 2.5rem;
+                color: var(--yellow);
+            }
+
+            .logo h1 {
+                font-size: 2.5rem;
+                background: linear-gradient(45deg, var(--yellow), var(--yellow-light));
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+            }
+
+            .subtitle {
+                color: var(--text-gray);
+                font-size: 1.1rem;
+                margin-top: 5px;
+            }
+
+            /* КНОПКА НАСТРОЕК */
+            .settings-btn {
+                background: linear-gradient(
+                    135deg,
+                    rgba(255, 215, 0, 0.1),
+                    rgba(184, 134, 11, 0.1)
+                );
+                border: 1px solid rgba(255, 215, 0, 0.3);
+                border-radius: 50%;
+                width: 60px;
+                height: 60px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: var(--transition);
+                color: var(--yellow);
+                font-size: 1.8rem;
+            }
+
+            .settings-btn:hover {
+                background: linear-gradient(
+                    135deg,
+                    rgba(255, 215, 0, 0.2),
+                    rgba(184, 134, 11, 0.2)
+                );
+                border-color: var(--yellow);
+                transform: rotate(90deg);
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            }
+
+            /* ОКНО НАСТРОЕК */
+            .settings-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.8);
+                backdrop-filter: blur(5px);
+                z-index: 1000;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .settings-modal {
+                background: var(--card-bg);
+                border: 1px solid var(--yellow);
+                border-radius: 15px;
+                width: 90%;
+                max-width: 500px;
+                padding: 30px;
+                position: relative;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+                animation: modalFadeIn 0.3s ease-out;
+            }
+
+            @keyframes modalFadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 30px;
+                padding-bottom: 15px;
+                border-bottom: 1px solid var(--border-dark);
+            }
+
+            .modal-header h2 {
+                color: var(--yellow);
+                font-size: 1.8rem;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .close-modal {
+                background: none;
+                border: none;
+                color: var(--text-gray);
+                font-size: 1.5rem;
+                cursor: pointer;
+                padding: 5px;
+                transition: var(--transition);
+            }
+
+            .close-modal:hover {
+                color: var(--yellow);
+            }
+
+            .settings-content {
+                margin-bottom: 30px;
+            }
+
+            .settings-section {
+                margin-bottom: 25px;
+            }
+
+            .settings-section h3 {
+                color: var(--yellow-light);
+                margin-bottom: 15px;
+                font-size: 1.2rem;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .settings-info {
+                background: rgba(255, 215, 0, 0.05);
+                border: 1px solid rgba(255, 215, 0, 0.1);
+                border-radius: 10px;
+                padding: 15px;
+                margin-bottom: 20px;
+                color: var(--text-gray);
+                font-size: 0.95rem;
+            }
+
+            .settings-info i {
+                color: var(--yellow);
+                margin-right: 8px;
+            }
+
+            /* КНОПКА СБРОСА */
+            .reset-btn {
+                background: linear-gradient(135deg, rgba(255, 87, 87, 0.1), rgba(198, 40, 40, 0.1));
+                border: 1px solid rgba(255, 87, 87, 0.3);
+                color: #ff5757;
+                border-radius: 10px;
+                padding: 15px 25px;
+                font-size: 1.1rem;
+                font-weight: bold;
+                cursor: pointer;
+                transition: var(--transition);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 12px;
+                width: 100%;
+            }
+
+            .reset-btn:hover {
+                background: linear-gradient(135deg, rgba(255, 87, 87, 0.2), rgba(198, 40, 40, 0.2));
+                border-color: #ff5757;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(255, 87, 87, 0.2);
+            }
+
+            .reset-btn:active {
+                transform: translateY(0);
+            }
+
+            /* СТАТИСТИКА */
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+
+            .stat-item {
+                background: rgba(255, 215, 0, 0.05);
+                border: 1px solid rgba(255, 215, 0, 0.1);
+                border-radius: 10px;
+                padding: 15px;
+                text-align: center;
+            }
+
+            .stat-value {
+                display: block;
+                font-size: 2rem;
+                font-weight: bold;
+                color: var(--yellow);
+                margin-bottom: 5px;
+            }
+
+            .stat-label {
+                font-size: 0.9rem;
+                color: var(--text-gray);
+            }
+
+            /* ПЛИТКА ПРИЛОЖЕНИЙ */
+            .apps-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 25px;
+                margin-bottom: 40px;
+            }
+
+            /* КАРТОЧКА ПРИЛОЖЕНИЯ */
+            .app-card {
+                background: var(--card-bg);
+                border: 1px solid var(--border-dark);
+                border-radius: 15px;
+                padding: 25px;
+                cursor: pointer;
+                transition: var(--transition);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .app-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: linear-gradient(90deg, var(--yellow-dark), var(--yellow));
+                transform: scaleX(0);
+                transition: transform 0.3s ease;
+            }
+
+            .app-card:hover {
+                transform: translateY(-5px);
+                border-color: var(--yellow);
+                box-shadow: var(--shadow);
+            }
+
+            .app-card:hover::before {
+                transform: scaleX(1);
+            }
+
+            /* Карточка из истории получает жёлтую полоску слева */
+            .app-card.history {
+                border-left: 4px solid var(--yellow);
+            }
+
+            .app-icon {
+                width: 70px;
+                height: 70px;
+                background: linear-gradient(
+                    135deg,
+                    rgba(255, 215, 0, 0.1),
+                    rgba(184, 134, 11, 0.1)
+                );
+                border: 2px solid rgba(255, 215, 0, 0.2);
+                border-radius: 15px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 20px;
+                font-size: 2rem;
+                color: var(--yellow);
+            }
+
+            .app-title {
+                font-size: 1.4rem;
+                font-weight: bold;
+                color: var(--text-light);
+                margin-bottom: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .app-version {
+                background: rgba(255, 215, 0, 0.1);
+                color: var(--yellow);
+                padding: 4px 12px;
+                border-radius: 20px;
+                font-size: 0.85rem;
+                font-weight: bold;
+            }
+
+            .app-description {
+                color: var(--text-gray);
+                font-size: 1rem;
+                line-height: 1.5;
+                margin-bottom: 20px;
+                min-height: 60px;
+            }
+
+            .app-footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-top: 15px;
+                border-top: 1px solid var(--border-dark);
+                font-size: 0.9rem;
+                color: var(--text-gray);
+            }
+
+            .app-history-badge {
+                background: rgba(255, 215, 0, 0.1);
+                color: var(--yellow);
+                padding: 4px 10px;
+                border-radius: 12px;
+                font-size: 0.8rem;
+            }
+
+            /* ФУТЕР */
+            .footer {
+                text-align: center;
+                padding: 30px 20px;
+                color: var(--text-gray);
+                border-top: 1px solid var(--border-dark);
+                margin-top: 20px;
+            }
+
+            .footer p {
+                margin-bottom: 10px;
+            }
+
+            .footer-hint {
+                font-size: 0.9rem;
+                color: var(--yellow-dark);
+            }
+
+            /* АДАПТИВНОСТЬ */
+            @media (max-width: 768px) {
+                .apps-grid {
+                    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                }
+
+                .logo h1 {
+                    font-size: 2rem;
+                }
+
+                .settings-modal {
+                    padding: 20px;
+                    width: 95%;
+                }
+
+                .stats-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .apps-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                body {
+                    padding: 10px;
+                }
+
+                .header {
+                    padding: 20px 10px;
+                    flex-direction: column;
+                    gap: 20px;
+                    text-align: center;
+                }
+
+                .settings-btn {
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    width: 50px;
+                    height: 50px;
+                    font-size: 1.5rem;
+                    z-index: 100;
+                }
+            }
+
+            /* АНИМАЦИЯ ПОЯВЛЕНИЯ */
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .app-card {
+                animation: fadeIn 0.5s ease-out forwards;
+                opacity: 0;
+            }
+
+            /* Задержки для анимаций карточек */
+            .app-card:nth-child(1) {
+                animation-delay: 0.1s;
+            }
+            .app-card:nth-child(2) {
+                animation-delay: 0.2s;
+            }
+            .app-card:nth-child(3) {
+                animation-delay: 0.3s;
+            }
+            .app-card:nth-child(4) {
+                animation-delay: 0.4s;
+            }
+            .app-card:nth-child(5) {
+                animation-delay: 0.5s;
+            }
+            .app-card:nth-child(6) {
+                animation-delay: 0.6s;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <!-- ЗАГОЛОВОК -->
+            <header class="header">
+                <div>
+                    <div class="logo">
+                        <i class="fas fa-puzzle-piece"></i>
+                        <h1>Мои приложения</h1>
+                    </div>
+                    <p class="subtitle">Нажмите на карточку для открытия приложения</p>
                 </div>
-                <p class="subtitle">Быстрый доступ ко всем приложениям</p>
+
+                <!-- КНОПКА НАСТРОЕК -->
+                <div class="settings-btn" id="settingsBtn">
+                    <i class="fas fa-cog"></i>
+                </div>
+            </header>
+
+            <!-- ПЛИТКА ПРИЛОЖЕНИЙ -->
+            <div class="apps-grid" id="apps-grid">
+                <!-- Приложения будут созданы через JavaScript -->
             </div>
-            <div class="header-badge">
-                <span id="total-apps">0</span> приложений
+
+            <!-- ФУТЕР -->
+            <footer class="footer">
+                <p>История посещений сохраняется в вашем браузере</p>
+                <p class="footer-hint">Приложения отсортированы по истории посещений</p>
+            </footer>
+        </div>
+
+        <!-- ОКНО НАСТРОЕК -->
+        <div class="settings-overlay" id="settingsOverlay">
+            <div class="settings-modal">
+                <div class="modal-header">
+                    <h2><i class="fas fa-cog"></i> Настройки</h2>
+                    <button class="close-modal" id="closeModal">&times;</button>
+                </div>
+
+                <div class="settings-content">
+                    <div class="settings-section">
+                        <h3><i class="fas fa-chart-bar"></i> Статистика</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-value" id="statTotalApps">0</span>
+                                <span class="stat-label">Всего приложений</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="statHistoryCount">0</span>
+                                <span class="stat-label">В истории</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Опасная зона</h3>
+                        <div class="settings-info">
+                            <p>
+                                <i class="fas fa-info-circle"></i>
+                                Эта операция удалит всю историю посещений приложений. Приложения
+                                останутся в списке, но их порядок вернётся к алфавитному. Действие
+                                необратимо!
+                            </p>
+                        </div>
+
+                        <button class="reset-btn" id="resetHistoryBtn">
+                            <i class="fas fa-trash-alt"></i>
+                            <span>Сбросить историю посещений</span>
+                        </button>
+                    </div>
+                </div>
             </div>
-        </header>
+        </div>
 
-        <!-- Основной контент -->
-        <main class="main-content">
-            <!-- Левая панель - История -->
-            <aside class="sidebar">
-                <div class="sidebar-section">
-                    <h3><i class="fas fa-history"></i> История посещений</h3>
-                    <div class="history-list" id="history-list">
-                        <div class="history-empty">
-                            <i class="fas fa-clock"></i>
-                            <p>История пуста</p>
+        <script>
+            // ========== КОНФИГУРАЦИЯ ==========
+            const STORAGE_KEY = 'apps_history'; // Ключ для localStorage
+
+            // ========== МАССИВ ПРИЛОЖЕНИЙ (ЗАПОЛНИТЕ ЭТОТ МАССИВ) ==========
+            const APPS = [
+                {
+                    id: 'calculator',
+                    url: 'apps/alcoCalc.html',
+                    title: 'Калькулятор разбодяживания',
+                    icon: 'fas fa-calculator',
+                    description: 'Продвинутый калькулятор с научными функциями',
+                },
+                {
+                    id: 'notes',
+                    url: 'apps/questing.html',
+                    title: 'Новогодние вопросы',
+                    icon: 'fas fa-sticky-note',
+                    description: 'Захади и отвечай на вопросы ',
+                },
+                {
+                    id: 'weather',
+                    url: 'apps/bigFive.html',
+                    title: 'Тест личности',
+                },
+            ];
+            // ========== РАБОТА С ИСТОРИЕЙ ==========
+            let history = [];
+
+            // Загрузка истории из localStorage
+            function loadHistory() {
+                try {
+                    const saved = localStorage.getItem(STORAGE_KEY);
+                    history = saved ? JSON.parse(saved) : [];
+                    updateStats(); // Обновляем статистику
+                } catch (e) {
+                    console.error('Ошибка загрузки истории:', e);
+                    history = [];
+                }
+            }
+
+            // Сохранение истории в localStorage
+            function saveHistory() {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+                    updateStats(); // Обновляем статистику
+                } catch (e) {
+                    console.error('Ошибка сохранения истории:', e);
+                }
+            }
+
+            // Добавление приложения в историю
+            function addToHistory(appId) {
+                // Удаляем приложение из истории если оно уже есть
+                history = history.filter((id) => id !== appId);
+
+                // Добавляем в начало массива
+                history.unshift(appId);
+
+                // Сохраняем
+                saveHistory();
+
+                // Обновляем отображение
+                renderApps();
+            }
+
+            // Сброс истории
+            function resetHistory() {
+                if (
+                    confirm(
+                        'Вы уверены, что хотите сбросить всю историю посещений?\nЭто действие нельзя отменить.'
+                    )
+                ) {
+                    history = [];
+                    saveHistory();
+                    renderApps();
+
+                    // Показываем уведомление
+                    showNotification('История посещений сброшена!', 'success');
+
+                    // Закрываем окно настроек
+                    closeSettings();
+                }
+            }
+
+            // ========== ОТОБРАЖЕНИЕ ПРИЛОЖЕНИЙ ==========
+            function renderApps() {
+                const container = document.getElementById('apps-grid');
+                if (!container) return;
+
+                // Создаём копию массива для сортировки
+                let appsToShow = [...APPS];
+
+                // Сортируем: сначала приложения из истории, потом остальные по алфавиту
+                appsToShow.sort((a, b) => {
+                    const aInHistory = history.includes(a.id);
+                    const bInHistory = history.includes(b.id);
+
+                    // Оба в истории - сортируем по порядку в истории
+                    if (aInHistory && bInHistory) {
+                        return history.indexOf(a.id) - history.indexOf(b.id);
+                    }
+
+                    // Один в истории, другой нет - тот, что в истории, выше
+                    if (aInHistory && !bInHistory) return -1;
+                    if (!aInHistory && bInHistory) return 1;
+
+                    // Оба не в истории - сортируем по алфавиту
+                    return a.title.localeCompare(b.title);
+                });
+
+                // Создаём HTML для каждого приложения
+                container.innerHTML = appsToShow
+                    .map((app) => {
+                        const isInHistory = history.includes(app.id);
+                        const version = app.version || '1.0'; // Если версии нет - ставим "1.0"
+                        const defaultIcon = 'fas fa-puzzle-piece'; // Иконка по умолчанию
+
+                        return `
+                    <div class="app-card ${isInHistory ? 'history' : ''}" 
+                         onclick="openApp('${app.id}')"
+                         title="Открыть ${app.title}">
+                        
+                        <div class="app-icon">
+                            <i class="${app.icon || defaultIcon}"></i>
+                        </div>
+                        
+                        <div class="app-title">
+                            <span>${app.title}</span>
+                            <span class="app-version">v${version}</span>
+                        </div>
+                        
+                        <div class="app-description">
+                            ${app.description || 'Описание отсутствует'}
+                        </div>
+                        
+                        <div class="app-footer">
+                            <span>apps/${app.id}.html</span>
+                            ${
+                                isInHistory
+                                    ? '<span class="app-history-badge"><i class="fas fa-history"></i> В истории</span>'
+                                    : ''
+                            }
                         </div>
                     </div>
-                </div>
-                
-                <div class="sidebar-section">
-                    <h3><i class="fas fa-filter"></i> Фильтры</h3>
-                    <div class="filters">
-                        <button class="filter-btn active" onclick="filterApps('all')">
-                            <i class="fas fa-th"></i> Все
-                        </button>
-                        <button class="filter-btn" onclick="filterApps('recent')">
-                            <i class="fas fa-star"></i> Недавние
-                        </button>
-                        <button class="filter-btn" onclick="filterApps('alpha')">
-                            <i class="fas fa-flask"></i> Alpha
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="sidebar-info">
-                    <p><i class="fas fa-info-circle"></i> Нажмите на карточку для открытия приложения</p>
-                    <p><i class="fas fa-database"></i> История сохраняется локально</p>
-                </div>
-            </aside>
+                `;
+                    })
+                    .join('');
+            }
 
-            <!-- Правая панель - Приложения -->
-            <section class="apps-section">
-                <!-- Поиск и управление -->
-                <div class="apps-header">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="search" placeholder="Поиск приложений..." 
-                               oninput="searchApps()">
-                        <button class="clear-search" onclick="clearSearch()" title="Очистить">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="view-controls">
-                        <span>Сортировка:</span>
-                        <select id="sort" onchange="sortApps()">
-                            <option value="name">По названию</option>
-                            <option value="recent">По дате</option>
-                            <option value="history">По истории</option>
-                        </select>
-                    </div>
-                </div>
+            // ========== ОТКРЫТИЕ ПРИЛОЖЕНИЯ ==========
+            function openApp(appId) {
+                // Находим приложение по ID
+                const app = APPS.find((a) => a.id === appId);
+                if (!app) {
+                    console.error('Приложение не найдено:', appId);
+                    return;
+                }
 
-                <!-- Сетка приложений -->
-                <div class="apps-grid" id="apps-grid">
-                    <!-- Приложения загружаются динамически -->
-                    <div class="loading-state">
-                        <div class="spinner">
-                            <i class="fas fa-spinner fa-spin"></i>
-                        </div>
-                        <p>Загрузка приложений...</p>
-                    </div>
-                </div>
+                // Добавляем в историю
+                addToHistory(appId);
 
-                <!-- Информация -->
-                <div class="apps-footer">
-                    <div class="stats">
-                        <div class="stat">
-                            <i class="fas fa-layer-group"></i>
-                            <span>Всего: <strong id="stats-total">0</strong></span>
-                        </div>
-                        <div class="stat">
-                            <i class="fas fa-eye"></i>
-                            <span>Открыто: <strong id="stats-history">0</strong></span>
-                        </div>
-                        <div class="stat">
-                            <i class="fas fa-clock"></i>
-                            <span>Обновлено: <strong id="last-updated">-</strong></span>
-                        </div>
-                    </div>
-                    
-                    <button class="refresh-btn" onclick="loadApps()" title="Обновить список">
-                        <i class="fas fa-sync-alt"></i> Обновить
-                    </button>
-                </div>
-            </section>
-        </main>
+                window.location.href = app.url;
+            }
 
-        <!-- Футер -->
-        <footer class="footer">
-            <p>© 2025 Apps Navigator • Автоматически обновляется</p>
-            <p class="footer-hint">
-                <i class="fas fa-code-branch"></i>
-                Система сканирует папку apps/ при каждом обновлении
-            </p>
-        </footer>
-    </div>
+            // ========== УПРАВЛЕНИЕ НАСТРОЙКАМИ ==========
+            function openSettings() {
+                const overlay = document.getElementById('settingsOverlay');
+                if (overlay) {
+                    overlay.style.display = 'flex';
+                    document.body.style.overflow = 'hidden'; // Блокируем скролл
+                    updateStats(); // Обновляем статистику в модальном окне
+                }
+            }
 
-    <script src="index.js"></script>
-</body>
+            function closeSettings() {
+                const overlay = document.getElementById('settingsOverlay');
+                if (overlay) {
+                    overlay.style.display = 'none';
+                    document.body.style.overflow = 'auto'; // Возвращаем скролл
+                }
+            }
+
+            // Обновление статистики в настройках
+            function updateStats() {
+                document.getElementById('statTotalApps').textContent = APPS.length;
+                document.getElementById('statHistoryCount').textContent = history.length;
+            }
+
+            // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+            function showNotification(message, type = 'info') {
+                // Создаём элемент уведомления
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${
+                    type === 'success' ? 'rgba(76, 175, 80, 0.9)' : 'rgba(33, 150, 243, 0.9)'
+                };
+                color: white;
+                padding: 15px 25px;
+                border-radius: 8px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                max-width: 300px;
+            `;
+
+                // Добавляем иконку
+                const icon = type === 'success' ? 'check-circle' : 'info-circle';
+                notification.innerHTML = `<i class="fas fa-${icon}"></i> ${message}`;
+
+                // Добавляем на страницу
+                document.body.appendChild(notification);
+
+                // Удаляем через 3 секунды
+                setTimeout(() => {
+                    notification.style.animation = 'slideOut 0.3s ease-out forwards';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 300);
+                }, 3000);
+
+                // Добавляем стили для анимаций
+                if (!document.querySelector('#notification-styles')) {
+                    const style = document.createElement('style');
+                    style.id = 'notification-styles';
+                    style.textContent = `
+                    @keyframes slideIn {
+                        from {
+                            transform: translateX(100%);
+                            opacity: 0;
+                        }
+                        to {
+                            transform: translateX(0);
+                            opacity: 1;
+                        }
+                    }
+                    @keyframes slideOut {
+                        from {
+                            transform: translateX(0);
+                            opacity: 1;
+                        }
+                        to {
+                            transform: translateX(100%);
+                            opacity: 0;
+                        }
+                    }
+                `;
+                    document.head.appendChild(style);
+                }
+            }
+
+            // ========== ИНИЦИАЛИЗАЦИЯ ==========
+            function init() {
+                // Загружаем историю
+                loadHistory();
+
+                // Отображаем приложения
+                renderApps();
+
+                // Настраиваем обработчики событий для настроек
+                const settingsBtn = document.getElementById('settingsBtn');
+                const closeModalBtn = document.getElementById('closeModal');
+                const resetHistoryBtn = document.getElementById('resetHistoryBtn');
+                const settingsOverlay = document.getElementById('settingsOverlay');
+
+                if (settingsBtn) settingsBtn.addEventListener('click', openSettings);
+                if (closeModalBtn) closeModalBtn.addEventListener('click', closeSettings);
+                if (resetHistoryBtn) resetHistoryBtn.addEventListener('click', resetHistory);
+
+                // Закрытие модального окна при клике на overlay
+                if (settingsOverlay) {
+                    settingsOverlay.addEventListener('click', function (e) {
+                        if (e.target === this) {
+                            closeSettings();
+                        }
+                    });
+                }
+
+                // Закрытие модального окна при нажатии Escape
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape') {
+                        closeSettings();
+                    }
+                });
+
+                // Выводим информацию в консоль для отладки
+                console.log('Всего приложений:', APPS.length);
+                console.log('История посещений:', history);
+            }
+
+            // Запускаем при загрузке страницы
+            document.addEventListener('DOMContentLoaded', init);
+
+            // Экспортируем функции для глобального использования
+            window.openApp = openApp;
+            window.addToHistory = addToHistory;
+            window.resetHistory = resetHistory;
+            window.openSettings = openSettings;
+            window.closeSettings = closeSettings;
+        </script>
+    </body>
 </html>
