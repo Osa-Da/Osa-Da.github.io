@@ -21,7 +21,7 @@ const APPS = [
     },
     {
         id: 'weather',
-        url: 'apps/bigFive.html',
+        url: 'bigFive.html',
         title: 'Тест личности',
     },
 ];
