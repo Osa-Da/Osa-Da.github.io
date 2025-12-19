@@ -1,4 +1,50 @@
-<!DOCTYPE html>
+const fs = require('fs');
+const path = require('path');
+
+console.log('🚀 Начинаю создавать навигацию...');
+
+// Папка с приложениями
+const APPS_FOLDER = 'App'; // Если у тебя 'app' - поменяй здесь
+
+// Проверяем есть ли папка
+if (!fs.existsSync(APPS_FOLDER)) {
+    console.error('❌ Папка App не найдена!');
+    process.exit(1);
+}
+
+// Получаем все html файлы
+const appFiles = fs.readdirSync(APPS_FOLDER)
+    .filter(file => file.endsWith('.html'))
+    .sort(); // Сортируем по алфавиту
+
+console.log(`📁 Нашёл ${appFiles.length} приложений:`);
+
+// Создаем карточки для каждого приложения
+let appCardsHTML = '';
+appFiles.forEach((file, index) => {
+    const appPath = `${APPS_FOLDER}/${file}`;
+    const appName = file.replace('.html', '')
+        .replace(/-/g, ' ')
+        .replace(/_/g, ' ');
+    
+    // Делаем первую букву заглавной
+    const displayName = appName.charAt(0).toUpperCase() + appName.slice(1);
+    
+    console.log(`   ${index + 1}. ${displayName} (${file})`);
+    
+    // Создаем HTML для карточки
+    appCardsHTML += `
+    <div class="app-card" onclick="window.location.href='${appPath}'">
+        <div class="app-number">${index + 1}</div>
+        <div class="app-icon">📱</div>
+        <h3 class="app-title">${displayName}</h3>
+        <p class="app-filename">${file}</p>
+        <button class="app-button">Открыть →</button>
+    </div>`;
+});
+
+// Создаем полную HTML страницу
+const html = `<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -165,7 +211,7 @@
             <p class="subtitle">Все мои веб-приложения в одном месте</p>
             <div class="stats">
                 <div class="stat">
-                    <div class="stat-value">3</div>
+                    <div class="stat-value">${appFiles.length}</div>
                     <div>приложений</div>
                 </div>
                 <div class="stat">
@@ -176,38 +222,17 @@
         </header>
         
         <div class="apps-grid">
-            
-    <div class="app-card" onclick="window.location.href='App/AlcoCalc.html'">
-        <div class="app-number">1</div>
-        <div class="app-icon">📱</div>
-        <h3 class="app-title">AlcoCalc</h3>
-        <p class="app-filename">AlcoCalc.html</p>
-        <button class="app-button">Открыть →</button>
-    </div>
-    <div class="app-card" onclick="window.location.href='App/BigFive.html'">
-        <div class="app-number">2</div>
-        <div class="app-icon">📱</div>
-        <h3 class="app-title">BigFive</h3>
-        <p class="app-filename">BigFive.html</p>
-        <button class="app-button">Открыть →</button>
-    </div>
-    <div class="app-card" onclick="window.location.href='App/Questing.html'">
-        <div class="app-number">3</div>
-        <div class="app-icon">📱</div>
-        <h3 class="app-title">Questing</h3>
-        <p class="app-filename">Questing.html</p>
-        <button class="app-button">Открыть →</button>
-    </div>
+            ${appCardsHTML}
         </div>
         
         <footer>
-            <p>🚀 Навигация создана автоматически • 19.12.2025</p>
+            <p>🚀 Навигация создана автоматически • ${new Date().toLocaleDateString('ru-RU')}</p>
         </footer>
     </div>
     
     <script>
         // Простой поиск (можно добавить позже)
-        console.log('Добро пожаловать! Доступно 3 приложений');
+        console.log('Добро пожаловать! Доступно ${appFiles.length} приложений');
         
         // Добавляем анимацию появления
         document.addEventListener('DOMContentLoaded', function() {
@@ -220,14 +245,20 @@
         
         // Добавляем стили для анимации
         const style = document.createElement('style');
-        style.textContent = `
+        style.textContent = \`
             @keyframes fadeIn {
                 from { opacity: 0; transform: translateY(20px); }
                 to { opacity: 1; transform: translateY(0); }
             }
             .app-card { opacity: 0; }
-        `;
+        \`;
         document.head.appendChild(style);
     </script>
 </body>
-</html>
+</html>`;
+
+// Сохраняем файл
+fs.writeFileSync('index.html', html, 'utf-8');
+
+console.log('✅ Готово! Файл index.html создан.');
+console.log('📊 Всего приложений: ' + appFiles.length);

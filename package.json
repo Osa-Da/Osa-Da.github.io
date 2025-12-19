@@ -1,0 +1,9 @@
+{
+	"name": "my-apps-navigation",
+	"version": "1.0.0",
+	"description": "Auto-generated navigation for my apps",
+	"scripts": {
+	  "build": "node scripts/generate-navigation.js"
+	},
+	"dependencies": {}
+ }
