@@ -7,14 +7,14 @@
 const APPS = [
     {
         id: 'calculator',
-        url: 'apps/alcoCalc.html',
+        url: 'Apps/alcoCalc.html',
         title: 'Калькулятор разбодяживания',
         icon: 'fas fa-calculator',
         description: 'Продвинутый калькулятор с научными функциями',
     },
     {
         id: 'notes',
-        url: 'apps/questing.html',
+        url: 'Apps/questing.html',
         title: 'Новогодние вопросы',
         icon: 'fas fa-sticky-note',
         description: 'Захади и отвечай на вопросы ',
