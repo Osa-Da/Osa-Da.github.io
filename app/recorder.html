@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Запись активности на вкладке браузера</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a237e 0%, #311b92 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00e5ff, #2979ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .control-panel {
+            background-color: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        
+        .preview-area {
+            background-color: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #00e5ff;
+        }
+        
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        button i {
+            font-size: 1.3rem;
+        }
+        
+        .btn-record {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+            flex: 1;
+            min-width: 180px;
+        }
+        
+        .btn-stop {
+            background: linear-gradient(135deg, #424242, #212121);
+            color: white;
+            flex: 1;
+            min-width: 180px;
+        }
+        
+        .btn-preview {
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+            color: white;
+            flex: 1;
+            min-width: 180px;
+        }
+        
+        .btn-download {
+            background: linear-gradient(135deg, #2196f3, #0d47a1);
+            color: white;
+            flex: 1;
+            min-width: 180px;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 14px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+        
+        .status-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #757575;
+        }
+        
+        .status-dot.recording {
+            background-color: #f44336;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+        
+        .timer {
+            font-size: 1.8rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #00e5ff;
+            margin-left: auto;
+        }
+        
+        .settings-panel {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .settings-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .setting-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #bbdefb;
+        }
+        
+        select, .checkbox-group {
+            width: 100%;
+            padding: 12px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        option {
+            color: black;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        
+        .checkbox-group input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .video-preview {
+            width: 100%;
+            height: 280px;
+            background-color: #000;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        video, audio {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background-color: #000;
+        }
+        
+        .video-placeholder, .audio-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #aaa;
+            font-size: 1.2rem;
+        }
+        
+        .video-placeholder i, .audio-placeholder i {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            color: #555;
+        }
+        
+        .info-box {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .info-box h3 {
+            color: #00e5ff;
+            margin-bottom: 10px;
+        }
+        
+        .info-box ul {
+            padding-left: 20px;
+            line-height: 1.6;
+        }
+        
+        .info-box li {
+            margin-bottom: 8px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            padding: 20px;
+            width: 100%;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .warning {
+            background-color: rgba(255, 193, 7, 0.2);
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        
+        .recordings-list {
+            margin-top: 20px;
+        }
+        
+        .recordings-list h3 {
+            margin-bottom: 15px;
+            color: #00e5ff;
+        }
+        
+        .recording-item {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .recording-info {
+            flex-grow: 1;
+        }
+        
+        .recording-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .recording-details {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .recording-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .format-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            background-color: #2979ff;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 8px;
+        }
+        
+        .audio-badge {
+            background-color: #4caf50;
+        }
+        
+        .format-info {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-video"></i> Запись активности на вкладке</h1>
+            <p class="subtitle">Записывайте видео, аудио или одновременно и то и другое с вкладки браузера. Выберите формат файла и настройки записи.</p>
+        </header>
+        
+        <div class="main-content">
+            <section class="control-panel">
+                <h2><i class="fas fa-sliders-h"></i> Управление записью</h2>
+                
+                <div class="settings-panel">
+                    <h3><i class="fas fa-cog"></i> Настройки записи</h3>
+                    
+                    <div class="settings-row">
+                        <div class="setting-group">
+                            <label for="formatSelect"><i class="fas fa-file-video"></i> Формат файла</label>
+                            <select id="formatSelect">
+                                <option value="mp4" selected>MP4 (рекомендуется)</option>
+                                <option value="webm">WebM</option>
+                                <option value="avi">AVI</option>
+                                <option value="mkv">MKV</option>
+                                <option value="mov">MOV</option>
+                            </select>
+                        </div>
+                        
+                        <div class="setting-group">
+                            <label for="qualitySelect"><i class="fas fa-chart-line"></i> Качество видео</label>
+                            <select id="qualitySelect">
+                                <option value="high" selected>Высокое</option>
+                                <option value="medium">Среднее</option>
+                                <option value="low">Низкое</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-row">
+                        <div class="setting-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="recordAudioOnly" name="recordAudioOnly">
+                                <label for="recordAudioOnly">Только аудио (без видео)</label>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="recordSystemAudio" name="recordSystemAudio" checked>
+                                <label for="recordSystemAudio">Записывать звук системы</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="format-info">
+                        <strong>Информация о форматах:</strong> MP4 имеет лучшую совместимость с устройствами и программами. WebM лучше подходит для веба. При выборе "Только аудио" файл будет сохранен в формате MP3.
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button id="startRecord" class="btn-record">
+                        <i class="fas fa-circle"></i> Начать запись
+                    </button>
+                    <button id="stopRecord" class="btn-stop" disabled>
+                        <i class="fas fa-stop"></i> Остановить запись
+                    </button>
+                </div>
+                
+                <div class="button-group">
+                    <button id="playPreview" class="btn-preview" disabled>
+                        <i class="fas fa-play"></i> Просмотреть запись
+                    </button>
+                    <button id="downloadRecording" class="btn-download" disabled>
+                        <i class="fas fa-download"></i> Скачать запись
+                    </button>
+                </div>
+                
+                <div class="status-indicator">
+                    <div class="status-dot" id="statusDot"></div>
+                    <span id="statusText">Готов к записи</span>
+                    <div class="timer" id="timer">00:00</div>
+                </div>
+                
+                <div class="info-box">
+                    <h3><i class="fas fa-info-circle"></i> Инструкция</h3>
+                    <ul>
+                        <li>Выберите формат файла и настройки записи</li>
+                        <li>Нажмите "Начать запись" - браузер запросит разрешение</li>
+                        <li>Выберите вкладку или окно для записи</li>
+                        <li>Для записи только звука отметьте соответствующую опцию</li>
+                        <li>Нажмите "Остановить запись" для завершения</li>
+                        <li>Просмотрите запись и скачайте её на компьютер</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section class="preview-area">
+                <h2><i class="fas fa-eye"></i> Предпросмотр</h2>
+                
+                <div class="video-preview">
+                    <div id="videoPlaceholder" class="video-placeholder">
+                        <i class="fas fa-video-slash"></i>
+                        <p>Здесь будет отображаться запись</p>
+                    </div>
+                    <div id="audioPlaceholder" class="audio-placeholder hidden">
+                        <i class="fas fa-volume-up"></i>
+                        <p>Аудиозапись</p>
+                    </div>
+                    <video id="previewVideo" controls class="hidden"></video>
+                    <audio id="previewAudio" controls class="hidden"></audio>
+                </div>
+                
+                <div class="recordings-list">
+                    <h3><i class="fas fa-history"></i> Последние записи</h3>
+                    <div id="recordingsContainer">
+                        <p id="noRecordingsText">Записей пока нет. Начните первую запись!</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <footer>
+            <p>Запись активности на вкладке браузера &copy; 2023 | Используйте с осторожностью</p>
+            <p>Работает на MediaRecorder API | Совместимо с современными браузерами</p>
+        </footer>
+    </div>
+
+    <script>
+        // Элементы DOM
+        const startRecordBtn = document.getElementById('startRecord');
+        const stopRecordBtn = document.getElementById('stopRecord');
+        const playPreviewBtn = document.getElementById('playPreview');
+        const downloadRecordingBtn = document.getElementById('downloadRecording');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const timerElement = document.getElementById('timer');
+        const videoPlaceholder = document.getElementById('videoPlaceholder');
+        const audioPlaceholder = document.getElementById('audioPlaceholder');
+        const previewVideo = document.getElementById('previewVideo');
+        const previewAudio = document.getElementById('previewAudio');
+        const noRecordingsText = document.getElementById('noRecordingsText');
+        const recordingsContainer = document.getElementById('recordingsContainer');
+        const formatSelect = document.getElementById('formatSelect');
+        const qualitySelect = document.getElementById('qualitySelect');
+        const recordAudioOnlyCheckbox = document.getElementById('recordAudioOnly');
+        const recordSystemAudioCheckbox = document.getElementById('recordSystemAudio');
+        
+        // Переменные для записи
+        let mediaRecorder;
+        let recordedChunks = [];
+        let recordingStartTime;
+        let timerInterval;
+        let currentRecording = null;
+        let recordings = JSON.parse(localStorage.getItem('screenRecordings')) || [];
+        let audioOnly = false;
+        let currentFormat = 'mp4';
+        
+        // Настройки форматов
+        const formatConfigs = {
+            'mp4': {
+                mimeType: 'video/mp4',
+                codec: 'avc1.42E01E',
+                extension: 'mp4',
+                audioCodec: 'mp4a.40.2'
+            },
+            'webm': {
+                mimeType: 'video/webm',
+                codec: 'vp9',
+                extension: 'webm',
+                audioCodec: 'opus'
+            },
+            'avi': {
+                mimeType: 'video/x-msvideo',
+                codec: '',
+                extension: 'avi',
+                audioCodec: ''
+            },
+            'mkv': {
+                mimeType: 'video/x-matroska',
+                codec: '',
+                extension: 'mkv',
+                audioCodec: ''
+            },
+            'mov': {
+                mimeType: 'video/quicktime',
+                codec: 'avc1',
+                extension: 'mov',
+                audioCodec: 'mp4a'
+            }
+        };
+        
+        // Настройки качества
+        const qualityConfigs = {
+            'high': { videoBitsPerSecond: 5000000, audioBitsPerSecond: 128000 },
+            'medium': { videoBitsPerSecond: 2500000, audioBitsPerSecond: 96000 },
+            'low': { videoBitsPerSecond: 1000000, audioBitsPerSecond: 64000 }
+        };
+        
+        // Отображение последних записей
+        function displayRecordings() {
+            if (recordings.length === 0) {
+                noRecordingsText.classList.remove('hidden');
+                return;
+            }
+            
+            noRecordingsText.classList.add('hidden');
+            recordingsContainer.innerHTML = '';
+            
+            // Показываем последние 5 записей
+            const recentRecordings = recordings.slice(-5).reverse();
+            
+            recentRecordings.forEach((recording, index) => {
+                const recordingElement = document.createElement('div');
+                recordingElement.className = 'recording-item';
+                
+                const date = new Date(recording.timestamp);
+                const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+                const isAudioOnly = recording.audioOnly || false;
+                const format = recording.format || 'webm';
+                
+                recordingElement.innerHTML = `
+                    <div class="recording-info">
+                        <div class="recording-title">
+                            ${isAudioOnly ? '<i class="fas fa-volume-up"></i> Аудио' : '<i class="fas fa-video"></i> Видео'} запись ${recordings.length - index}
+                            <span class="format-badge ${isAudioOnly ? 'audio-badge' : ''}">
+                                ${isAudioOnly ? 'MP3' : format.toUpperCase()}
+                            </span>
+                        </div>
+                        <div class="recording-details">${formattedDate} | Длительность: ${formatTime(recording.duration)}</div>
+                    </div>
+                    <div class="recording-actions">
+                        <button class="btn-preview" onclick="playRecording('${recording.id}')" style="padding: 8px 12px;">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="btn-download" onclick="downloadRecordingById('${recording.id}')" style="padding: 8px 12px;">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                `;
+                
+                recordingsContainer.appendChild(recordingElement);
+            });
+        }
+        
+        // Воспроизведение записи по ID
+        function playRecording(id) {
+            const recording = recordings.find(r => r.id === id);
+            if (recording) {
+                const isAudioOnly = recording.audioOnly || false;
+                
+                if (isAudioOnly) {
+                    previewAudio.src = recording.url;
+                    audioPlaceholder.classList.remove('hidden');
+                    videoPlaceholder.classList.add('hidden');
+                    previewVideo.classList.add('hidden');
+                    previewAudio.classList.remove('hidden');
+                } else {
+                    previewVideo.src = recording.url;
+                    videoPlaceholder.classList.add('hidden');
+                    audioPlaceholder.classList.add('hidden');
+                    previewVideo.classList.remove('hidden');
+                    previewAudio.classList.add('hidden');
+                }
+                
+                playPreviewBtn.disabled = false;
+                currentRecording = recording;
+            }
+        }
+        
+        // Скачивание записи по ID
+        function downloadRecordingById(id) {
+            const recording = recordings.find(r => r.id === id);
+            if (recording) {
+                const isAudioOnly = recording.audioOnly || false;
+                const format = recording.format || 'webm';
+                const extension = isAudioOnly ? 'mp3' : format;
+                
+                const date = new Date(recording.timestamp);
+                const dateStr = date.toISOString().slice(0, 19).replace(/:/g, '-');
+                const filename = isAudioOnly ? 
+                    `аудиозапись-${dateStr}.${extension}` : 
+                    `видеозапись-${dateStr}.${extension}`;
+                
+                const a = document.createElement('a');
+                a.href = recording.url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+        }
+        
+        // Форматирование времени (мм:сс)
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
+            return `${mins}:${secs}`;
+        }
+        
+        // Обновление таймера
+        function updateTimer() {
+            if (!recordingStartTime) return;
+            
+            const elapsedSeconds = Math.floor((Date.now() - recordingStartTime) / 1000);
+            timerElement.textContent = formatTime(elapsedSeconds);
+        }
+        
+        // Проверка поддержки формата браузером
+        function isFormatSupported(format) {
+            const config = formatConfigs[format];
+            if (!config) return false;
+            
+            // Для аудио всегда поддерживаем MP3
+            if (audioOnly) return true;
+            
+            // Для видео проверяем поддержку MIME типа
+            if (MediaRecorder.isTypeSupported) {
+                const mimeType = `${config.mimeType};codecs=${config.codec},${config.audioCodec}`;
+                return MediaRecorder.isTypeSupported(mimeType);
+            }
+            
+            // Если браузер не поддерживает проверку, возвращаем true для основных форматов
+            return ['mp4', 'webm'].includes(format);
+        }
+        
+        // Получение MIME типа для записи
+        function getMimeType(format) {
+            const config = formatConfigs[format];
+            if (!config) return 'video/webm'; // fallback
+            
+            // Для аудио используем audio/mpeg
+            if (audioOnly) return 'audio/mpeg';
+            
+            // Формируем полный MIME тип с кодеками
+            if (config.codec && config.audioCodec) {
+                const mimeType = `${config.mimeType};codecs=${config.codec},${config.audioCodec}`;
+                if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(mimeType)) {
+                    return mimeType;
+                }
+            }
+            
+            // Если не поддерживается, пробуем базовый MIME тип
+            if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(config.mimeType)) {
+                return config.mimeType;
+            }
+            
+            // Если ничего не поддерживается, возвращаем webm как наиболее совместимый
+            return 'video/webm';
+        }
+        
+        // Начало записи
+        async function startRecording() {
+            try {
+                audioOnly = recordAudioOnlyCheckbox.checked;
+                currentFormat = formatSelect.value;
+                
+                // Проверяем поддержку формата
+                if (!audioOnly && !isFormatSupported(currentFormat)) {
+                    alert(`Формат ${currentFormat.toUpperCase()} не поддерживается вашим браузером. Выбран формат WebM.`);
+                    currentFormat = 'webm';
+                    formatSelect.value = 'webm';
+                }
+                
+                let stream;
+                
+                if (audioOnly) {
+                    // Запись только аудио
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        audio: {
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            sampleRate: 44100
+                        }
+                    });
+                } else {
+                    // Запись видео и аудио
+                    const displayMediaOptions = {
+                        video: {
+                            displaySurface: 'browser',
+                            cursor: 'always',
+                            frameRate: { ideal: 30, max: 60 }
+                        }
+                    };
+                    
+                    // Добавляем аудио, если выбрана опция
+                    if (recordSystemAudioCheckbox.checked) {
+                        displayMediaOptions.audio = true;
+                    }
+                    
+                    stream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
+                }
+                
+                // Получаем настройки качества
+                const quality = qualitySelect.value;
+                const qualitySettings = qualityConfigs[quality] || qualityConfigs.medium;
+                
+                // Создаем MediaRecorder
+                const mimeType = getMimeType(currentFormat);
+                const options = {
+                    mimeType: mimeType,
+                    audioBitsPerSecond: qualitySettings.audioBitsPerSecond
+                };
+                
+                // Добавляем настройки видео, если не аудио
+                if (!audioOnly) {
+                    options.videoBitsPerSecond = qualitySettings.videoBitsPerSecond;
+                }
+                
+                mediaRecorder = new MediaRecorder(stream, options);
+                
+                // Собираем чанки данных
+                recordedChunks = [];
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        recordedChunks.push(event.data);
+                    }
+                };
+                
+                // Когда запись остановлена
+                mediaRecorder.onstop = () => {
+                    // Создаем Blob из записанных чанков
+                    const mimeType = audioOnly ? 'audio/mpeg' : mediaRecorder.mimeType;
+                    const blob = new Blob(recordedChunks, { type: mimeType });
+                    
+                    // Создаем URL для воспроизведения
+                    const url = URL.createObjectURL(blob);
+                    
+                    // Создаем объект записи
+                    const recordingDuration = Math.floor((Date.now() - recordingStartTime) / 1000);
+                    const recording = {
+                        id: Date.now().toString(),
+                        url: url,
+                        timestamp: Date.now(),
+                        duration: recordingDuration,
+                        blob: blob,
+                        audioOnly: audioOnly,
+                        format: currentFormat
+                    };
+                    
+                    currentRecording = recording;
+                    
+                    // Добавляем запись в историю
+                    recordings.push(recording);
+                    localStorage.setItem('screenRecordings', JSON.stringify(recordings));
+                    
+                    // Обновляем интерфейс
+                    playPreviewBtn.disabled = false;
+                    downloadRecordingBtn.disabled = false;
+                    
+                    // Останавливаем все треки потока
+                    stream.getTracks().forEach(track => track.stop());
+                    
+                    // Обновляем список записей
+                    displayRecordings();
+                };
+                
+                // Начинаем запись
+                mediaRecorder.start(1000); // Собираем данные каждую секунду
+                recordingStartTime = Date.now();
+                
+                // Запускаем таймер
+                timerInterval = setInterval(updateTimer, 1000);
+                
+                // Обновляем интерфейс
+                startRecordBtn.disabled = true;
+                stopRecordBtn.disabled = false;
+                formatSelect.disabled = true;
+                recordAudioOnlyCheckbox.disabled = true;
+                statusDot.classList.add('recording');
+                statusText.textContent = audioOnly ? 'Идет аудиозапись...' : 'Идет видеозапись...';
+                
+                // Обработка случая, когда пользователь прекращает захват
+                if (!audioOnly) {
+                    stream.getVideoTracks()[0].addEventListener('ended', () => {
+                        if (mediaRecorder.state === 'recording') {
+                            stopRecording();
+                        }
+                    });
+                }
+                
+            } catch (error) {
+                console.error('Ошибка при начале записи:', error);
+                alert('Не удалось начать запись. Убедитесь, что вы предоставили необходимые разрешения.');
+                resetInterface();
+            }
+        }
+        
+        // Остановка записи
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                clearInterval(timerInterval);
+                resetInterface();
+                statusText.textContent = 'Запись завершена';
+                statusDot.classList.remove('recording');
+            }
+        }
+        
+        // Сброс интерфейса
+        function resetInterface() {
+            startRecordBtn.disabled = false;
+            stopRecordBtn.disabled = true;
+            formatSelect.disabled = false;
+            recordAudioOnlyCheckbox.disabled = false;
+            statusDot.classList.remove('recording');
+        }
+        
+        // Воспроизведение последней записи
+        function playPreview() {
+            if (currentRecording) {
+                const isAudioOnly = currentRecording.audioOnly || false;
+                
+                if (isAudioOnly) {
+                    previewAudio.src = currentRecording.url;
+                    audioPlaceholder.classList.remove('hidden');
+                    videoPlaceholder.classList.add('hidden');
+                    previewVideo.classList.add('hidden');
+                    previewAudio.classList.remove('hidden');
+                } else {
+                    previewVideo.src = currentRecording.url;
+                    videoPlaceholder.classList.add('hidden');
+                    audioPlaceholder.classList.add('hidden');
+                    previewVideo.classList.remove('hidden');
+                    previewAudio.classList.add('hidden');
+                }
+            }
+        }
+        
+        // Скачивание последней записи
+        function downloadRecording() {
+            if (currentRecording) {
+                const isAudioOnly = currentRecording.audioOnly || false;
+                const format = currentRecording.format || 'webm';
+                const extension = isAudioOnly ? 'mp3' : format;
+                
+                const date = new Date(currentRecording.timestamp);
+                const dateStr = date.toISOString().slice(0, 19).replace(/:/g, '-');
+                const filename = isAudioOnly ? 
+                    `аудиозапись-${dateStr}.${extension}` : 
+                    `видеозапись-${dateStr}.${extension}`;
+                
+                const a = document.createElement('a');
+                a.href = currentRecording.url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+        }
+        
+        // Обработчики событий
+        startRecordBtn.addEventListener('click', startRecording);
+        stopRecordBtn.addEventListener('click', stopRecording);
+        playPreviewBtn.addEventListener('click', playPreview);
+        downloadRecordingBtn.addEventListener('click', downloadRecording);
+        
+        // Обработка изменения формата записи
+        formatSelect.addEventListener('change', () => {
+            currentFormat = formatSelect.value;
+        });
+        
+        // Обработка изменения режима "только аудио"
+        recordAudioOnlyCheckbox.addEventListener('change', () => {
+            if (recordAudioOnlyCheckbox.checked) {
+                recordSystemAudioCheckbox.checked = true;
+                recordSystemAudioCheckbox.disabled = true;
+                qualitySelect.value = 'high'; // Для аудио всегда высокое качество
+                qualitySelect.disabled = true;
+            } else {
+                recordSystemAudioCheckbox.disabled = false;
+                qualitySelect.disabled = false;
+            }
+        });
+        
+        // Показ списка записей при загрузке страницы
+        displayRecordings();
+        
+        // Информируем пользователя о поддержке браузером
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+            alert('Ваш браузер не поддерживает запись экрана. Попробуйте использовать последнюю версию Chrome, Firefox или Edge.');
+            startRecordBtn.disabled = true;
+            startRecordBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Не поддерживается вашим браузером';
+        }
+        
+        // Проверяем поддержку аудио API
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            recordAudioOnlyCheckbox.disabled = true;
+            recordAudioOnlyCheckbox.parentElement.innerHTML += '<br><small style="color:#ff9800">Не поддерживается вашим браузером</small>';
+        }
+    </script>
+</body>
+</html>

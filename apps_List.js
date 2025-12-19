@@ -13,6 +13,13 @@ const APPS = [
         description: 'Продвинутый калькулятор с научными функциями',
     },
     {
+        id: 'recorder',
+        url: 'recorder.html',
+        title: 'Запись экрана',
+        icon: 'fas fa-film',
+        description: 'Способ записи вкладок хрома',
+    },
+    {
         id: 'notes',
         url: 'questing.html',
         title: 'Новогодние вопросы',
