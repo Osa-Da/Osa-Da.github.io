@@ -183,7 +183,7 @@
                 background: none;
                 border: none;
                 color: var(--text-gray);
-                font-size: 1.5rem;
+                font-size: 2.5rem;
                 cursor: pointer;
                 padding: 5px;
                 transition: var(--transition);
@@ -422,8 +422,8 @@
                 }
 
                 .settings-modal {
-                    padding: 20px;
                     width: 95%;
+                    overflow: scroll;
                 }
 
                 .stats-grid {
@@ -550,16 +550,6 @@
                     </div>
 
                     <div class="settings-section">
-                        <h3><i class="fas fa-exclamation-triangle"></i> Опасная зона</h3>
-                        <div class="settings-info">
-                            <p>
-                                <i class="fas fa-info-circle"></i>
-                                Эта операция удалит всю историю посещений приложений. Приложения
-                                останутся в списке, но их порядок вернётся к алфавитному. Действие
-                                необратимо!
-                            </p>
-                        </div>
-
                         <button class="reset-btn" id="resetHistoryBtn">
                             <i class="fas fa-trash-alt"></i>
                             <span>Сбросить историю посещений</span>
@@ -568,33 +558,12 @@
                 </div>
             </div>
         </div>
-
+        <!-- Подгружаем массив страниц -->
+        <script src="./apps.js"></script>
         <script>
             // ========== КОНФИГУРАЦИЯ ==========
             const STORAGE_KEY = 'apps_history'; // Ключ для localStorage
 
-            // ========== МАССИВ ПРИЛОЖЕНИЙ (ЗАПОЛНИТЕ ЭТОТ МАССИВ) ==========
-            const APPS = [
-                {
-                    id: 'calculator',
-                    url: 'apps/alcoCalc.html',
-                    title: 'Калькулятор разбодяживания',
-                    icon: 'fas fa-calculator',
-                    description: 'Продвинутый калькулятор с научными функциями',
-                },
-                {
-                    id: 'notes',
-                    url: 'apps/questing.html',
-                    title: 'Новогодние вопросы',
-                    icon: 'fas fa-sticky-note',
-                    description: 'Захади и отвечай на вопросы ',
-                },
-                {
-                    id: 'weather',
-                    url: 'apps/bigFive.html',
-                    title: 'Тест личности',
-                },
-            ];
             // ========== РАБОТА С ИСТОРИЕЙ ==========
             let history = [];
 
