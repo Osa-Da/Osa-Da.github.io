@@ -502,7 +502,7 @@
                 <div>
                     <div class="logo">
                         <img src="./img/icons8-оса-64.png" alt="" />
-                        <h1>0SA.D4</h1>
+                        <h1>OSA.DA</h1>
                     </div>
                     <p class="subtitle">Нажмите на карточку для открытия приложения</p>
                 </div>
@@ -639,18 +639,18 @@
                 let appsToShow = [...APPS];
 
                 // Сортируем: сначала приложения из истории, потом остальные по алфавиту
-                appsToShow.sort((a, b) => {
-                    const aInHistory = history.includes(a.id);
-                    const bInHistory = history.includes(b.id);
+                appsToShow.sort((a, b) => { 
+                    // const aInHistory = history.includes(a.id); Отключили ИСТОРИЮ - хуйня по ощущениям
+                    // const bInHistory = history.includes(b.id);
 
-                    // Оба в истории - сортируем по порядку в истории
-                    if (aInHistory && bInHistory) {
-                        return history.indexOf(a.id) - history.indexOf(b.id);
-                    }
+                    // // Оба в истории - сортируем по порядку в истории
+                    // if (aInHistory && bInHistory) {
+                    //     return history.indexOf(a.id) - history.indexOf(b.id);
+                    // }
 
-                    // Один в истории, другой нет - тот, что в истории, выше
-                    if (aInHistory && !bInHistory) return -1;
-                    if (!aInHistory && bInHistory) return 1;
+                    // // Один в истории, другой нет - тот, что в истории, выше
+                    // if (aInHistory && !bInHistory) return -1;
+                    // if (!aInHistory && bInHistory) return 1;
 
                     // Оба не в истории - сортируем по алфавиту
                     return a.title.localeCompare(b.title);
