@@ -9,7 +9,7 @@
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
         />
-        <link type="Image/x-icon" href="./img/icons8-оса-32.png" rel="icon">
+        <link type="Image/x-icon" href="./img/icons8-оса-32.png" rel="icon" />
         <style>
             /* СБРОС СТИЛЕЙ */
             * {
@@ -566,7 +566,7 @@
             </div>
         </div>
         <!-- Подгружаем массив страниц -->
-        <script src="./apps.js"></script>
+        <script src="./apps_List.js"></script>
         <script>
             // ========== КОНФИГУРАЦИЯ ==========
             const STORAGE_KEY = 'apps_history'; // Ключ для localStorage
@@ -707,7 +707,7 @@
                 // Добавляем в историю
                 addToHistory(appId);
 
-                window.location.href = app.url;
+                window.location.href = 'app/' + app.url;
             }
 
             // ========== УПРАВЛЕНИЕ НАСТРОЙКАМИ ==========

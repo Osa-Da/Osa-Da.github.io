@@ -1,4 +1,4 @@
-// id: идентификатор {число},
+// id: идентификатор {число}, С МАЛЕНЬКОЙ
 // name: название {строка},
 // url: url {строка},
 // description: описание {строка},
@@ -7,14 +7,14 @@
 const APPS = [
     {
         id: 'calculator',
-        url: 'Apps/alcoCalc.html',
+        url: 'alcoCalc.html',
         title: 'Калькулятор разбодяживания',
         icon: 'fas fa-calculator',
         description: 'Продвинутый калькулятор с научными функциями',
     },
     {
         id: 'notes',
-        url: 'Apps/questing.html',
+        url: 'questing.html',
         title: 'Новогодние вопросы',
         icon: 'fas fa-sticky-note',
         description: 'Захади и отвечай на вопросы ',
