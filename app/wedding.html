@@ -32,19 +32,21 @@
           "Helvetica Neue",
           sans-serif;
         background: #d9d9d9;
-        background-image: url(./wedding/back.jpg);
-        background-size: contain;
         color: #2c2c2c;
-        
         height: 100vh;
-        background-attachment: fixed;
         box-sizing: border-box;
-        background-position: right;
-      }
-      .container-parrent {
         padding: 20px 16px 60px;
-        width: 100%; /* Ширина линии */
-        height: 100%;
+      }
+      .container-background {
+        background-image: url(./wedding/back.jpg);
+        background-position: center;
+        background-size: cover;
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: -1;
       }
       p {
         font-size: 1.2rem;
@@ -451,12 +453,11 @@
         width: 100%; /* Ширина линии */
         margin: 20px 0; /* Отступы сверху и снизу */
       }
-      
     </style>
   </head>
   <body>
-    <div class="container-parrent">
-        <div class="container" id="app"></div>
+    <div class="container-background"></div>
+    <div class="container" id="app"></div>
 
     <script>
       // -------- КОНФИГУРАЦИЯ ----------
@@ -746,7 +747,7 @@
             <!-- 1. Приглашение -->
             <div class="card">
                 <div class="invite-text">
-                    <div class="names-highlight">33333</div>
+                    <div class="names-highlight">444</div>
                     <p class="font-Cormorant names-highlight__title">Дорогие и близкие!<br>Приглашаем Вас разделить с нами радость нашего бракосочетания!</p>
                 </div>
                 <div class="wedding-date">${commonText.date_day}</div>
@@ -971,6 +972,5 @@
         myStatus = status;
       }
     </script>
-    </div>
   </body>
 </html>
