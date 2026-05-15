@@ -1,0 +1,968 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes"
+    />
+    <title>Приглашение на свадьбу | Аркадий & Елизавета</title>
+    <style>
+      @font-face {
+        font-family: "Nicoletta"; /* Название шрифта */
+        src: url(./wedding/Nicoletta.otf);
+      }
+      @font-face {
+        font-family: "Cormorant"; /* Название шрифта */
+        src: url(./wedding/Cormorant.ttf);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        background-attachment: fixed;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          "Helvetica Neue",
+          sans-serif;
+        background: #d9d9d9;
+        background-image: url(./wedding/back.jpg);
+        background-size: cover;
+        color: #2c2c2c;
+        padding: 20px 16px 60px;
+        min-height: 100vh;
+        background-attachment: fixed;
+        box-sizing: border-box;
+        background-position: right;
+      }
+      p {
+        font-size: 1.2rem;
+      }
+
+      /* Основной контейнер */
+      .container {
+        max-width: 500px;
+        margin: 0 auto;
+        overflow-x: hidden;
+      }
+
+      /* Блоки */
+      .card {
+        padding: 40px 18px 40px;
+      }
+
+      /* Задержки анимации для блоков */
+      .card:nth-child(1) {
+        animation-delay: 0.05s;
+      }
+      .card:nth-child(2) {
+        animation-delay: 0.15s;
+      }
+      .card:nth-child(3) {
+        animation-delay: 0.25s;
+      }
+      .card:nth-child(4) {
+        animation-delay: 0.35s;
+      }
+
+      @keyframes fadeSlideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Заголовки */
+      h2 {
+        font-size: 1.7rem;
+        font-weight: 600;
+        letter-spacing: -0.3px;
+        margin-bottom: 16px;
+        color: #5e7757;
+        padding-left: 14px;
+      }
+
+      h3 {
+        font-size: 1.2rem;
+        font-weight: 500;
+        margin: 16px 0 8px;
+        color: #657a8b;
+      }
+
+      /* Текст приглашения */
+      .invite-text {
+        font-size: 1.05rem;
+        line-height: 1.45;
+        margin-bottom: 20px;
+      }
+      .names-highlight {
+        padding: 12px 16px;
+        border-radius: 24px;
+        margin: 16px 0;
+        font-weight: 500;
+        text-align: center;
+        color: #2e3b2b;
+        font-family: "Nicoletta", sans-serif;
+        font-size: 3.5rem;
+        display: flex;
+        flex-direction: column;
+      }
+      .highlight-text {
+        margin: 16px 0;
+        font-weight: 500;
+        text-align: center;
+        color: #2e3b2b;
+        font-family: "Nicoletta", sans-serif;
+        font-size: 3.5rem;
+      }
+      .names-highlight__title {
+        text-align: center;
+        font-size: 1.3rem;
+        text-transform: uppercase;
+        font-weight: 500;
+      }
+      .wrapString {
+        margin-top: -1.5rem;
+        margin-bottom: -1.5rem;
+        font-size: 2rem;
+      }
+      .wrapString::after {
+        font-family: sans-serif;
+        content: " ———";
+      }
+      .wrapString::before {
+        font-family: sans-serif;
+        content: "——— ";
+      }
+      .wedding-date {
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-align: center;
+        margin: 20px 0 10px;
+        color: #2c2c2c;
+        font-family: "Cormorant";
+        font-weight: 900;
+      }
+      .wedding-date_year {
+        font-size: 1.5rem;
+        margin-top: -1rem;
+      }
+      .time-sub {
+        font-size: 1rem;
+        text-align: center;
+        color: #40436d;
+        margin-top: -5px;
+        text-align: center;
+      }
+      .time-sub_title {
+        font-size: 1.5rem;
+      }
+      .location {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 0.95rem;
+        border-top: 1px solid #eaeaea;
+        padding-top: 16px;
+      }
+      .signature {
+        margin-top: 20px;
+        text-align: right;
+        font-style: italic;
+        font-weight: 400;
+        color: #657a8b;
+      }
+
+      /* Дресс-код: кружки */
+      .dresscode-colors {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin: 24px 0;
+        flex-direction: column;
+      }
+      .color-circle {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        cursor: default;
+        flex-shrink: 0;
+      }
+      .color-circle__container {
+        display: flex;
+      }
+      .color-circle__container:nth-child(even) {
+        flex-direction: row-reverse;
+      }
+      .color-circle:hover {
+        transform: scale(1.08);
+      }
+      .color-label {
+        text-align: center;
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-top: 8px;
+        color: #4a4a4a;
+
+        margin: auto;
+      }
+
+      /* Блок пожеланий */
+      .wishes-note {
+        background: #f9f5ef;
+        padding: 16px;
+        border-radius: 24px;
+        margin: 12px 0;
+        font-style: normal;
+        border-left: 3px solid #a6a6a6;
+      }
+
+      /* Кнопки ответа */
+      .rsvp-buttons {
+        display: flex;
+        gap: 16px;
+        margin: 20px 0 10px;
+        flex-direction: column;
+      }
+      .btn {
+        flex: 1;
+        padding: 14px 0;
+        border-radius: 60px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: #f0f0f0;
+        color: #333;
+      }
+      .btn-yes {
+        background: #5e7757;
+        color: white;
+        box-shadow: 0 2px 8px rgba(94, 119, 87, 0.3);
+      }
+      .btn-yes:active {
+        transform: scale(0.96);
+        background: #4a6044;
+      }
+      .btn-no {
+        background: #a6a6a6;
+        color: white;
+      }
+      .btn-no:active {
+        transform: scale(0.96);
+        background: #8b8b8b;
+      }
+      .status-message {
+        font-size: 0.85rem;
+        text-align: center;
+        margin-top: 12px;
+        color: #3e422e;
+      }
+
+      /* Панель выхода */
+      .logout-area {
+        text-align: right;
+        margin-bottom: 16px;
+      }
+      .logout-btn {
+        background: none;
+        border: 1px solid #97b0c4;
+        padding: 6px 14px;
+        border-radius: 40px;
+        font-size: 0.8rem;
+        color: #657a8b;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .logout-btn:active {
+        background: #e2e2e2;
+      }
+
+      /* Админ-панель */
+      .admin-panel {
+        background: #fef7e0;
+        border-radius: 32px;
+        padding: 20px;
+        margin-bottom: 24px;
+        border: 1px solid #d9cba0;
+      }
+      .guest-list {
+        max-height: 400px;
+        overflow-y: auto;
+        margin-top: 16px;
+      }
+      .guest-item {
+        background: white;
+        padding: 12px;
+        border-radius: 20px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .guest-name {
+        font-weight: 600;
+      }
+      .guest-status {
+        padding: 4px 12px;
+        border-radius: 40px;
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+      .status-yes {
+        background: #e0f0dd;
+        color: #2f6b2f;
+      }
+      .status-no {
+        background: #ffe0e0;
+        color: #b13e3e;
+      }
+      .status-wait {
+        background: #eee;
+        color: #5e5e5e;
+      }
+
+      footer {
+        text-align: center;
+        font-size: 0.7rem;
+        color: #8f8f8f;
+        margin-top: 20px;
+      }
+      button {
+        background: none;
+        border: none;
+      }
+      .login-screen {
+        max-width: 400px;
+        margin: 20vh auto;
+        background: white;
+        border-radius: 48px;
+        padding: 32px 24px;
+        text-align: center;
+        box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
+      }
+      .login-input {
+        width: 100%;
+        padding: 14px 18px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 60px;
+        margin: 20px 0;
+        text-align: center;
+      }
+      .login-btn {
+        background: #5e7757;
+        color: white;
+        border: none;
+        padding: 12px 28px;
+        border-radius: 60px;
+        font-weight: 600;
+        width: 100%;
+        font-size: 1.1rem;
+      }
+      .error-msg {
+        color: #b13e3e;
+        font-size: 0.85rem;
+      }
+      hr {
+        margin: 16px 0;
+        border: 0;
+        height: 1px;
+        background: linear-gradient(to right, #d9d9d9, #a6a6a6, #d9d9d9);
+      }
+      .btn-yes[data-selected="true"] {
+        background: #4a6044;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        transform: scale(0.98);
+      }
+      .btn-no[data-selected="true"] {
+        background: #8b8b8b;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        transform: scale(0.98);
+      }
+      /* Спиннер загрузки */
+      .loader-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      }
+      .loader {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #d9d9d9;
+        border-top: 4px solid #5e7757;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        background: white;
+        padding: 10px;
+        border-radius: 50%;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .loader-text {
+        margin-top: 12px;
+        color: #5e7757;
+        font-weight: bold;
+      }
+      .font-Cormorant {
+        font-family: "Cormorant";
+      }
+      .address {
+        flex-shrink: 0;
+        flex-wrap: wrap;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        border-radius: 20%;
+        padding: 10px;
+      }
+      .simple-line {
+        border-bottom: 3px solid #5e7757; /* Толщина, стиль, цвет */
+        border-radius: 100%;
+        width: 100%; /* Ширина линии */
+        margin: 20px 0; /* Отступы сверху и снизу */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container" id="app"></div>
+
+    <script>
+      // -------- КОНФИГУРАЦИЯ ----------
+      const SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbwjHpwQGMM-cmro3nax4kGHhaliVdkNJTwOsfGrB_OuHALkXLb2_O-t1tsh0rKv9o2EPg/exec"; // ЗАМЕНИТЕ НА ВАШ URL ВЕБ-ПРИЛОЖЕНИЯ!
+
+      // Словарь паролей -> отображаемое имя
+      const guestPasswords = {
+        папа: "Дорогой папа",
+        ivan_olga: `Иван и Ольга`,
+        alex_natalia: "Александр и Наталья",
+        viktor_julia: "Виктор и Юлия",
+        maxim_polina: "Максим и Полина",
+        natalia: "Наталья",
+        mihail_nadezhda: "Михаил и Надежда",
+        alex_svetlana: "Александр и Светлана",
+        andrey_tatiana: "Андрей и Татьяна",
+        alex_olya: "Александр и Оля",
+        vladimir_sveta_maria: "Владимир, Светлана и Мария",
+        vladimir_tatiana: "Владимир и Татьяна",
+        nikolay_tatiana: "Николай и Татьяна",
+        maxim: "Максим",
+        liliya: "Лилия",
+        artem_sofia: "Артём и Софья",
+        elvira: "Эльвира",
+        elena_igor: "Елена и Игорь",
+        dana: "Дана",
+        // админский доступ
+        admin2026: "ADMIN",
+      };
+
+      // Статический текст
+      const commonText = {
+        dresscode: `Не ломайте голову над подарками. Ваши пожелания в конвертах, помогут нам осуществить нашу мечту о свадебном путешествии.\n\nК сожалению, мы не можем пригласить детей на нашу свадьбу. Просим оставить ваших малышей в надежных руках на день торжества, так как формат нашей свадьбы только для взрослых. Спасибо за понимание!`,
+        date_day: "25 июня",
+        date_year: "2026",
+        ceremonyTime: "Церемония в 10:30",
+        ceremonyAddr: "г. Тюмень, ул. Малыгина 85",
+        banquetTime: "Торжество в 14:30",
+        banquetAddr:
+          "г. Тюмень, ул. Республики 246а Банкетный зал Hellen Hall - ",
+        signature: "С Уважением Аркадий и Елизавета",
+      };
+
+      const colors = [
+        { value: "#657a8b", title: "Сизый" },
+        { value: "#97b0c4", title: "Голубовато-серый" },
+        { value: "#a6a6a6", title: "Серебристый" },
+        { value: "#d9d9d9", title: "Светло-серый" },
+      ];
+
+      // Автоматический вход по параметру из URL
+      function autoLoginFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get("code");
+
+        if (code && guests[code]) {
+          // Сохраняем в localStorage
+          localStorage.setItem("wedding_guest_code", code);
+          localStorage.setItem("wedding_guest_name", guests[code]);
+          localStorage.setItem("wedding_is_admin", code === "admin2026");
+
+          // Обновляем переменные
+          currentGuest = code;
+          currentName = guests[code];
+          isAdmin = code === "admin2026";
+
+          // Убираем параметр из URL (чтобы при перезагрузке не было дублей)
+          window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname,
+          );
+
+          return true;
+        }
+        return false;
+      }
+
+      // Показать загрузку
+      function showLoader() {
+        let loader = document.getElementById("globalLoader");
+        if (!loader) {
+          loader = document.createElement("div");
+          loader.id = "globalLoader";
+          loader.className = "loader-overlay";
+          loader.innerHTML = `
+            <div style="background: white; padding: 20px 30px; border-radius: 20px; text-align: center;">
+                <div class="loader"></div>
+            </div>
+        `;
+          document.body.appendChild(loader);
+        } else {
+          loader.style.display = "flex";
+        }
+      }
+
+      // Скрыть загрузку
+      function hideLoader() {
+        const loader = document.getElementById("globalLoader");
+        if (loader) {
+          loader.style.display = "none";
+        }
+      }
+
+      // Глобальное состояние
+      let currentGuestCode = null;
+      let currentGuestName = null;
+      let isAdmin = false;
+      let rsvpStatus = null; // "yes", "no" или null
+      let adminData = {}; // все ответы гостей { guest_code: { guest_name, status, timestamp } }
+
+      // DOM элемент
+      const app = document.getElementById("app");
+
+      // Вспомогательные функции
+      function saveLoginToLocalStorage(code, name, isAdminFlag) {
+        localStorage.setItem("wedding_guest_code", code);
+        localStorage.setItem("wedding_guest_name", name);
+        localStorage.setItem(
+          "wedding_is_admin",
+          isAdminFlag ? "true" : "false",
+        );
+      }
+
+      function clearLogin() {
+        localStorage.removeItem("wedding_guest_code");
+        localStorage.removeItem("wedding_guest_name");
+        localStorage.removeItem("wedding_is_admin");
+        currentGuestCode = null;
+        currentGuestName = null;
+        isAdmin = false;
+        rsvpStatus = null;
+        renderLoginScreen();
+      }
+
+      // Добавить эту функцию - получает текущий ответ гостя из Google Sheets
+      async function fetchGuestStatus(guestCode) {
+        if (isAdmin) return null;
+        try {
+          showLoader();
+          const res = await fetch(`${SCRIPT_URL}?t=${Date.now()}`, {
+            method: "GET",
+          });
+          const allData = await res.json();
+          // Ищем последний ответ этого гостя
+          if (allData[guestCode] && allData[guestCode].status) {
+            return allData[guestCode].status; // 'yes' или 'no'
+          }
+          return null;
+        } catch (e) {
+          console.warn("Не удалось загрузить статус", e);
+          return null;
+        } finally {
+          hideLoader();
+        }
+      }
+
+      // ЗАМЕНИТЬ старую функцию saveResponseToSheet
+      async function saveResponseToSheet(status) {
+        if (!currentGuestCode) return false;
+
+        // Отправляем POST с указанием, что это ОБНОВЛЕНИЕ
+        const payload = {
+          guest_code: currentGuestCode,
+          guest_name: currentGuestName,
+          status: status,
+          user_agent: navigator.userAgent,
+          update: true, // <-- новый флаг
+        };
+
+        try {
+          showLoader();
+          await fetch(SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors", // для простоты с Google Script
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          console.log("Response saved");
+          return true;
+        } catch (e) {
+          console.error(e);
+          return false;
+        } finally {
+          hideLoader();
+        }
+      }
+      async function fetchAdminData() {
+        if (!isAdmin) return;
+        try {
+          showLoader();
+          const res = await fetch(`${SCRIPT_URL}?t=${Date.now()}`, {
+            method: "GET",
+          });
+          const data = await res.json();
+          adminData = data;
+          renderMainApp();
+        } catch (e) {
+          console.warn("Не удалось загрузить данные админа", e);
+          adminData = {};
+          renderMainApp();
+        } finally {
+          hideLoader();
+        }
+      }
+
+      // ОБНОВИТЬ функцию setResponse
+      async function setResponse(ans) {
+        if (ans === rsvpStatus) return;
+        showLoader();
+        const success = await saveResponseToSheet(ans);
+        hideLoader();
+        if (success) {
+          rsvpStatus = ans;
+          saveStatusLocally(ans); // сохраняем локально
+          renderMainApp();
+          // Опционально: показать уведомление
+          const msg =
+            ans === "yes"
+              ? "Спасибо! Ждём вас! 🎉"
+              : "Жаль, но спасибо за ответ!";
+          alert(msg);
+        } else {
+          alert("Ошибка сохранения. Попробуйте позже.");
+        }
+      }
+
+      // Рендер главного интерфейса
+      function renderMainApp() {
+        if (!currentGuestCode) return;
+        if (isAdmin) {
+          // Админ-панель
+          let guestItemsHtml = "";
+          for (let [code, info] of Object.entries(adminData)) {
+            const displayName = guestPasswords[code] || code;
+            let statusClass = "status-wait";
+            let statusText = "Нет ответа";
+            if (info.status === "yes") {
+              statusClass = "status-yes";
+              statusText = "✅ Придет";
+            } else if (info.status === "no") {
+              statusClass = "status-no";
+              statusText = "❌ Не придет";
+            }
+            guestItemsHtml += `
+                    <div class="guest-item">
+                        <div class="guest-name">${escapeHtml(displayName)}</div>
+                        <div class="guest-status ${statusClass}">${statusText}</div>
+                    </div>
+                `;
+          }
+          const htmlAdmin = `
+                <div class="logout-area">
+                    <button class="logout-btn" id="logoutBtnAdmin">🚪 Выйти</button>
+                </div>
+                <div class="admin-panel">
+                    <h2>📋 Админ-панель</h2>
+                    <p>Список гостей и их ответы:</p>
+                    <div class="guest-list">
+                        ${guestItemsHtml || "<div>Пока нет данных</div>"}
+                    </div>
+                </div>
+                <footer>Последнее обновление: ${new Date().toLocaleString()}</footer>
+            `;
+          app.innerHTML = htmlAdmin;
+          document
+            .getElementById("logoutBtnAdmin")
+            ?.addEventListener("click", clearLogin);
+          return;
+        }
+
+        // Обычный гость — отображаем блоки
+        const rsvpBlock = `
+            <div class="rsvp-buttons">
+                <button class="btn btn-yes" id="rsvpYes" data-selected="${rsvpStatus === "yes"}">Да, я буду!</button>
+                <button class="btn btn-no" id="rsvpNo" data-selected="${rsvpStatus === "no"}">К сожалению не смогу😔</button>
+            </div>
+            <hr class="simple-line">
+            ${rsvpStatus ? `<div class="status-message">✅ Вы ответили: ${rsvpStatus === "yes" ? "Буду! Спасибо! 🎉" : "Не смогу, жаль 😔"}</div>` : '<div class="status-message">Пожалуйста, дайте ответ, для нас это важно</div>'}
+        `;
+
+        const htmlGuest = `
+            <div class="logout-area">
+                <button class="logout-btn" id="logoutBtnGuest">Выйти</button>
+            </div>
+            <!-- 1. Приглашение -->
+            <div class="card">
+                <div class="invite-text">
+                    <div class="names-highlight">${escapeHtml(currentGuestName)}</div>
+                    <p class="font-Cormorant names-highlight__title">Дорогие и близкие!<br>Приглашаем Вас разделить с нами радость нашего бракосочетания!</p>
+                </div>
+                <div class="wedding-date">${commonText.date_day}</div>
+                <div class="wedding-date wedding-date_year">${commonText.date_year}</div>
+                <div style="display: flex; flex-direction: column;">
+                    <div  class="address" style="display: flex; flex-direction: column;">
+                          <div class="time-sub time-sub_title">${commonText.ceremonyTime}</div>
+                        <div class="time-sub">${commonText.ceremonyAddr}</div>
+                    </div>
+                    <hr class="simple-line">
+                    <div class="address" style="display: flex; flex-direction: column;">
+                        <div class="time-sub time-sub_title ">${commonText.banquetTime}</div>
+                        <div class="time-sub" >${commonText.banquetAddr}</div>
+                    </div>
+                </div>
+                <div class="signature">${commonText.signature}</div>
+            </div>
+            
+            <!-- 2. Дресс код + кружочки -->
+            <div class="card">
+                <h2 class="highlight-text">Дресс-код</h2>
+                
+                <div class="wishes-note">Дорогие наши гости! У нас к вам небольшая просьба 🌸
+Поддержите, пожалуйста, цветовую гамму нашего торжества
+Мы будем очень рады видеть вас в этих элегантных тонах!</div>
+<div class="dresscode-colors">
+                    ${colors.map((c) => `<div class='color-circle__container'><div class="color-circle" style="background: ${c.value};"></div><div class="color-label">${c.title}</div></div>`).join("")}
+                </div>
+            </div>
+            
+            <!-- 3. Пожелания / Примечание (дополнительно) -->
+            <div class="card">
+                <h2 class="highlight-text">🎁 Пожелания</h2>
+                <p style='text-align: center'>${escapeHtml(commonText.dresscode).replace(/\n/g, "<br>")}❤️</p>
+                <hr>
+                <p style='text-align: center'><em>Каждый ваш отклик делает этот день особенным!</em></p>
+            </div>
+            
+            <!-- 4. Блок с вопросом будете или нет -->
+            <div class="card" style="min-height: 80vh">
+                <h2 class="highlight-text">Ожидать ли вас?</h2>
+                ${rsvpBlock}
+            </div>
+            <footer>Спасибо, что вы с нами ✨</footer>
+        `;
+
+        app.innerHTML = htmlGuest;
+        document
+          .getElementById("rsvpYes")
+          ?.addEventListener("click", () => setResponse("yes"));
+        document
+          .getElementById("rsvpNo")
+          ?.addEventListener("click", () => setResponse("no"));
+        document
+          .getElementById("logoutBtnGuest")
+          ?.addEventListener("click", clearLogin);
+      }
+
+      // Сохранять ответ локально для скорости
+      function saveStatusLocally(status) {
+        if (!currentGuestCode) return;
+        localStorage.setItem(`wedding_status_${currentGuestCode}`, status);
+      }
+
+      function loadStatusLocally() {
+        if (!currentGuestCode) return null;
+        return localStorage.getItem(`wedding_status_${currentGuestCode}`);
+      }
+
+      function renderLoginScreen(error = "") {
+        app.innerHTML = `
+            <div class="login-screen">
+                <h2 style="color:#5e7757;">💍 Аркадий & Елизавета</h2>
+                <p>Введите ваш пароль для входа</p>
+                <input type="text" id="passwordInput" class="login-input" placeholder="Пароль" autocomplete="off">
+                <button id="loginBtn" class="login-btn">Войти</button>
+                ${error ? `<div class="error-msg">${error}</div>` : ""}
+                <div style="margin-top:20px; font-size:0.7rem;">*пароль выдан в приглашении</div>
+            </div>
+        `;
+        const input = document.getElementById("passwordInput");
+        const btn = document.getElementById("loginBtn");
+        const doLogin = () => {
+          const pwd = input.value.trim().toLowerCase();
+          if (guestPasswords[pwd]) {
+            const displayName = guestPasswords[pwd];
+            const isAdminMode = pwd === "admin2026";
+            currentGuestCode = pwd;
+            currentGuestName = displayName;
+            isAdmin = isAdminMode;
+            saveLoginToLocalStorage(pwd, displayName, isAdminMode);
+
+            if (isAdminMode) {
+              fetchAdminData().then(() => renderMainApp());
+            } else {
+              // ЗАГРУЖАЕМ СУЩЕСТВУЮЩИЙ СТАТУС
+              fetchGuestStatus(pwd).then((status) => {
+                rsvpStatus = status; // 'yes', 'no' или null
+                renderMainApp();
+              });
+            }
+          } else {
+            renderLoginScreen("Неверный пароль. Попробуйте ещё раз.");
+          }
+        };
+        btn.addEventListener("click", doLogin);
+        input.addEventListener("keypress", (e) => {
+          if (e.key === "Enter") doLogin();
+        });
+      }
+
+      function escapeHtml(str) {
+        if (!str) return "";
+
+        // Экранируем спецсимволы
+        let escaped = str.replace(/[&<>]/g, function (m) {
+          if (m === "&") return "&amp;";
+          if (m === "<") return "&lt;";
+          if (m === ">") return "&gt;";
+          return m;
+        });
+
+        // Заменяем " и " на перенос строки с div
+        escaped = escaped.replace(/\s+и\s+/g, function (match) {
+          return '<div class="wrapString">&</div>';
+        });
+
+        return escaped;
+      }
+
+      // Инициализация
+      (function init() {
+        const savedCode = localStorage.getItem("wedding_guest_code");
+        const savedName = localStorage.getItem("wedding_guest_name");
+        const savedAdmin = localStorage.getItem("wedding_is_admin") === "true";
+        if (savedCode && guestPasswords[savedCode]) {
+          currentGuestCode = savedCode;
+          currentGuestName = savedName || guestPasswords[savedCode];
+          isAdmin = savedAdmin;
+          if (isAdmin) {
+            fetchAdminData().then(() => renderMainApp());
+          } else {
+            rsvpStatus = null;
+            renderMainApp();
+          }
+        } else {
+          renderLoginScreen();
+        }
+      })();
+
+      // Запуск
+      (async function () {
+        // Сначала проверяем URL параметр
+        if (!autoLoginFromURL()) {
+          // Если нет параметра, проверяем сохраненного пользователя
+          const savedGuest = localStorage.getItem("wedding_guest_code");
+          const savedIsAdmin =
+            localStorage.getItem("wedding_is_admin") === "true";
+
+          if (savedGuest && guests[savedGuest]) {
+            currentGuest = savedGuest;
+            currentName = localStorage.getItem("wedding_guest_name");
+            isAdmin = savedIsAdmin;
+          } else {
+            renderLoginScreen();
+            return;
+          }
+        }
+        showLoader();
+        // Загружаем данные
+        if (isAdmin) {
+          const data = await loadAdminData();
+          renderAdmin(data);
+        } else {
+          myStatus = await loadStatus(currentGuest);
+          renderGuest();
+        }
+        hideLoader();
+      })();
+
+      async function loadAdminData() {
+        showLoader();
+        try {
+          const res = await fetch(SCRIPT_URL + "?t=" + Date.now());
+          const data = await res.json();
+          return data;
+        } finally {
+          hideLoader();
+        }
+      }
+      async function loadStatus(code) {
+        const local = localStorage.getItem(`status_${code}`);
+        if (local) return local;
+
+        showLoader();
+        try {
+          const res = await fetch(SCRIPT_URL + "?t=" + Date.now());
+          const data = await res.json();
+          return data[code]?.status || null;
+        } catch (e) {
+          return null;
+        } finally {
+          hideLoader();
+        }
+      }
+      function saveToSheet(code, name, status) {
+        showLoader();
+
+        fetch(SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          body: JSON.stringify({
+            guest_code: code,
+            guest_name: name,
+            status: status,
+          }),
+        }).finally(() => {
+          hideLoader();
+        });
+
+        localStorage.setItem(`status_${code}`, status);
+        myStatus = status;
+      }
+    </script>
+  </body>
+</html>

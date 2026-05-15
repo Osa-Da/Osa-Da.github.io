@@ -31,4 +31,9 @@ const APPS = [
         url: 'bigFive.html',
         title: 'Тест личности',
     },
+    {
+        id: 'wedding',
+        url: 'wedding.html',
+        title: 'Свадебныое приглашение',
+    },
 ];
