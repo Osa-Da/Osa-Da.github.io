@@ -705,7 +705,7 @@
             }
             guestItemsHtml += `
                     <div class="guest-item">
-                        <div class="guest-name">${escapeHtml(displayName)}</div>
+                        <div class="guest-name">${escapeHtml(displayName, false)}</div>
                         <div class="guest-status ${statusClass}">${statusText}</div>
                     </div>
                 `;
@@ -859,7 +859,7 @@
         });
       }
 
-      function escapeHtml(str) {
+      function escapeHtml(str, replaceAnd = true) {
         if (!str) return "";
 
         // Экранируем спецсимволы
@@ -870,10 +870,12 @@
           return m;
         });
 
-        // Заменяем " и " на перенос строки с div
-        escaped = escaped.replace(/\s+и\s+/g, function (match) {
-          return '<div class="wrapString">&</div>';
-        });
+        if (replaceAnd) {
+          // Заменяем " и " на перенос строки с div
+          escaped = escaped.replace(/\s+и\s+/g, function (match) {
+            return '<div class="wrapString">&</div>';
+          });
+        }
 
         return escaped;
       }
