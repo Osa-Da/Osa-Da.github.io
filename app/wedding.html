@@ -19,6 +19,8 @@
       * {
         margin: 0;
         padding: 0;
+        font-family: "Cormorant";
+        font-weight: 500;
         box-sizing: border-box;
         -webkit-tap-highlight-color: transparent;
       }
@@ -49,7 +51,8 @@
         z-index: -1;
       }
       p {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
+        font-weight: 500;
       }
 
       /* Основной контейнер */
@@ -165,14 +168,14 @@
         margin-top: -1rem;
       }
       .time-sub {
-        font-size: 1rem;
+        font-size: 1.2rem;
         text-align: center;
         color: #40436d;
         margin-top: -5px;
         text-align: center;
       }
       .time-sub_title {
-        font-size: 1.5rem;
+        font-size: 1.8rem;
       }
       .location {
         text-align: center;
@@ -187,6 +190,8 @@
         font-style: italic;
         font-weight: 400;
         color: #303941;
+        font-family: "Cormorant";
+        font-size: 1.2rem;
       }
 
       /* Дресс-код: кружки */
@@ -231,6 +236,8 @@
         margin: 12px 0;
         font-style: normal;
         border-left: 3px solid #a6a6a6;
+        font-size: 1.1rem;
+        font-weight: 500;
       }
 
       /* Кнопки ответа */
@@ -270,7 +277,7 @@
         background: #8b8b8b;
       }
       .status-message {
-        font-size: 0.85rem;
+        font-size: 1rem;
         text-align: center;
         margin-top: 12px;
         color: #3e422e;
@@ -280,6 +287,7 @@
       .logout-area {
         text-align: right;
         margin-bottom: 16px;
+        opacity: 0;
       }
       .logout-btn {
         background: none;
@@ -303,6 +311,13 @@
         margin-bottom: 24px;
         border: 1px solid #d9cba0;
       }
+      .admin-footer {
+        font-size: 1rem;
+        color: #2c2c2c;
+      }
+      .admin-panel * {
+        font-family: sans-serif !important;
+      }
       .guest-list {
         max-height: 400px;
         overflow-y: auto;
@@ -320,6 +335,7 @@
       }
       .guest-name {
         font-weight: 600;
+        color: #2c2c2c;
       }
       .guest-status {
         padding: 4px 12px;
@@ -446,6 +462,7 @@
         flex-direction: column;
         border-radius: 20%;
         padding: 10px;
+        font-family: "Cormorant";
       }
       .simple-line {
         border-bottom: 3px solid #5e7757; /* Толщина, стиль, цвет */
@@ -462,7 +479,7 @@
     <script>
       // -------- КОНФИГУРАЦИЯ ----------
       const SCRIPT_URL =
-        "https://script.google.com/macros/s/AKfycbwjHpwQGMM-cmro3nax4kGHhaliVdkNJTwOsfGrB_OuHALkXLb2_O-t1tsh0rKv9o2EPg/exec"; // ЗАМЕНИТЕ НА ВАШ URL ВЕБ-ПРИЛОЖЕНИЯ!
+        "https://script.google.com/macros/s/AKfycbwjHpwQGMM-cmro3nax4kGHhaliVdkNJTwOsfGrB_OuHALkXLb2_O-t1tsh0rKv9o2EPg/exec";
 
       // Словарь паролей -> отображаемое имя
       const guestPasswords = {
@@ -498,7 +515,7 @@
         ceremonyAddr: "г. Тюмень, ул. Малыгина 85",
         banquetTime: "Торжество в 14:30",
         banquetAddr:
-          "г. Тюмень, ул. Республики 246а Банкетный зал Hellen Hall - ",
+          "г. Тюмень, ул. Республики 246а Банкетный зал Hellen Hall ",
         signature: "С Уважением Аркадий и Елизавета",
       };
 
@@ -698,13 +715,13 @@
             let statusText = "Нет ответа";
             if (info.status === "yes") {
               statusClass = "status-yes";
-              statusText = "✅ Придет";
+              statusText = "✅";
             } else if (info.status === "no") {
               statusClass = "status-no";
-              statusText = "❌ Не придет";
+              statusText = "❌";
             }
             guestItemsHtml += `
-                    <div class="guest-item">
+                    <div class="guest-item ${statusClass}">
                         <div class="guest-name">${escapeHtml(displayName, false)}</div>
                         <div class="guest-status ${statusClass}">${statusText}</div>
                     </div>
@@ -715,13 +732,13 @@
                     <button class="logout-btn" id="logoutBtnAdmin">🚪 Выйти</button>
                 </div>
                 <div class="admin-panel">
-                    <h2>📋 Админ-панель</h2>
+                    <h2>📋 Админ</h2>
                     <p>Список гостей и их ответы:</p>
                     <div class="guest-list">
                         ${guestItemsHtml || "<div>Пока нет данных</div>"}
                     </div>
                 </div>
-                <footer>Последнее обновление: ${new Date().toLocaleString()}</footer>
+                <footer class="admin-footer">Последнее обновление: ${new Date().toLocaleString()}</footer>
             `;
           app.innerHTML = htmlAdmin;
           document
@@ -820,12 +837,10 @@
       function renderLoginScreen(error = "") {
         app.innerHTML = `
             <div class="login-screen">
-                <h2 style="color:#5e7757;">💍 Аркадий & Елизавета</h2>
                 <p>Введите ваш пароль для входа</p>
                 <input type="text" id="passwordInput" class="login-input" placeholder="Пароль" autocomplete="off">
                 <button id="loginBtn" class="login-btn">Войти</button>
                 ${error ? `<div class="error-msg">${error}</div>` : ""}
-                <div style="margin-top:20px; font-size:0.7rem;">*пароль выдан в приглашении</div>
             </div>
         `;
         const input = document.getElementById("passwordInput");
