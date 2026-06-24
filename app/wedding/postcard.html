@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Поздравление</title>
+  <style>
+    /* Сброс и базовые настройки */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      background-color: black;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+    }
+
+    /* Главный контейнер — занимает весь экран, флекс-колонка */
+    .page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 480px;
+      min-height: 100vh;
+      padding: 16px 16px 24px;
+      background-color: #323232;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    /* Блок с картинкой */
+    .image-wrapper {
+      flex: 1 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 8px 0;
+      position: relative;
+      z-index: 2;
+    }
+
+    .image-wrapper img {
+      display: block;
+      width: 100%;
+      max-width: 400px;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 24px;
+      box-shadow: 0 8px 24px rgba(255, 215, 0, 0.2);
+      background-color: #1a1a1a;
+    }
+
+    /* Нижний блок с переливающимся текстом */
+    .text-wrapper {
+      width: 100%;
+      padding: 20px 0 20px;
+      text-align: center;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .rainbow-text {
+      font-size: clamp(1.6rem, 7vw, 2.6rem);
+      font-weight: 800;
+      line-height: 1.3;
+      letter-spacing: 0.02em;
+      background: linear-gradient(90deg, 
+        #ff6b6b, #feca57, #48dbfb, #a29bfe, #fd79a8, #fdcb6e, #e17055, #74b9ff, #a29bfe, #ff6b6b
+      );
+      background-size: 300% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: shimmer 5s ease-in-out infinite alternate, pulse 4s ease-in-out infinite;
+      text-shadow: 0 0 12px rgba(255, 200, 100, 0.2);
+      word-break: break-word;
+      display: inline-block;
+      padding: 0 4px;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 0% center; }
+      100% { background-position: 200% center; }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 0.95; }
+      50% { transform: scale(1.02); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.95; }
+    }
+
+    @media (max-width: 360px) {
+      .page { padding: 10px 10px 16px; }
+      .text-wrapper { padding: 12px 0 4px; }
+    }
+
+    @media (orientation: landscape) and (max-height: 500px) {
+      .page {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        min-height: 100vh;
+        padding: 12px 16px;
+      }
+      .image-wrapper { flex: 0 1 50%; padding: 4px; }
+      .image-wrapper img { max-width: 280px; border-radius: 20px; }
+      .text-wrapper { flex: 0 1 45%; padding: 8px 0; }
+      .rainbow-text { font-size: clamp(1.2rem, 4vw, 2rem); }
+    }
+
+    /* ===== СТИЛИ ДЛЯ ПАДАЮЩИХ КУПЮР (ДВУХСТОРОННИЕ) ===== */
+    .money-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+      overflow: hidden;
+    }
+
+    .bill-wrapper {
+      position: absolute;
+      top: -120px;
+      animation: fall linear infinite;
+      user-select: none;
+      filter: drop-shadow(0 4px 16px rgba(0, 200, 0, 0.25));
+      transform-origin: center center;
+      will-change: transform, top;
+      perspective: 800px;
+    }
+
+    /* 3D-контейнер для переворота */
+    .bill-flipper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.3s ease;
+      transform-style: preserve-3d;
+      animation: flipBill 3s ease-in-out infinite alternate;
+    }
+
+    /* Лицевая и оборотная стороны */
+    .bill-front,
+    .bill-back {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 6px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+
+    .bill-front {
+      background-color: #2e7d32;
+      z-index: 2;
+      transform: rotateY(0deg);
+    }
+
+    .bill-back {
+      background-color: #1b5e20;
+      transform: rotateY(180deg);
+    }
+
+    /* Анимация переворота */
+    @keyframes flipBill {
+      0% { transform: rotateY(0deg); }
+      45% { transform: rotateY(0deg); }
+      55% { transform: rotateY(180deg); }
+      100% { transform: rotateY(180deg); }
+    }
+
+    /* Анимация падения с вращением */
+    @keyframes fall {
+      0% {
+        transform: translateY(0) rotate(0deg) scale(0.85);
+        opacity: 0.9;
+      }
+      20% {
+        transform: translateY(10vh) rotate(8deg) scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: translateY(40vh) rotate(-12deg) scale(1);
+        opacity: 1;
+      }
+      80% {
+        transform: translateY(70vh) rotate(6deg) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(110vh) rotate(-4deg) scale(0.9);
+        opacity: 0.15;
+      }
+    }
+
+    /* Дополнительный блеск для купюр */
+    .bill-front::after,
+    .bill-back::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
+      pointer-events: none;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <!-- КОНТЕЙНЕР С ПАДАЮЩИМИ КУПЮРАМИ -->
+  <div class="money-container" id="moneyContainer"></div>
+
+  <!-- ОСНОВНОЙ КОНТЕНТ -->
+  <div class="page">
+    <div class="image-wrapper">
+      <img 
+        src="https://i.pinimg.com/originals/30/79/9e/30799eb9b9cac30b7d3846db02ed31a2.jpg?nii=t" 
+        alt="Поздравительная картинка" 
+        loading="lazy"
+        width="600"
+        height="600"
+      >
+    </div>
+    <div class="text-wrapper">
+      <span class="rainbow-text">АхУеть это случилось!</span>
+      <span class="rainbow-text">ПОЗДРАВЛЯЕМ!!!!</span>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // ============================================================
+      //  НАСТРОЙКИ — МЕНЯЙТЕ ЗДЕСЬ ВСЁ, ЧТО ХОТИТЕ
+      // ============================================================
+      
+      // 1. Ссылки на изображения купюр (лицевая и оборотная стороны)
+      //    Лицевая сторона (аверс)
+      const BILL_FRONT_IMAGE = './1000_2.jpg';
+      //    Оборотная сторона (реверс) — можно указать другую картинку или ту же
+      const BILL_BACK_IMAGE = './1000_1.jpg';
+      
+      // 2. Базовые размеры купюры (в пикселях)
+      const BILL_BASE_WIDTH = 110;
+      const BILL_BASE_HEIGHT = 48;
+      
+      // 3. Количество купюр
+      const BILL_COUNT = 30;
+      
+      // 4. Разброс размеров (0.6 — 1.4 = от 60% до 140% от базового)
+      const SIZE_MIN = 0.6;
+      const SIZE_MAX = 1.4;
+      
+      // 5. Скорость падения (сек) — диапазон для каждой купюры
+      const DURATION_MIN = 6;
+      const DURATION_MAX = 15;
+      
+      // 6. Задержка перед началом падения (сек)
+      const DELAY_MIN = 0;
+      const DELAY_MAX = 10;
+      
+      // 7. Включить/выключить анимацию переворота (true/false)
+      const ENABLE_FLIP = true;
+      
+      // 8. Скорость переворота (сек) — длительность одного цикла
+      const FLIP_DURATION = 4; // чем больше число, тем медленнее переворот
+      
+      // ============================================================
+      //  КОД СОЗДАНИЯ КУПЮР (НИЖЕ НИЧЕГО НЕ МЕНЯТЬ, ЕСЛИ НЕ НАДО)
+      // ============================================================
+      
+      const container = document.getElementById('moneyContainer');
+      if (!container) return;
+
+      function randomRange(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+      // Создаём купюры
+      for (let i = 0; i < BILL_COUNT; i++) {
+        // Внешний контейнер (для падения)
+        const wrapper = document.createElement('div');
+        wrapper.className = 'bill-wrapper';
+        
+        // Размер
+        const scale = randomRange(SIZE_MIN, SIZE_MAX);
+        const width = Math.round(BILL_BASE_WIDTH * scale);
+        const height = Math.round(BILL_BASE_HEIGHT * scale);
+        wrapper.style.width = width + 'px';
+        wrapper.style.height = height + 'px';
+        
+        // Позиция
+        wrapper.style.left = randomRange(2, 94) + '%';
+        
+        // Анимация падения
+        const duration = randomRange(DURATION_MIN, DURATION_MAX);
+        const delay = randomRange(DELAY_MIN, DELAY_MAX);
+        wrapper.style.animationDuration = duration + 's';
+        wrapper.style.animationDelay = delay + 's';
+        
+        // Начальный поворот
+        const startRotate = randomRange(-25, 25);
+        wrapper.style.transform = `rotate(${startRotate}deg)`;
+        
+        // === 3D-флиппер ===
+        const flipper = document.createElement('div');
+        flipper.className = 'bill-flipper';
+        flipper.style.width = '100%';
+        flipper.style.height = '100%';
+        
+        // Настройка анимации переворота
+        if (ENABLE_FLIP) {
+          const flipDelay = randomRange(0, 2); // небольшая задержка для каждого
+          const flipDuration = FLIP_DURATION + randomRange(-0.8, 0.8);
+          flipper.style.animationDuration = Math.max(1.5, flipDuration) + 's';
+          flipper.style.animationDelay = flipDelay + 's';
+        } else {
+          flipper.style.animation = 'none';
+          flipper.style.transform = 'rotateY(0deg)';
+        }
+        
+        // === Лицевая сторона ===
+        const front = document.createElement('div');
+        front.className = 'bill-front';
+        if (BILL_FRONT_IMAGE) {
+          front.style.backgroundImage = `url('${BILL_FRONT_IMAGE}')`;
+          front.style.backgroundColor = 'transparent';
+          front.style.border = '1px solid rgba(255, 215, 0, 0.7)';
+        }
+        
+        // === Оборотная сторона ===
+        const back = document.createElement('div');
+        back.className = 'bill-back';
+        if (BILL_BACK_IMAGE) {
+          back.style.backgroundImage = `url('${BILL_BACK_IMAGE}')`;
+          back.style.backgroundColor = 'transparent';
+          back.style.border = '1px solid rgba(255, 215, 0, 0.7)';
+        } else if (BILL_FRONT_IMAGE) {
+          // Если нет отдельной картинки для оборота, используем лицевую с затемнением
+          back.style.backgroundImage = `url('${BILL_FRONT_IMAGE}')`;
+          back.style.backgroundColor = 'transparent';
+          back.style.filter = 'brightness(0.7) sepia(0.3)';
+          back.style.border = '1px solid rgba(255, 215, 0, 0.5)';
+        }
+        
+        // Собираем
+        flipper.appendChild(front);
+        flipper.appendChild(back);
+        wrapper.appendChild(flipper);
+        container.appendChild(wrapper);
+      }
+      
+      console.log(`💰 Создано ${BILL_COUNT} двухсторонних купюр!`);
+      console.log(`📐 Базовый размер: ${BILL_BASE_WIDTH}x${BILL_BASE_HEIGHT}px`);
+      console.log(`🔄 Переворот: ${ENABLE_FLIP ? 'ВКЛ' : 'ВЫКЛ'}`);
+      
+    })();
+  </script>
+</body>
+</html>
