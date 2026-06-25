@@ -88,7 +88,7 @@
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      animation: shimmer 5s ease-in-out infinite alternate, pulse 4s ease-in-out infinite;
+      animation: shimmer 5s ease-in-out infinite alternate, pulse .5s ease-in-out infinite;
       text-shadow: 0 0 12px rgba(255, 200, 100, 0.2);
       word-break: break-word;
       display: inline-block;
@@ -102,7 +102,7 @@
 
     @keyframes pulse {
       0% { transform: scale(1); opacity: 0.95; }
-      50% { transform: scale(1.02); opacity: 1; }
+      50% { transform: scale(1.15); opacity: 1; }
       100% { transform: scale(1); opacity: 0.95; }
     }
 
@@ -168,7 +168,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      border-radius: 6px;
+      border-radius: 2px;
       box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
       background-size: cover;
       background-position: center;
@@ -243,7 +243,7 @@
   <div class="page">
     <div class="image-wrapper">
       <img 
-        src="https://i.pinimg.com/originals/30/79/9e/30799eb9b9cac30b7d3846db02ed31a2.jpg?nii=t" 
+        src="./12.jpg" 
         alt="Поздравительная картинка" 
         loading="lazy"
         width="600"
@@ -251,8 +251,7 @@
       >
     </div>
     <div class="text-wrapper">
-      <span class="rainbow-text">АхУеть это случилось!</span>
-      <span class="rainbow-text">ПОЗДРАВЛЯЕМ!!!!</span>
+      <span class="rainbow-text">Всех благ</span>
     </div>
   </div>
 
@@ -273,7 +272,7 @@
       const BILL_BASE_HEIGHT = 48;
       
       // 3. Количество купюр
-      const BILL_COUNT = 30;
+      const BILL_COUNT = 15;
       
       // 4. Разброс размеров (0.6 — 1.4 = от 60% до 140% от базового)
       const SIZE_MIN = 0.6;
@@ -353,7 +352,6 @@
         if (BILL_FRONT_IMAGE) {
           front.style.backgroundImage = `url('${BILL_FRONT_IMAGE}')`;
           front.style.backgroundColor = 'transparent';
-          front.style.border = '1px solid rgba(255, 215, 0, 0.7)';
         }
         
         // === Оборотная сторона ===
@@ -367,8 +365,6 @@
           // Если нет отдельной картинки для оборота, используем лицевую с затемнением
           back.style.backgroundImage = `url('${BILL_FRONT_IMAGE}')`;
           back.style.backgroundColor = 'transparent';
-          back.style.filter = 'brightness(0.7) sepia(0.3)';
-          back.style.border = '1px solid rgba(255, 215, 0, 0.5)';
         }
         
         // Собираем
