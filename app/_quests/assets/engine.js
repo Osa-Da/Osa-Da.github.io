@@ -29,7 +29,7 @@ const Engine = (function(){
     return `
       <div class="min-h-screen p-4 sm:p-6 flex flex-col items-center">
         <div class="w-full max-w-4xl mb-3">
-          <a href="../../index.html" class="text-gray-400 hover:text-gray-200 text-sm">← в журнал</a>
+          <a href="../../../quests.html" class="text-gray-400 hover:text-gray-200 text-sm">← в журнал</a>
         </div>
 
         <div id="gate" class="card rounded-xl p-6 sm:p-8 w-full max-w-2xl">
