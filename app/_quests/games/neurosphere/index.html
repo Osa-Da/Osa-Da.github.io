@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>NeuroSphere</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="../../assets/engine.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+<div id="app"></div>
+<script src="../../assets/engine.js"></script>
+<script src="./data.js"></script>
+<script>
+  // Единственная настройка, которая живёт в HTML игры, а не в движке:
+  // включён ли режим разработчика (список кодов + смена персонажа).
+  // На реальной игре поставить false.
+  const DEBUG_MODE = true;
+  Engine.mount(GAME, { debug: DEBUG_MODE });
+</script>
+</body>
+</html>

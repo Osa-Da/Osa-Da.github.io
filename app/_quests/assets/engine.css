@@ -1,0 +1,117 @@
+/* =========================================================================
+   ПЛАТФОРМА: стиль закреплён здесь и одинаков для всех игр.
+   Это те же 10 кастомных классов, что были в самой первой версии игры —
+   всё остальное (сетки, отступы, цвета текста) берётся из Tailwind CDN,
+   который подключается в index.html каждой игры.
+   ========================================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@300;400;500;600&display=swap');
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #0a0a0a;
+    color: #e5e5e5;
+    line-height: 1.6;
+}
+html { font-size: 17.5px; } /* платформенная правка: чуть крупнее весь текст (Tailwind rem-размеры считаются от этого) */
+
+.card {
+    background: linear-gradient(145deg, #1a1a1a 0%, #0d0d0d 100%);
+    border: 1px solid #333;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #555, transparent);
+}
+
+.feature-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.glow-text {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.badge {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.message {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    text-align: center;
+}
+.success { background-color: rgba(0, 255, 0, 0.1); border: 1px solid rgba(0, 255, 0, 0.3); }
+.error { background-color: rgba(255, 0, 0, 0.1); border: 1px solid rgba(255, 0, 0, 0.3); }
+
+.ability-border { border-color: #3b82f6; }
+.feature-border { border-color: #f59e0b; }
+.quest-border { border-color: #10b981; }
+
+/* ---- три состояния блока, всегда обычным CSS (не зависит от Tailwind CDN) ----
+   1) дефолт   — чуть тонировано тематическим цветом
+   2) новое    — насыщенный тематический цвет + бейдж "Новое"
+   3) done/failed (только задания) — тусклее дефолта, нейтрально + цветной бейдж */
+.tint-amber-dim       { background-color: rgba(245,158,11,.06); }
+.tint-amber-strong    { background-color: rgba(245,158,11,.28); }
+.tint-blue-dim        { background-color: rgba(59,130,246,.06); }
+.tint-blue-strong     { background-color: rgba(59,130,246,.28); }
+.tint-emerald-dim     { background-color: rgba(16,185,129,.06); }
+.tint-emerald-strong  { background-color: rgba(16,185,129,.28); }
+.tint-ultra-dim       { background-color: rgba(255,255,255,.025); }
+
+.border-amber-dim     { border-color: rgba(245,158,11,.18); }
+.border-amber-strong  { border-color: rgba(245,158,11,.75); }
+.border-blue-dim      { border-color: rgba(59,130,246,.18); }
+.border-blue-strong   { border-color: rgba(59,130,246,.75); }
+.border-emerald-dim   { border-color: rgba(16,185,129,.18); }
+.border-emerald-strong{ border-color: rgba(16,185,129,.75); }
+.border-ultra-dim     { border-color: rgba(255,255,255,.08); }
+
+.badge {
+  display: inline-block; font-size: 11px; line-height: 1;
+  padding: 4px 9px; border-radius: 9999px; border: 1px solid; margin-left: 8px;
+  vertical-align: middle; white-space: nowrap;
+}
+.badge-amber   { color:#fbbf24; border-color: rgba(245,158,11,.6); background: rgba(245,158,11,.14); }
+.badge-blue    { color:#60a5fa; border-color: rgba(59,130,246,.6); background: rgba(59,130,246,.14); }
+.badge-emerald { color:#34d399; border-color: rgba(16,185,129,.6); background: rgba(16,185,129,.14); }
+.badge-red     { color:#f87171; border-color: rgba(239,68,68,.6); background: rgba(239,68,68,.14); }
+
+/* завершённое задание — тускнеет целиком, кроме бейджа-подписи
+   (он рисуется отдельным элементом поверх, вне этого класса) */
+.done-fade { opacity: .7; }
+
+/* ---- допущенные улучшения: мобильные тап-таргеты (не меняют внешний вид) ---- */
+input[type=text], button { font-size: 16px; min-height: 44px; }
+
+/* ---- платформенная фича: подсветка вновь открытого контента ----
+   Фон блока в состоянии покоя задаётся бледным Tailwind-классом (bg-*-900/[6%]).
+   Пока играет .engine-pop, background-color анимируется через CSS-переменную
+   --pop-bg (её ставит JS под цвет тематического блока) — на пике анимация
+   перекрывает бледный фон полной насыщенностью, к концу сама возвращается
+   к статичному классу. Так видно, какой блок только что открылся. */
+@keyframes enginePop {
+  0%   { opacity: 0; transform: translateY(10px) scale(.96); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes engineGlow {
+  0%, 100% { box-shadow: 0 0 0 rgba(255,255,255,0); }
+  35%      { box-shadow: 0 0 26px var(--pop-bg, rgba(255,255,255,.4)); }
+}
+@keyframes engineBgPulse {
+  0%   { background-color: transparent; }
+  35%  { background-color: var(--pop-bg, rgba(255,255,255,.3)); }
+  100% { background-color: transparent; }
+}
+.engine-pop { animation: enginePop .5s ease-out, engineGlow 1.2s ease-out, engineBgPulse 1.2s ease-out; }
