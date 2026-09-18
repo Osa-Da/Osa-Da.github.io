@@ -373,11 +373,21 @@ const Engine = (function () {
             badge: '<span class="badge badge-red">Провалено</span>',
           },
         }[st];
-        const reward =
+
+        // FIX: симметричные ветки для успеха и провала
+        let reward = "";
+        if (
           st === "done" &&
           (q.rewards?.COMPLETED || q.rewardsDescription?.COMPLETED)
-            ? `<div class="mt-3 p-2 bg-gray-700/30 rounded-lg text-sm text-yellow-400">${q.rewardsDescription?.COMPLETED ? q.rewardsDescription.COMPLETED + "<br>" : ""}${q.rewards?.COMPLETED || ""}</div>`
-            : "";
+        ) {
+          reward = `<div class="mt-3 p-2 bg-gray-700/30 rounded-lg text-sm text-yellow-400">${q.rewardsDescription?.COMPLETED ? q.rewardsDescription.COMPLETED + "<br>" : ""}${q.rewards?.COMPLETED || ""}</div>`;
+        } else if (
+          st === "failed" &&
+          (q.rewards?.FAILED || q.rewardsDescription?.FAILED)
+        ) {
+          reward = `<div class="mt-3 p-2 bg-gray-700/30 rounded-lg text-sm text-red-400">${q.rewardsDescription?.FAILED ? q.rewardsDescription.FAILED + "<br>" : ""}${q.rewards?.FAILED || ""}</div>`;
+        }
+
         return `<div class="relative" data-quest="${esc(q.title)}">
         <div class="p-5 rounded-lg border ${styleMap.cls} ${st === "done" ? "done-fade" : ""}">
           <div class="mb-2">
