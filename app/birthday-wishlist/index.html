@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Виш-листы</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>🎂 Виш-листы</h1>
+    <p class="subtitle">Выберите подарок или присоединитесь к любому — можно скидываться на всё</p>
+  </header>
+
+  <section id="auth-section">
+    <input type="text" id="username-input" placeholder="Ваше имя, чтобы другие поняли" maxlength="40" autocomplete="off">
+    <button id="register-btn">Войти</button>
+    <p id="auth-message"></p>
+  </section>
+
+  <section id="wishlist-section" class="hidden">
+    <div class="user-bar">
+      <span id="current-user"></span>
+      <button id="logout-btn" class="btn-ghost-small">Выйти</button>
+    </div>
+
+    <div id="owner-picker" class="owner-picker">
+      <label for="owner-select">Чей виш-лист:</label>
+      <select id="owner-select"></select>
+    </div>
+
+    <section id="admin-panel" class="hidden">
+      <h2 id="admin-title">🛠️ Админ-панель</h2>
+      <div class="admin-buttons">
+        <button id="seed-btn"     class="btn-admin">🌱 Заполнить мой список</button>
+        <button id="clear-btn"    class="btn-admin btn-warn">🧹 Очистить брони текущего списка</button>
+        <button id="clear-all-btn" class="btn-admin btn-warn">💣 Очистить ВСЕ брони (все списки)</button>
+        <button id="wipe-btn"     class="btn-admin btn-danger">💥 Полный сброс (юзеры + брони)</button>
+      </div>
+      <p class="admin-hint">
+        × на чипсе — снять конкретную бронь.<br>
+        «Текущий список» — тот, что выбран в селекторе выше.
+      </p>
+    </section>
+
+    <button id="refresh-btn">🔄 Обновить</button>
+
+    <div id="loader" class="loader hidden">
+      <div class="spinner"></div>
+      <span>Загрузка…</span>
+    </div>
+
+    <div id="wishlist-container"></div>
+  </section>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="script.js"></script>
+</body>
+</html>
