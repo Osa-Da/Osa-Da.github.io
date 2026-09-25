@@ -36,4 +36,9 @@ const APPS = [
         url: 'wedding.html',
         title: 'Свадебныое приглашение',
     },
+    {
+        id: 'quests',
+        url: 'quests.html',
+        title: 'Квесты',
+    },
 ];
