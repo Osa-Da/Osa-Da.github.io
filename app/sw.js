@@ -1,5 +1,9 @@
-const CACHE = "dietmanager-v5";
-const ASSETS = ["./dietManager.html", "./dietManager/manifest.json"];
+const CACHE = "dietmanager-v6";
+const ASSETS = [
+  "./dietManager.html",
+  "./dietManager/styles.css",
+  "./dietManager/manifest.json",
+];
 
 self.addEventListener("install", (e) => {
   self.skipWaiting();
