@@ -8,7 +8,7 @@
     />
     <meta name="theme-color" content="#0f1115" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <title>DietManager</title>
+    <title>DietManager V1.02</title>
     <link rel="manifest" href="dietManager/manifest.json" />
     <link rel="stylesheet" href="dietManager/styles.css" />
   </head>
@@ -91,6 +91,14 @@
         "
         ><span class="ic">🔄</span> Обновить данные</a
       >
+      <a
+        href="#"
+        onclick="
+          reloadApp();
+          return false;
+        "
+        ><span class="ic">🔃</span> Перезагрузить приложение</a
+      >
       <div class="sep"></div>
       <a
         href="#"
@@ -116,7 +124,7 @@
     <section class="screen" id="scr-login">
       <div class="login-wrap">
         <div class="logo">🥗</div>
-        <h2>DietManager V1.0</h2>
+        <h2>DietManager</h2>
         <div class="sub">Войди или создай новый профиль</div>
         <div class="field">
           <label>Имя (логин)</label>
@@ -290,7 +298,7 @@
       </div>
       <div id="recentBlock" style="display: none">
         <div class="section-label">🕐 Недавние</div>
-        <div class="grid" id="recentGrid" class="grid-with-margin"></div>
+        <div class="grid grid-with-margin" id="recentGrid"></div>
       </div>
       <div class="section-label" id="allLabel">Все продукты</div>
       <div class="grid" id="foodGrid"></div>
@@ -501,7 +509,7 @@
       const IMG_BASE = "dietManager/images/";
       const ADMIN_USER = "admin";
       const ADMIN_PASS = "00000";
-      const SESSION_DAYS = 300;
+      const SESSION_DAYS = 36500;
       const ADMIN_DEFAULT_PROFILE = {
         weight: 70,
         height: 170,
@@ -809,7 +817,7 @@
       }
 
       /* ============================================================
-   ЗВУК
+   SOUND
    ============================================================ */
       let audioCtx = null;
       function ensureAudio() {
@@ -923,7 +931,7 @@
       }
 
       /* ============================================================
-   РАСЧЁТ
+   CALC
    ============================================================ */
       function calcTDEE(p) {
         const { weight, height, age, sex, act } = p;
@@ -960,7 +968,7 @@
         status.textContent = "Проверка...";
         status.style.color = "var(--muted)";
 
-        // ==== 1. Админ ====
+        // 1. Admin
         if (user === ADMIN_USER && pass === ADMIN_PASS) {
           const existing =
             state.profile && state.profile.user === ADMIN_USER
@@ -985,7 +993,7 @@
           return;
         }
 
-        // ==== 2. Онлайн ====
+        // 2. Online
         if (isOnline() && API_URL && !API_URL.startsWith("PASTE")) {
           const res = await apiGet("getUser", { user });
           if (res && res.ok && res.user) {
@@ -1040,7 +1048,7 @@
           return;
         }
 
-        // ==== 3. Офлайн ====
+        // 3. Offline
         if (state.profile && state.profile.user === user) {
           if (state.profile.passHash) {
             const h = await sha256(pass);
@@ -1058,7 +1066,7 @@
         }
 
         status.innerHTML =
-          "⚠️ Нет интернета или профиля «" +
+          "⚠️ Нет интернета и профиля «" +
           esc(user) +
           '». <a href="#" onclick="goToRegister();return false" class="link">Создать новый?</a>';
         status.style.color = "var(--warn)";
@@ -1068,7 +1076,6 @@
         if (!hasValidSession()) return false;
         const s = state.session;
         if (!state.profile || state.profile.user !== s.user) {
-          // сессия есть, а профиля нет — попробуем подтянуть с сервера
           if (isOnline() && API_URL && !API_URL.startsWith("PASTE")) {
             const res = await apiGet("getUser", { user: s.user });
             if (res && res.ok && res.user) {
@@ -1216,7 +1223,7 @@
       }
 
       /* ============================================================
-   REFRESH (кнопка в бургере)
+   REFRESH / RELOAD
    ============================================================ */
       async function manualRefresh() {
         closeDrawer();
@@ -1227,13 +1234,19 @@
         toast("Обновление...");
         await syncNow();
       }
+      function reloadApp() {
+        closeDrawer();
+        toast("Перезагрузка...");
+        setTimeout(() => {
+          location.href = location.pathname + "?t=" + Date.now();
+        }, 250);
+      }
       async function syncNow() {
         if (!isOnline()) {
           toast("Офлайн — нет синхронизации");
           return;
         }
 
-        // 1. Продукты
         const foodsRes = await apiGet("getFoods");
         if (
           foodsRes &&
@@ -1251,7 +1264,6 @@
           renderGrid();
         }
 
-        // 2. Профиль
         if (state.profile) {
           const u = await apiGet("getUser", { user: state.profile.user });
           if (u && u.ok && u.user) {
@@ -1259,7 +1271,6 @@
             saveState();
           }
 
-          // 3. История
           const m = await apiGet("getMeals", { user: state.profile.user });
           if (m && m.ok && Array.isArray(m.meals)) {
             const serverIds = new Set(m.meals.map((x) => String(x.id)));
@@ -1270,10 +1281,8 @@
             saveState();
           }
 
-          // 4. Досылаем очередь
           await flushPending();
 
-          // 5. Обновляем UI
           renderHeaderProgress();
           renderHistory();
           renderPlate();
@@ -2563,7 +2572,6 @@
           }
         });
 
-        // Автологин по сохранённой сессии
         const auto = await tryAutoLogin();
         if (auto) {
           if (state.profile) {

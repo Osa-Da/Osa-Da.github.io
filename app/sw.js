@@ -1,4 +1,4 @@
-const CACHE = "dietmanager-v6";
+const CACHE = "dietmanager-v7";
 const ASSETS = [
   "./dietManager.html",
   "./dietManager/styles.css",
@@ -56,4 +56,10 @@ self.addEventListener("fetch", (e) => {
         .catch(() => cached);
     }),
   );
+});
+
+self.addEventListener("message", (e) => {
+  if (e.data && e.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
