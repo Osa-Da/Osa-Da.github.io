@@ -1,0 +1,3840 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0f1115" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>DietManager</title>
+    <link rel="manifest" href="dietManager/manifest.json" />
+    <style>
+      :root {
+        --bg: #0f1115;
+        --card: #1a1d24;
+        --card2: #232733;
+        --card3: #2c3140;
+        --accent: #facc15;
+        --accent2: #eab308;
+        --accent-dark: #1a1400;
+        --text: #eef1f7;
+        --muted: #9ba3b8;
+        --danger: #ef4444;
+        --warn: #f59e0b;
+        --admin: #a855f7;
+      }
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        overscroll-behavior: none;
+        font-size: 17px;
+        line-height: 1.45;
+      }
+      body {
+        min-height: 100vh;
+      }
+      body.locked {
+        overflow: hidden;
+        position: fixed;
+        width: 100%;
+      }
+      button {
+        background: none;
+        border: none;
+        color: inherit;
+        font: inherit;
+        cursor: pointer;
+      }
+      input,
+      select {
+        background: var(--card2);
+        border: 1px solid #3a4252;
+        color: var(--text);
+        padding: 14px;
+        border-radius: 12px;
+        font-size: 17px;
+        width: 100%;
+        outline: none;
+        font-family: inherit;
+      }
+      input:focus,
+      select:focus {
+        border-color: var(--accent);
+      }
+
+      /* HEADER */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(15, 17, 21, 0.96);
+        backdrop-filter: blur(10px);
+        padding: 12px 16px;
+        border-bottom: 1px solid #22262f;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-height: 64px;
+      }
+      .header-progress {
+        flex: 1;
+        min-width: 0;
+      }
+      .hp-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 6px;
+      }
+      .hp-label {
+        font-size: 15px;
+        color: var(--muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .hp-label b {
+        color: var(--text);
+        font-size: 17px;
+        font-weight: 700;
+      }
+      .hp-delta {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        background: var(--card2);
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--accent);
+        flex-shrink: 0;
+        cursor: pointer;
+      }
+      .hp-delta.neg {
+        color: var(--danger);
+      }
+      .header-progress .progress {
+        height: 8px;
+        background: var(--card2);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .header-progress .progress > div {
+        height: 100%;
+        background: var(--accent);
+        width: 0;
+        transition: width 0.3s;
+      }
+      .header-progress .progress.warn > div {
+        background: var(--warn);
+      }
+      .header-progress .progress.over > div {
+        background: var(--danger);
+      }
+      .header-title {
+        font-size: 18px;
+        font-weight: 600;
+        display: none;
+      }
+      .admin-badge {
+        font-size: 11px;
+        color: #fff;
+        background: var(--admin);
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+      }
+      .burger {
+        font-size: 32px;
+        padding: 6px 10px;
+        line-height: 1;
+        flex-shrink: 0;
+      }
+
+      /* DRAWER */
+      .drawer {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 85%;
+        max-width: 380px;
+        height: 100vh;
+        background: var(--card);
+        z-index: 100;
+        transition: right 0.25s ease;
+        padding: 80px 24px 24px;
+        box-shadow: -8px 0 24px rgba(0, 0, 0, 0.5);
+        overflow-y: auto;
+      }
+      .drawer.open {
+        right: 0;
+      }
+      .drawer .close {
+        position: absolute;
+        top: 18px;
+        right: 22px;
+        font-size: 38px;
+        padding: 4px;
+        line-height: 1;
+      }
+      .drawer a {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 22px 16px;
+        border-radius: 14px;
+        margin-bottom: 10px;
+        text-decoration: none;
+        color: var(--text);
+        font-size: 21px;
+        font-weight: 500;
+      }
+      .drawer a .ic {
+        font-size: 26px;
+        width: 32px;
+        text-align: center;
+      }
+      .drawer a:active {
+        background: var(--card2);
+      }
+      .drawer a.danger {
+        color: var(--danger);
+      }
+      .drawer a.admin {
+        color: var(--admin);
+      }
+      .drawer .sep {
+        height: 1px;
+        background: #2a2f3a;
+        margin: 14px 0;
+      }
+
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 90;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s;
+      }
+      .overlay.open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      /* SCREENS */
+      .screen {
+        display: none;
+        padding: 18px 18px 120px;
+      }
+      .screen.active {
+        display: block;
+      }
+      .screen h2 {
+        font-size: 24px;
+        margin: 10px 0 18px;
+      }
+
+      .field {
+        margin-bottom: 14px;
+      }
+      .field label {
+        display: block;
+        font-size: 14px;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+      .row2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .btn {
+        background: var(--accent);
+        color: var(--accent-dark);
+        font-weight: 700;
+        padding: 16px;
+        border-radius: 14px;
+        width: 100%;
+        font-size: 17px;
+        margin-top: 12px;
+      }
+      .btn.secondary {
+        background: var(--card2);
+        color: var(--text);
+      }
+      .btn.danger {
+        background: rgba(239, 68, 68, 0.15);
+        color: var(--danger);
+        border: 1px solid rgba(239, 68, 68, 0.35);
+      }
+      .btn.admin {
+        background: var(--admin);
+        color: #fff;
+      }
+      .btn:active {
+        opacity: 0.85;
+      }
+
+      .deficit-pick {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 10px;
+        margin-top: 8px;
+      }
+      .deficit-pick button {
+        padding: 14px 8px;
+        border-radius: 12px;
+        background: var(--card2);
+        font-size: 15px;
+        text-align: center;
+        border: 2px solid transparent;
+        line-height: 1.3;
+      }
+      .deficit-pick button small {
+        color: var(--muted);
+        font-size: 12px;
+        display: block;
+        margin-top: 2px;
+      }
+      .deficit-pick button.sel {
+        border-color: var(--accent);
+        background: #3a3200;
+      }
+
+      .info-card {
+        background: var(--card);
+        padding: 18px;
+        border-radius: 16px;
+        margin-bottom: 14px;
+      }
+      .info-card .num {
+        font-size: 34px;
+        font-weight: 700;
+        color: var(--accent);
+        line-height: 1.1;
+      }
+      .info-card .lbl {
+        font-size: 14px;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+      .info-card .row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #22262f;
+        font-size: 15px;
+        gap: 10px;
+      }
+      .info-card .row:last-child {
+        border-bottom: none;
+      }
+
+      /* LOGIN SCREEN */
+      .login-wrap {
+        max-width: 520px;
+        margin: 60px auto 0;
+        text-align: center;
+      }
+      .login-wrap .logo {
+        font-size: 64px;
+        margin-bottom: 8px;
+      }
+      .login-wrap h2 {
+        font-size: 28px;
+        margin: 0 0 8px;
+      }
+      .login-wrap .sub {
+        color: var(--muted);
+        margin-bottom: 32px;
+        font-size: 16px;
+      }
+      .login-hint {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 20px;
+        line-height: 1.5;
+        background: var(--card2);
+        padding: 14px;
+        border-radius: 12px;
+        text-align: left;
+      }
+
+      /* SLIDER */
+      .kcal-slider-wrap {
+        display: flex;
+        gap: 18px;
+        align-items: stretch;
+        background: var(--card);
+        padding: 18px;
+        border-radius: 16px;
+        margin-bottom: 14px;
+      }
+      .kcal-slider-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .kcal-slider-info .big {
+        font-size: 36px;
+        font-weight: 700;
+        color: var(--accent);
+        line-height: 1.05;
+      }
+      .kcal-slider-info .unit {
+        font-size: 14px;
+        color: var(--muted);
+        margin-bottom: 12px;
+      }
+      .proj-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        font-size: 15px;
+        border-bottom: 1px dashed #2a2f3a;
+        gap: 8px;
+      }
+      .proj-row:last-child {
+        border-bottom: none;
+      }
+      .proj-row b {
+        color: var(--accent);
+        font-weight: 700;
+      }
+
+      .vslider {
+        position: relative;
+        width: 64px;
+        border-radius: 16px;
+        background: var(--card2);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 0;
+        user-select: none;
+        touch-action: none;
+        flex-shrink: 0;
+        border: 1px solid #333a49;
+        cursor: pointer;
+      }
+      .vslider .vmax,
+      .vslider .vmin {
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .vslider-track {
+        position: relative;
+        flex: 1;
+        width: 6px;
+        background: #2c3140;
+        border-radius: 3px;
+        margin: 10px 0;
+        min-height: 200px;
+      }
+      .vslider-fill {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--accent);
+        border-radius: 3px;
+        transition: height 0.05s linear;
+      }
+      .vslider-knob {
+        position: absolute;
+        left: 50%;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--accent);
+        border: 4px solid var(--bg);
+        transform: translate(-50%, 50%);
+        bottom: 0;
+        transition: bottom 0.05s linear;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        pointer-events: none;
+      }
+      .vslider-knob::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 6px;
+        height: 12px;
+        border-radius: 3px;
+        background: var(--accent-dark);
+      }
+
+      /* SEARCH */
+      .search-wrap {
+        position: relative;
+        margin-bottom: 12px;
+      }
+      .search-input {
+        background: var(--card2);
+        border: 1px solid #3a4252;
+        color: var(--text);
+        padding: 14px 44px 14px 46px;
+        border-radius: 12px;
+        font-size: 16px;
+        width: 100%;
+        outline: none;
+        font-family: inherit;
+      }
+      .search-input:focus {
+        border-color: var(--accent);
+      }
+      .search-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 18px;
+        color: var(--muted);
+        pointer-events: none;
+      }
+      .search-clear {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 20px;
+        color: var(--muted);
+        padding: 8px 10px;
+        display: none;
+      }
+      .search-clear.show {
+        display: block;
+      }
+
+      /* CATS */
+      .cats-wrap {
+        position: relative;
+        margin: 0 -18px 14px;
+        padding: 0;
+      }
+      .cats {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        padding: 4px 18px 6px;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        transition:
+          mask-image 0.2s,
+          -webkit-mask-image 0.2s;
+      }
+      .cats::-webkit-scrollbar {
+        display: none;
+      }
+      .cats.scroll-left {
+        -webkit-mask-image: linear-gradient(
+          to right,
+          transparent 0,
+          #000 28px,
+          #000 100%
+        );
+        mask-image: linear-gradient(
+          to right,
+          transparent 0,
+          #000 28px,
+          #000 100%
+        );
+      }
+      .cats.scroll-right {
+        -webkit-mask-image: linear-gradient(
+          to left,
+          transparent 0,
+          #000 28px,
+          #000 100%
+        );
+        mask-image: linear-gradient(
+          to left,
+          transparent 0,
+          #000 28px,
+          #000 100%
+        );
+      }
+      .cats.scroll-both {
+        -webkit-mask-image: linear-gradient(
+          to right,
+          transparent 0,
+          #000 28px,
+          #000 calc(100% - 28px),
+          transparent 100%
+        );
+        mask-image: linear-gradient(
+          to right,
+          transparent 0,
+          #000 28px,
+          #000 calc(100% - 28px),
+          transparent 100%
+        );
+      }
+      .cats button {
+        white-space: nowrap;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: var(--card2);
+        font-size: 15px;
+        color: var(--text);
+      }
+      .cats button.sel {
+        background: var(--accent);
+        color: var(--accent-dark);
+        font-weight: 600;
+      }
+
+      /* GRID */
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+      .tile {
+        background: var(--card);
+        border-radius: 14px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+        position: relative;
+        transition: transform 0.1s;
+        height: 0;
+        padding-bottom: calc(100% + 56px);
+        min-height: 0;
+      }
+      .tile-inner {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .tile .imgwrap {
+        width: 100%;
+        aspect-ratio: 1;
+        flex: 1 1 auto;
+        background: var(--card2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 44px;
+        overflow: hidden;
+        position: relative;
+        min-height: 0;
+      }
+      .tile .imgwrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        inset: 0;
+      }
+      .tile .name {
+        font-size: 13px;
+        padding: 8px 8px 2px;
+        line-height: 1.2;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex: 0 0 24px;
+      }
+      .tile .kcal {
+        font-size: 12px;
+        color: var(--muted);
+        padding: 0 8px 8px;
+        flex: 0 0 22px;
+        overflow: hidden;
+      }
+      .tile .edit {
+        position: absolute;
+        top: 6px;
+        left: 6px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.65);
+        color: #fff;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+      }
+      .tile .recent-star {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        font-size: 14px;
+        color: var(--accent);
+        z-index: 2;
+        text-shadow: 0 1px 2px #000;
+      }
+
+      .add-food-tile {
+        background: linear-gradient(135deg, #3a3200, #1a1d24);
+        border: 2px dashed var(--accent);
+        border-radius: 14px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        color: var(--accent);
+        font-weight: 600;
+        gap: 4px;
+        cursor: pointer;
+        height: 0;
+        padding-bottom: calc(100% + 56px);
+        position: relative;
+      }
+      .add-food-tile-inner {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+      }
+      .add-food-tile .plus {
+        font-size: 36px;
+        line-height: 1;
+      }
+
+      .section-label {
+        font-size: 15px;
+        color: var(--muted);
+        margin: 6px 0 10px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+      }
+
+      /* MODAL */
+      .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 200;
+        display: none;
+        align-items: flex-end;
+        justify-content: center;
+      }
+      .modal.open {
+        display: flex;
+      }
+      .modal-inner {
+        background: var(--card);
+        width: 100%;
+        max-width: 560px;
+        border-radius: 22px 22px 0 0;
+        padding: 22px;
+        max-height: 95vh;
+        overflow: auto;
+      }
+      .modal-inner.big {
+        padding: 26px 22px 22px;
+      }
+      .modal-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+      .modal-head h3 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 700;
+      }
+      .modal-head button {
+        font-size: 26px;
+        padding: 6px 14px;
+        color: var(--muted);
+      }
+
+      .picker {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        justify-content: center;
+        margin: 20px 0;
+        user-select: none;
+        position: relative;
+        height: 360px;
+      }
+      .picker-dial {
+        width: 130px;
+        height: 360px;
+        overflow: hidden;
+        position: relative;
+        border-radius: 18px;
+        background: var(--card2);
+        mask-image: linear-gradient(
+          transparent,
+          #000 22%,
+          #000 78%,
+          transparent
+        );
+        -webkit-mask-image: linear-gradient(
+          transparent,
+          #000 22%,
+          #000 78%,
+          transparent
+        );
+        touch-action: none;
+        cursor: grab;
+      }
+      .picker-dial:active {
+        cursor: grabbing;
+      }
+      .picker-list {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        will-change: transform;
+      }
+      .picker-item {
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        color: var(--muted);
+        transition:
+          color 0.15s,
+          font-size 0.15s;
+      }
+      .picker-item.cur {
+        color: var(--accent);
+        font-size: 34px;
+        font-weight: 700;
+      }
+      .picker-center {
+        position: absolute;
+        top: 50%;
+        left: 15%;
+        right: 15%;
+        height: 56px;
+        transform: translateY(-50%);
+        border-top: 2px solid #3a4250;
+        border-bottom: 2px solid #3a4250;
+        pointer-events: none;
+        z-index: 2;
+        background: rgba(250, 204, 21, 0.05);
+      }
+      .weight-big {
+        font-size: 52px;
+        font-weight: 700;
+        color: var(--accent);
+        text-align: center;
+        min-width: 130px;
+        line-height: 1;
+      }
+      .weight-big small {
+        font-size: 16px;
+        color: var(--muted);
+        font-weight: 400;
+        display: block;
+        margin-top: 4px;
+      }
+      .kcal-preview {
+        text-align: center;
+        font-size: 30px;
+        margin: 18px 0 22px;
+        font-weight: 600;
+      }
+      .kcal-preview b {
+        color: var(--accent);
+      }
+
+      /* FAB */
+      .plate-fab {
+        position: fixed;
+        bottom: 24px;
+        right: 18px;
+        background: var(--accent);
+        color: var(--accent-dark);
+        width: 68px;
+        height: 68px;
+        border-radius: 50%;
+        font-size: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 60;
+        box-shadow: 0 8px 24px rgba(250, 204, 21, 0.45);
+        font-weight: 700;
+        transition:
+          background 0.2s,
+          transform 0.15s;
+      }
+      .plate-fab.back {
+        background: var(--card3);
+        color: var(--text);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        font-size: 26px;
+      }
+      .plate-fab:active {
+        transform: scale(0.92);
+      }
+      .plate-fab .badge {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        background: var(--danger);
+        color: #fff;
+        border-radius: 999px;
+        padding: 3px 9px;
+        font-size: 13px;
+        min-width: 22px;
+        text-align: center;
+        font-weight: 700;
+      }
+
+      /* PLATE */
+      .plate-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 16px;
+        background: var(--card2);
+        border-radius: 12px;
+        margin-bottom: 8px;
+        font-size: 16px;
+        gap: 10px;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .plate-item:active {
+        background: var(--card3);
+      }
+      .plate-item .info {
+        flex: 1;
+        min-width: 0;
+      }
+      .plate-item .nm {
+        font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .plate-item .gr {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .plate-item .k {
+        color: var(--accent);
+        font-weight: 700;
+        font-size: 17px;
+        flex-shrink: 0;
+      }
+      .plate-item .rm {
+        color: var(--danger);
+        padding: 6px 10px;
+        font-size: 20px;
+        border-radius: 8px;
+        flex-shrink: 0;
+      }
+
+      .past-meals-toggle {
+        background: var(--card2);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 16px;
+        cursor: pointer;
+        font-weight: 500;
+      }
+      .past-meals-toggle .arr {
+        color: var(--accent);
+        font-size: 18px;
+        transition: transform 0.2s;
+      }
+      .past-meals-toggle.open .arr {
+        transform: rotate(90deg);
+      }
+      .past-meals-list {
+        display: none;
+        margin-bottom: 14px;
+      }
+      .past-meals-list.open {
+        display: block;
+      }
+      .past-meal {
+        background: var(--card2);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 8px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        font-size: 15px;
+      }
+      .past-meal:active {
+        background: var(--card3);
+      }
+      .past-meal .info {
+        flex: 1;
+        min-width: 0;
+      }
+      .past-meal .meta {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .past-meal .k {
+        color: var(--accent);
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+      .past-meal .rm {
+        color: var(--danger);
+        padding: 8px 12px;
+        font-size: 18px;
+        border-radius: 8px;
+        background: rgba(239, 68, 68, 0.1);
+        flex-shrink: 0;
+      }
+
+      /* HISTORY */
+      .hist-month {
+        background: var(--card);
+        border-radius: 16px;
+        margin-bottom: 14px;
+        overflow: hidden;
+      }
+      .hist-month > summary {
+        padding: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        list-style: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 18px;
+      }
+      .hist-month > summary::-webkit-details-marker {
+        display: none;
+      }
+      .hist-month > summary .sum {
+        color: var(--accent);
+        font-size: 15px;
+        font-weight: 700;
+      }
+      .hist-day {
+        padding: 16px 18px;
+        border-top: 1px solid #22262f;
+      }
+      .hist-day-head {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .hist-day-num {
+        font-size: 38px;
+        font-weight: 800;
+        color: var(--accent);
+        line-height: 1;
+        letter-spacing: -1px;
+      }
+      .hist-day-meta {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      .hist-day-name {
+        font-size: 15px;
+        color: var(--text);
+        font-weight: 600;
+      }
+      .hist-day-wd {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .hist-day-total {
+        font-size: 15px;
+        color: var(--accent);
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+      .hist-meal {
+        background: var(--card2);
+        border-radius: 12px;
+        margin-bottom: 8px;
+        overflow: hidden;
+      }
+      .hist-meal-head {
+        padding: 12px 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        gap: 10px;
+        font-size: 16px;
+      }
+      .hist-meal-head:active {
+        background: var(--card3);
+      }
+      .hist-meal-head .nm {
+        font-weight: 600;
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .hist-meal-head .t {
+        color: var(--muted);
+        font-size: 13px;
+        margin-left: 6px;
+        font-weight: 400;
+      }
+      .hist-meal-head .k {
+        color: var(--accent);
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+      .hist-meal-head .arr {
+        color: var(--muted);
+        font-size: 13px;
+        transition: transform 0.2s;
+        flex-shrink: 0;
+      }
+      .hist-meal.open .hist-meal-head .arr {
+        transform: rotate(90deg);
+      }
+      .hist-meal-body {
+        display: none;
+        padding: 0 14px 12px;
+        border-top: 1px solid #2a2f3a;
+      }
+      .hist-meal.open .hist-meal-body {
+        display: block;
+      }
+      .hist-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        font-size: 15px;
+        border-bottom: 1px dashed #2a2f3a;
+        gap: 8px;
+      }
+      .hist-item:last-child {
+        border-bottom: none;
+      }
+      .hist-item .g {
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .hist-item .kk {
+        color: var(--accent);
+        font-weight: 600;
+        flex-shrink: 0;
+      }
+      .hist-meal-actions {
+        display: flex;
+        justify-content: flex-end;
+        padding: 6px 14px 12px;
+        border-top: 1px solid #2a2f3a;
+        gap: 8px;
+      }
+      .hist-meal-actions button {
+        font-size: 14px;
+        padding: 8px 14px;
+        border-radius: 8px;
+        color: var(--danger);
+        background: rgba(239, 68, 68, 0.1);
+      }
+
+      /* ADMIN */
+      .admin-user-card {
+        background: var(--card2);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+      }
+      .admin-user-card .nm {
+        font-weight: 600;
+      }
+      .admin-user-card .meta {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .admin-user-card .del {
+        color: var(--danger);
+        padding: 8px 14px;
+        font-size: 20px;
+        border-radius: 8px;
+        background: rgba(239, 68, 68, 0.1);
+        flex-shrink: 0;
+      }
+
+      /* MISC */
+      .empty {
+        text-align: center;
+        color: var(--muted);
+        padding: 50px 20px;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+
+      .toast {
+        position: fixed;
+        bottom: 110px;
+        left: 50%;
+        transform: translateX(-50%) translateY(20px);
+        background: var(--card3);
+        color: var(--text);
+        padding: 14px 22px;
+        border-radius: 999px;
+        font-size: 15px;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.3s;
+        z-index: 300;
+        white-space: nowrap;
+        max-width: 90vw;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+        font-weight: 500;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      .offline-badge {
+        font-size: 12px;
+        color: var(--warn);
+        padding: 3px 10px;
+        border: 1px solid var(--warn);
+        border-radius: 999px;
+        font-weight: 600;
+      }
+
+      .sync-status {
+        font-size: 14px;
+        color: var(--muted);
+        text-align: center;
+        margin-top: 10px;
+      }
+      .sync-status .dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent);
+        margin-right: 8px;
+        vertical-align: middle;
+      }
+      .sync-status.wait .dot {
+        background: var(--warn);
+      }
+
+      .emoji-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 8px;
+        max-height: 220px;
+        overflow-y: auto;
+        padding: 6px;
+        background: var(--card2);
+        border-radius: 12px;
+        margin-top: 8px;
+      }
+      .emoji-grid button {
+        font-size: 26px;
+        padding: 8px 0;
+        border-radius: 8px;
+        background: var(--card);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        aspect-ratio: 1;
+      }
+      .emoji-grid button.sel {
+        background: var(--accent);
+        color: var(--accent-dark);
+      }
+      .emoji-grid button:active {
+        transform: scale(0.9);
+      }
+
+      .reset-info {
+        font-size: 14px;
+        color: var(--muted);
+        line-height: 1.55;
+        background: var(--card2);
+        padding: 14px;
+        border-radius: 12px;
+        margin-top: 10px;
+      }
+      .reset-info ul {
+        margin: 6px 0 0 18px;
+        padding: 0;
+      }
+      .reset-info li {
+        margin: 4px 0;
+      }
+
+      .admin-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+        background: var(--card2);
+        padding: 6px;
+        border-radius: 12px;
+      }
+      .admin-tabs button {
+        flex: 1;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--muted);
+      }
+      .admin-tabs button.sel {
+        background: var(--admin);
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-title" id="headerTitle">DietManager</div>
+      <div class="header-progress" id="headerProgress" style="display: none">
+        <div class="hp-top">
+          <div class="hp-label" id="hpLabel"><b>0</b> / 2000 ккал</div>
+          <div class="hp-delta" id="hpDelta" onclick="toggleDeltaModal()">
+            <span id="hpDeltaText">Δ 0</span>
+          </div>
+        </div>
+        <div class="progress" id="hpProgWrap"><div id="hpProg"></div></div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0">
+        <span id="adminBadge" class="admin-badge" style="display: none"
+          >ADMIN</span
+        >
+        <span id="offlineBadge" class="offline-badge" style="display: none"
+          >offline</span
+        >
+        <button class="burger" onclick="openDrawer()">☰</button>
+      </div>
+    </header>
+
+    <div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+    <nav class="drawer" id="drawer">
+      <button class="close" onclick="closeDrawer()">×</button>
+      <a
+        href="#"
+        onclick="
+          nav('main');
+          return false;
+        "
+        ><span class="ic">🍽</span> Основное</a
+      >
+      <a
+        href="#"
+        onclick="
+          nav('plate');
+          return false;
+        "
+        ><span class="ic">🥣</span> Тарелка
+        <span
+          id="plateBadgeMenu"
+          style="color: var(--accent); margin-left: auto"
+        ></span
+      ></a>
+      <a
+        href="#"
+        onclick="
+          nav('profile');
+          return false;
+        "
+        ><span class="ic">👤</span> Профиль</a
+      >
+      <a
+        href="#"
+        onclick="
+          nav('history');
+          return false;
+        "
+        ><span class="ic">📅</span> История</a
+      >
+      <a
+        href="#"
+        id="adminLink"
+        onclick="
+          nav('admin');
+          return false;
+        "
+        class="admin"
+        style="display: none"
+        ><span class="ic">🛠</span> Админ-панель</a
+      >
+      <div class="sep"></div>
+      <a
+        href="#"
+        onclick="
+          logout();
+          return false;
+        "
+        class="danger"
+        ><span class="ic">🚪</span> Выйти из профиля</a
+      >
+      <a
+        href="#"
+        onclick="
+          confirmResetAll();
+          return false;
+        "
+        class="danger"
+        ><span class="ic">⚠️</span> Сбросить все данные</a
+      >
+    </nav>
+
+    <!-- ============= LOGIN ============= -->
+    <section class="screen" id="scr-login">
+      <div class="login-wrap">
+        <div class="logo">🥗</div>
+        <h2>DietManager</h2>
+        <div class="sub">Войди или создай новый профиль</div>
+
+        <div class="field">
+          <label>Имя (логин)</label>
+          <input id="l-user" placeholder="Иван" autocomplete="username" />
+        </div>
+        <div class="field">
+          <label>Пароль</label>
+          <input
+            id="l-pass"
+            type="password"
+            placeholder="••••"
+            autocomplete="current-password"
+          />
+        </div>
+
+        <button class="btn" id="loginBtn" onclick="doLogin()">🔓 Войти</button>
+        <button class="btn secondary" onclick="goToRegister()">
+          ➕ Создать новый профиль
+        </button>
+
+        <div
+          id="loginStatus"
+          style="
+            margin-top: 16px;
+            min-height: 24px;
+            font-size: 15px;
+            color: var(--muted);
+          "
+        ></div>
+
+        <div class="login-hint">
+          💡 Если ты уже создавал профиль раньше — введи то же имя и пароль, и
+          приложение подтянет твои данные (норму калорий, историю) с сервера,
+          если интернет доступен. Если профиля нет — нажми «Создать новый
+          профиль».
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= WELCOME / REGISTER ============= -->
+    <section class="screen" id="scr-welcome">
+      <h2 id="welcomeTitle">Новый профиль</h2>
+      <div class="field">
+        <label>Имя (логин)</label>
+        <input id="w-user" placeholder="Иван" autocomplete="username" />
+      </div>
+      <div class="field">
+        <label>Пароль</label>
+        <input
+          id="w-pass"
+          type="password"
+          placeholder="••••"
+          autocomplete="new-password"
+        />
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Текущий вес, кг</label>
+          <input
+            id="w-weight"
+            type="number"
+            inputmode="decimal"
+            placeholder="80"
+            step="0.1"
+          />
+        </div>
+        <div class="field">
+          <label>Рост, см</label>
+          <input
+            id="w-height"
+            type="number"
+            inputmode="numeric"
+            placeholder="180"
+          />
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Возраст</label>
+          <input
+            id="w-age"
+            type="number"
+            inputmode="numeric"
+            placeholder="30"
+          />
+        </div>
+        <div class="field">
+          <label>Желаемый вес, кг</label>
+          <input
+            id="w-target"
+            type="number"
+            inputmode="decimal"
+            placeholder="75"
+            step="0.1"
+          />
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Пол</label>
+          <select id="w-sex">
+            <option value="m">Мужской</option>
+            <option value="f">Женский</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Активность</label>
+          <select id="w-act">
+            <option value="1.2">Минимальная</option>
+            <option value="1.375">Лёгкая</option>
+            <option value="1.55" selected>Средняя</option>
+            <option value="1.725">Высокая</option>
+            <option value="1.9">Очень высокая</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Степень дефицита</label>
+        <div class="deficit-pick" id="w-deficit">
+          <button data-d="0.10">Лёгкий<small>-10%</small></button>
+          <button data-d="0.20" class="sel">Средний<small>-20%</small></button>
+          <button data-d="0.30">Сильный<small>-30%</small></button>
+        </div>
+      </div>
+      <div id="kcalSliderBlock">
+        <div class="kcal-slider-wrap">
+          <div class="kcal-slider-info">
+            <div class="big" id="calcKcal">2000</div>
+            <div class="unit">ккал в сутки</div>
+            <div class="proj-row">
+              <span>За 1 месяц</span><b id="proj1">−0 кг</b>
+            </div>
+            <div class="proj-row">
+              <span>За 3 месяца</span><b id="proj3">−0 кг</b>
+            </div>
+            <div class="proj-row">
+              <span>За 6 месяцев</span><b id="proj6">−0 кг</b>
+            </div>
+          </div>
+          <div class="vslider" id="vslider">
+            <div class="vmax" id="vmaxLbl">3500</div>
+            <div class="vslider-track" id="vsliderTrack">
+              <div class="vslider-fill" id="vsliderFill"></div>
+              <div class="vslider-knob" id="vsliderKnob"></div>
+            </div>
+            <div class="vmin" id="vminLbl">1000</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn" onclick="saveProfileFromForm()">
+        💾 Сохранить и продолжить
+      </button>
+      <button class="btn secondary" onclick="nav('login')">
+        ← Назад ко входу
+      </button>
+      <div id="w-result" style="margin-top: 16px"></div>
+      <div class="sync-status" id="w-sync">Готово к работе</div>
+    </section>
+
+    <!-- ============= MAIN ============= -->
+    <section class="screen" id="scr-main">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input
+          class="search-input"
+          id="searchInput"
+          placeholder="Поиск продукта..."
+          autocomplete="off"
+          oninput="onSearchInput()"
+        />
+        <button class="search-clear" id="searchClear" onclick="clearSearch()">
+          ✕
+        </button>
+      </div>
+      <div class="cats-wrap">
+        <div class="cats" id="cats"></div>
+      </div>
+      <div id="recentBlock" style="display: none">
+        <div class="section-label">🕐 Недавние</div>
+        <div class="grid" id="recentGrid" style="margin-bottom: 20px"></div>
+      </div>
+      <div class="section-label" id="allLabel">Все продукты</div>
+      <div class="grid" id="foodGrid"></div>
+    </section>
+
+    <!-- ============= PLATE ============= -->
+    <section class="screen" id="scr-plate">
+      <h2>🥣 Тарелка</h2>
+      <div
+        class="past-meals-toggle"
+        id="pastMealsToggle"
+        onclick="togglePastMeals()"
+      >
+        <span>📚 Выбрать прошлое блюдо</span>
+        <span class="arr">›</span>
+      </div>
+      <div class="past-meals-list" id="pastMealsList"></div>
+      <div class="field">
+        <label>Название блюда</label>
+        <input id="plate-name" placeholder="Например, Завтрак" />
+      </div>
+      <div id="plateItems"></div>
+      <div
+        id="plateTotal"
+        style="margin-top: 16px; font-size: 20px; text-align: right"
+      ></div>
+      <button class="btn" id="plateCommitBtn" onclick="commitPlate()">
+        ✓ Съедено, добавить в дневник
+      </button>
+      <button class="btn secondary" onclick="clearPlate()">
+        🗑 Очистить тарелку
+      </button>
+    </section>
+
+    <!-- ============= PROFILE ============= -->
+    <section class="screen" id="scr-profile">
+      <h2>👤 Профиль</h2>
+      <div id="profileView"></div>
+      <button class="btn secondary" onclick="editProfile()">
+        ✏️ Изменить параметры
+      </button>
+      <button class="btn secondary" onclick="syncNow()">
+        🔄 Синхронизировать с сервером
+      </button>
+      <div class="sync-status" id="p-sync"></div>
+      <div style="margin-top: 28px">
+        <div class="section-label">Управление аккаунтом</div>
+        <button class="btn secondary" onclick="logout()">
+          🚪 Выйти из профиля
+        </button>
+        <button class="btn danger" onclick="confirmResetAll()">
+          ⚠️ Сбросить все данные
+        </button>
+        <div class="reset-info">
+          <b>Что делает «Сбросить всё»:</b>
+          <ul>
+            <li>Удаляет <b>локальный профиль</b></li>
+            <li>Очищает <b>локальную историю</b> приёмов пищи</li>
+            <li>Очищает <b>тарелку</b> и очередь неотправленных записей</li>
+            <li>Сбрасывает список «недавних»</li>
+          </ul>
+          <b>Что НЕ делает:</b>
+          <ul>
+            <li>Не удаляет данные из Google Sheets</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= HISTORY ============= -->
+    <section class="screen" id="scr-history">
+      <h2>📅 История</h2>
+      <div id="historyView"></div>
+    </section>
+
+    <!-- ============= ADMIN ============= -->
+    <section class="screen" id="scr-admin">
+      <h2>🛠 Админ-панель</h2>
+      <div class="admin-tabs">
+        <button class="sel" data-tab="users" onclick="switchAdminTab('users')">
+          👥 Пользователи
+        </button>
+        <button data-tab="foods" onclick="switchAdminTab('foods')">
+          🍽 Продукты
+        </button>
+      </div>
+      <div id="adminTab-users">
+        <button class="btn secondary" onclick="adminLoadUsers()">
+          🔄 Загрузить пользователей
+        </button>
+        <div id="adminUsersList" style="margin-top: 14px"></div>
+      </div>
+      <div id="adminTab-foods" style="display: none">
+        <div class="field">
+          <label>Фильтр</label>
+          <input
+            id="adminFoodFilter"
+            placeholder="Поиск по названию..."
+            oninput="renderAdminFoods()"
+          />
+        </div>
+        <div id="adminFoodsList"></div>
+      </div>
+    </section>
+
+    <button
+      class="plate-fab"
+      id="plateFab"
+      onclick="onFabClick()"
+      style="display: none"
+    >
+      <span id="fabIcon">🥣</span>
+      <span class="badge" id="plateBadge" style="display: none">0</span>
+    </button>
+
+    <!-- WEIGHT MODAL -->
+    <div class="modal" id="weightModal">
+      <div class="modal-inner big">
+        <div class="modal-head">
+          <h3 id="wm-title">Продукт</h3>
+          <button onclick="closeWeightModal()">✕</button>
+        </div>
+        <div class="picker">
+          <div class="picker-center"></div>
+          <div class="picker-dial" id="dial">
+            <div class="picker-list" id="dialList"></div>
+          </div>
+          <div class="weight-big" id="weightBig">100<small>грамм</small></div>
+        </div>
+        <div class="kcal-preview">Калорий: <b id="kcalPreview">0</b></div>
+        <button class="btn" id="wm-confirm" onclick="confirmWeight()">
+          ✓ Добавить в тарелку
+        </button>
+        <button
+          class="btn secondary"
+          id="wm-remove"
+          onclick="removeEditingPlateItem()"
+          style="display: none; color: var(--danger)"
+        >
+          🗑 Удалить позицию
+        </button>
+      </div>
+    </div>
+
+    <!-- FOOD EDIT MODAL -->
+    <div class="modal" id="foodEditModal">
+      <div class="modal-inner">
+        <div class="modal-head">
+          <h3 id="fe-title">Продукт</h3>
+          <button onclick="closeFoodEdit()">✕</button>
+        </div>
+        <div class="field">
+          <label>Название</label
+          ><input id="fe-name" placeholder="Например, Гречка" />
+        </div>
+        <div class="field">
+          <label>Ккал на 100 г</label
+          ><input
+            id="fe-kcal"
+            type="number"
+            inputmode="numeric"
+            placeholder="110"
+          />
+        </div>
+        <div class="field">
+          <label>Категория</label
+          ><select id="fe-cat"></select>
+        </div>
+        <div class="field">
+          <label>Имя файла картинки</label>
+          <input id="fe-img" placeholder="grechka.png (необязательно)" />
+        </div>
+        <div class="field">
+          <label>Эмодзи</label>
+          <div style="display: flex; gap: 10px; align-items: center">
+            <div
+              id="fe-emoji-preview"
+              style="
+                font-size: 38px;
+                width: 56px;
+                height: 56px;
+                background: var(--card2);
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              🍽
+            </div>
+            <div style="flex: 1; font-size: 13px; color: var(--muted)">
+              Нажми, чтобы выбрать из списка ниже
+            </div>
+          </div>
+          <div class="emoji-grid" id="fe-emoji-grid"></div>
+        </div>
+        <button class="btn" onclick="saveFoodEdit()">💾 Сохранить</button>
+        <button
+          class="btn danger"
+          id="fe-delete"
+          onclick="deleteCurrentFood()"
+          style="display: none"
+        >
+          🗑 Удалить продукт
+        </button>
+      </div>
+    </div>
+
+    <!-- DELTA MODAL -->
+    <div class="modal" id="deltaModal">
+      <div class="modal-inner">
+        <div class="modal-head">
+          <h3>Δ Отклонение от нормы</h3>
+          <button onclick="closeDeltaModal()">✕</button>
+        </div>
+        <div
+          id="deltaModalBody"
+          style="font-size: 17px; line-height: 1.7"
+        ></div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+      /* ============================================================
+   CONFIG
+   ============================================================ */
+      const API_URL =
+        "https://script.google.com/macros/s/AKfycbxHPXMVX0Fwer6jagh0O0IXbjxTCThcgwCHPqy9DTzy5UOc90VAjLNvYT12g4_GVMd2/exec";
+      const IMG_BASE = "dietManager/images/";
+      const ADMIN_USER = "admin";
+      const ADMIN_PASS = "00000";
+      // Дефолтный профиль для админа (чтобы не проходить настройки)
+      const ADMIN_DEFAULT_PROFILE = {
+        weight: 70,
+        height: 170,
+        age: 30,
+        sex: "m",
+        act: "1.55",
+        deficit: "0.20",
+        targetWeight: 70,
+        dailyKcal: 2000,
+      };
+
+      /* ============================================================
+   STATE
+   ============================================================ */
+      const state = {
+        foods: [],
+        meals: [],
+        profile: null,
+        plate: [],
+        pending: [],
+        recentFoods: [],
+        recentMeals: [],
+        currentCat: "all",
+        searchQuery: "",
+        pickerItem: null,
+        editingFood: null,
+        editingPlateUid: null,
+        pickerEmoji: "🍽",
+        isAdmin: false,
+      };
+
+      const CATEGORIES = {
+        all: { name: "Всё" },
+        groats: { name: "Крупы", emoji: "🍚" },
+        meat: { name: "Мясо", emoji: "🍗" },
+        fish: { name: "Рыба", emoji: "🐟" },
+        veg: { name: "Овощи", emoji: "🥦" },
+        fruit: { name: "Фрукты", emoji: "🍎" },
+        bakery: { name: "Выпечка", emoji: "🍞" },
+        legumes: { name: "Бобовые", emoji: "🌱" },
+        dairy: { name: "Молочное", emoji: "🥛" },
+        other: { name: "Разное", emoji: "🍽" },
+      };
+
+      const EMOJI_SET = [
+        "🍽",
+        "🍚",
+        "🍛",
+        "🍲",
+        "🥣",
+        "🍜",
+        "🍝",
+        "🥗",
+        "🌾",
+        "🌽",
+        "🍗",
+        "🥩",
+        "🥓",
+        "🍖",
+        "🦃",
+        "🐖",
+        "🐄",
+        "🐟",
+        "🐠",
+        "🐡",
+        "🦐",
+        "🦑",
+        "🍤",
+        "🥦",
+        "🥕",
+        "🍅",
+        "🥒",
+        "🥔",
+        "🧅",
+        "🧄",
+        "🥬",
+        "🍆",
+        "🌶",
+        "🥑",
+        "🫒",
+        "🍎",
+        "🍌",
+        "🍊",
+        "🍇",
+        "🍓",
+        "🍒",
+        "🍑",
+        "🥝",
+        "🍍",
+        "🥭",
+        "🍐",
+        "🍋",
+        "🍉",
+        "🍈",
+        "🍞",
+        "🥐",
+        "🥖",
+        "🥨",
+        "🥯",
+        "🧇",
+        "🥞",
+        "🌱",
+        "🫛",
+        "🥜",
+        "🌰",
+        "🥛",
+        "🧀",
+        "🥚",
+        "🧈",
+        "🍶",
+        "🍫",
+        "🍪",
+        "🎂",
+        "🍰",
+        "🍩",
+        "🍯",
+        "🍿",
+        "🧂",
+        "🥫",
+        "💧",
+        "☕",
+        "🍵",
+        "🥤",
+        "🍺",
+        "🍷",
+      ];
+
+      const DEFAULT_FOODS = [
+        ["grechka", "Гречка", "groats", 110, "🍚"],
+        ["rice", "Рис", "groats", 130, "🍚"],
+        ["oat", "Овсянка", "groats", 88, "🥣"],
+        ["pasta", "Макароны", "groats", 131, "🍝"],
+        ["bulgur", "Булгур", "groats", 83, "🌾"],
+        ["chicken", "Куриная грудка", "meat", 165, "🍗"],
+        ["beef", "Говядина", "meat", 250, "🥩"],
+        ["pork", "Свинина", "meat", 260, "🥓"],
+        ["turkey", "Индейка", "meat", 104, "🦃"],
+        ["salmon", "Лосось", "fish", 208, "🐟"],
+        ["cod", "Треска", "fish", 82, "🐟"],
+        ["tuna", "Тунец", "fish", 132, "🐟"],
+        ["tomato", "Помидор", "veg", 20, "🍅"],
+        ["cucumber", "Огурец", "veg", 15, "🥒"],
+        ["potato", "Картофель", "veg", 77, "🥔"],
+        ["broccoli", "Брокколи", "veg", 34, "🥦"],
+        ["carrot", "Морковь", "veg", 35, "🥕"],
+        ["apple", "Яблоко", "fruit", 52, "🍎"],
+        ["banana", "Банан", "fruit", 89, "🍌"],
+        ["orange", "Апельсин", "fruit", 47, "🍊"],
+        ["bread_white", "Хлеб белый", "bakery", 265, "🍞"],
+        ["bread_black", "Хлеб чёрный", "bakery", 210, "🍞"],
+        ["lentils", "Чечевица", "legumes", 116, "🌱"],
+        ["chickpeas", "Нут", "legumes", 164, "🌱"],
+        ["beans", "Фасоль", "legumes", 127, "🌱"],
+        ["milk", "Молоко 2.5%", "dairy", 52, "🥛"],
+        ["yogurt", "Йогурт нат.", "dairy", 60, "🥛"],
+        ["cheese", "Сыр", "dairy", 360, "🧀"],
+        ["egg", "Яйцо", "other", 143, "🥚"],
+        ["butter", "Масло слив.", "other", 717, "🧈"],
+        ["oil", "Масло раст.", "other", 884, "🫒"],
+      ].map(([id, name, category, kcal, emoji]) => ({
+        id,
+        name,
+        category,
+        kcal,
+        image: "",
+        emoji,
+      }));
+
+      const MONTHS_RU = [
+        "Январь",
+        "Февраль",
+        "Март",
+        "Апрель",
+        "Май",
+        "Июнь",
+        "Июль",
+        "Август",
+        "Сентябрь",
+        "Октябрь",
+        "Ноябрь",
+        "Декабрь",
+      ];
+      const WEEKDAYS_RU = [
+        "воскресенье",
+        "понедельник",
+        "вторник",
+        "среда",
+        "четверг",
+        "пятница",
+        "суббота",
+      ];
+
+      /* ============================================================
+   STORAGE
+   ============================================================ */
+      function LS(k, v) {
+        if (v === undefined) {
+          try {
+            return JSON.parse(localStorage.getItem(k));
+          } catch (e) {
+            return null;
+          }
+        }
+        try {
+          localStorage.setItem(k, JSON.stringify(v));
+        } catch (e) {}
+      }
+      function saveState() {
+        LS("dm_profile", state.profile);
+        LS("dm_meals", state.meals);
+        LS("dm_plate", state.plate);
+        LS("dm_pending", state.pending);
+        LS("dm_foods", state.foods);
+        LS("dm_recentFoods", state.recentFoods);
+        LS("dm_recentMeals", state.recentMeals);
+      }
+      function loadState() {
+        state.profile = LS("dm_profile");
+        state.meals = LS("dm_meals") || [];
+        state.plate = LS("dm_plate") || [];
+        state.pending = LS("dm_pending") || [];
+        state.foods = LS("dm_foods") || [];
+        state.recentFoods = LS("dm_recentFoods") || [];
+        state.recentMeals = LS("dm_recentMeals") || [];
+      }
+
+      /* ============================================================
+   UTILS
+   ============================================================ */
+      const $ = (s) => document.querySelector(s);
+      const pad = (n) => String(n).padStart(2, "0");
+      const fmtDate = (ts) => {
+        const d = new Date(ts);
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+      };
+      const fmtTime = (ts) => {
+        const d = new Date(ts);
+        return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      };
+      const uid = () =>
+        Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+      const esc = (s) =>
+        String(s).replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+      function toast(msg) {
+        const t = $("#toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        clearTimeout(t._t);
+        t._t = setTimeout(() => t.classList.remove("show"), 1800);
+      }
+      async function sha256(str) {
+        const buf = new TextEncoder().encode(str);
+        const hash = await crypto.subtle.digest("SHA-256", buf);
+        return [...new Uint8Array(hash)]
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("");
+      }
+      function touchRecent(arr, item, key, max = 20) {
+        const k = item[key];
+        const filtered = arr.filter((x) => x[key] !== k);
+        filtered.unshift(item);
+        return filtered.slice(0, max);
+      }
+
+      /* ============================================================
+   ЗВУК
+   ============================================================ */
+      let audioCtx = null;
+      function ensureAudio() {
+        if (!audioCtx)
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === "suspended") audioCtx.resume();
+        return audioCtx;
+      }
+      function ratchetSound(steps = 3) {
+        try {
+          const ctx = ensureAudio();
+          const now = ctx.currentTime;
+          const interval = 0.02;
+          for (let i = 0; i < steps; i++) {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = "square";
+            osc.frequency.value = 1400 + Math.random() * 400;
+            const t = now + i * interval;
+            gain.gain.setValueAtTime(0.035, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.012);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(t);
+            osc.stop(t + 0.014);
+          }
+        } catch (e) {}
+      }
+
+      /* ============================================================
+   NETWORK
+   ============================================================ */
+      const isOnline = () => navigator.onLine;
+      function updateOnlineUI() {
+        $("#offlineBadge").style.display = isOnline() ? "none" : "inline-block";
+        updateSyncStatus();
+      }
+      function updateSyncStatus() {
+        ["#p-sync", "#w-sync"].forEach((sel) => {
+          const el = $(sel);
+          if (!el) return;
+          const n = state.pending.length;
+          if (!isOnline()) {
+            el.className = "sync-status wait";
+            el.innerHTML =
+              '<span class="dot"></span>Офлайн' +
+              (n ? ` · ${n} в очереди` : "");
+          } else if (n) {
+            el.className = "sync-status wait";
+            el.innerHTML = '<span class="dot"></span>Синхронизация... ' + n;
+          } else {
+            el.className = "sync-status";
+            el.innerHTML =
+              '<span class="dot"></span>Все данные синхронизированы';
+          }
+        });
+      }
+      async function apiGet(action, params = {}) {
+        if (!isOnline() || !API_URL || API_URL.startsWith("PASTE")) return null;
+        const q = new URLSearchParams({ action, ...params });
+        try {
+          const r = await fetch(`${API_URL}?${q}`, { redirect: "follow" });
+          return await r.json();
+        } catch (e) {
+          console.warn("apiGet", e);
+          return null;
+        }
+      }
+      async function apiPost(action, payload) {
+        if (!isOnline() || !API_URL || API_URL.startsWith("PASTE"))
+          throw new Error("offline");
+        const r = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action, payload }),
+          redirect: "follow",
+        });
+        return await r.json();
+      }
+      async function pushOrQueue(action, payload) {
+        if (isOnline() && API_URL && !API_URL.startsWith("PASTE")) {
+          try {
+            await apiPost(action, payload);
+            return true;
+          } catch (e) {
+            console.warn("post failed", e);
+          }
+        }
+        state.pending.push({ action, payload, ts: Date.now() });
+        saveState();
+        updateSyncStatus();
+        return false;
+      }
+      async function flushPending() {
+        if (!isOnline() || !state.pending.length) return;
+        if (!API_URL || API_URL.startsWith("PASTE")) return;
+        const queue = [...state.pending];
+        let ok = 0;
+        for (const p of queue) {
+          try {
+            await apiPost(p.action, p.payload);
+            ok++;
+            state.pending.shift();
+            saveState();
+            updateSyncStatus();
+          } catch (e) {
+            break;
+          }
+        }
+        if (ok) toast(`Синхронизировано: ${ok}`);
+      }
+
+      /* ============================================================
+   РАСЧЁТ
+   ============================================================ */
+      function calcTDEE(p) {
+        const { weight, height, age, sex, act } = p;
+        const bmr =
+          sex === "m"
+            ? 10 * weight + 6.25 * height - 5 * age + 5
+            : 10 * weight + 6.25 * height - 5 * age - 161;
+        return Math.round(bmr * parseFloat(act || 1.55));
+      }
+      function projectWeightLoss(profile, dailyKcal, months) {
+        const tdee = calcTDEE(profile);
+        const daily = dailyKcal - tdee;
+        return (daily * months * 30) / 7700;
+      }
+
+      /* ============================================================
+   LOGIN
+   ============================================================ */
+      async function doLogin() {
+        const user = $("#l-user").value.trim();
+        const pass = $("#l-pass").value.trim();
+        const status = $("#loginStatus");
+        if (!user) {
+          status.textContent = "⚠️ Введите имя";
+          status.style.color = "var(--warn)";
+          return;
+        }
+        if (!pass) {
+          status.textContent = "⚠️ Введите пароль";
+          status.style.color = "var(--warn)";
+          return;
+        }
+
+        status.textContent = "Проверка...";
+        status.style.color = "var(--muted)";
+
+        // ==== 1. Админ-вход без настроек ====
+        if (user === ADMIN_USER && pass === ADMIN_PASS) {
+          const existing =
+            state.profile && state.profile.user === ADMIN_USER
+              ? state.profile
+              : null;
+          const adminProfile = existing || {
+            user: ADMIN_USER,
+            passHash: await sha256(ADMIN_PASS),
+            name: ADMIN_USER,
+            ...ADMIN_DEFAULT_PROFILE,
+            updatedAt: Date.now(),
+          };
+          state.profile = adminProfile;
+          state.isAdmin = true;
+          saveState();
+          updateAdminUI();
+          // Отправляем дефолтный профиль, чтобы он появился в Sheets
+          pushOrQueue("saveUser", adminProfile).then(updateSyncStatus);
+          status.textContent = "👑 Админ вошёл";
+          status.style.color = "var(--accent)";
+          setTimeout(() => enterApp(), 400);
+          return;
+        }
+
+        // ==== 2. Онлайн — ищем на сервере ====
+        if (isOnline() && API_URL && !API_URL.startsWith("PASTE")) {
+          const res = await apiGet("getUser", { user });
+          if (res && res.ok && res.user) {
+            // Пользователь существует
+            const serverProfile = res.user;
+            // Проверяем пароль
+            if (serverProfile.passHash) {
+              const h = await sha256(pass);
+              if (h !== serverProfile.passHash) {
+                status.textContent = "❌ Неверный пароль";
+                status.style.color = "var(--danger)";
+                return;
+              }
+            }
+            // Ок — вход
+            state.profile = { ...serverProfile, user: serverProfile.user };
+            state.isAdmin = false;
+            saveState();
+            // Подтягиваем приёмы пищи
+            const m = await apiGet("getMeals", { user });
+            if (m && m.ok && Array.isArray(m.meals)) {
+              const serverIds = new Set(m.meals.map((x) => String(x.id)));
+              const localOnly = state.meals.filter(
+                (x) => !serverIds.has(String(x.id)),
+              );
+              state.meals = [...m.meals.map(parseMeal), ...localOnly];
+              saveState();
+            }
+            status.textContent = "✓ Добро пожаловать!";
+            status.style.color = "var(--accent)";
+            updateAdminUI();
+            setTimeout(() => enterApp(), 400);
+            return;
+          }
+          // Пользователя на сервере нет — пробуем локально
+          if (state.profile && state.profile.user === user) {
+            if (state.profile.passHash) {
+              const h = await sha256(pass);
+              if (h !== state.profile.passHash) {
+                status.textContent = "❌ Неверный пароль (локальный профиль)";
+                status.style.color = "var(--danger)";
+                return;
+              }
+            }
+            status.textContent = "✓ Вход (локальный профиль)";
+            status.style.color = "var(--accent)";
+            setTimeout(() => enterApp(), 400);
+            return;
+          }
+          // Нет ни на сервере, ни локально — предложить создать
+          status.innerHTML =
+            "⚠️ Профиль «" +
+            esc(user) +
+            '» не найден. <a href="#" onclick="goToRegister();return false" style="color:var(--accent);text-decoration:underline">Создать новый?</a>';
+          status.style.color = "var(--warn)";
+          return;
+        }
+
+        // ==== 3. Офлайн — проверяем локально ====
+        if (state.profile && state.profile.user === user) {
+          if (state.profile.passHash) {
+            const h = await sha256(pass);
+            if (h !== state.profile.passHash) {
+              status.textContent = "❌ Неверный пароль (офлайн)";
+              status.style.color = "var(--danger)";
+              return;
+            }
+          }
+          status.textContent = "✓ Вход (офлайн)";
+          status.style.color = "var(--accent)";
+          setTimeout(() => enterApp(), 400);
+          return;
+        }
+
+        status.innerHTML =
+          "⚠️ Нет интернета и локального профиля «" +
+          esc(user) +
+          '». <a href="#" onclick="goToRegister();return false" style="color:var(--accent);text-decoration:underline">Создать новый?</a>';
+        status.style.color = "var(--warn)";
+      }
+
+      function goToRegister() {
+        // Переносим имя из логина, если ввели
+        const u = $("#l-user").value.trim();
+        $("#w-user").value = u;
+        $("#w-pass").value = "";
+        sliderState.userTouched = false;
+        updateSliderUI();
+        $("#welcomeTitle").textContent = u
+          ? "Новый профиль: " + u
+          : "Новый профиль";
+        nav("welcome");
+      }
+
+      /* ============================================================
+   НАВИГАЦИЯ
+   ============================================================ */
+      function nav(screen) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        const el = $("#scr-" + screen);
+        if (el) el.classList.add("active");
+        closeDrawer();
+        if (screen === "plate") renderPlate();
+        if (screen === "profile") renderProfile();
+        if (screen === "history") renderHistory();
+        if (screen === "main") renderGrid();
+        if (screen === "admin") renderAdmin();
+        updateFab(screen);
+        updateHeader(screen);
+        window.scrollTo(0, 0);
+      }
+      function updateHeader(screen) {
+        const isMainLike =
+          screen === "main" ||
+          screen === "plate" ||
+          screen === "history" ||
+          screen === "admin";
+        const isProfile = screen === "profile";
+        const p = state.profile;
+        if (p && (isMainLike || isProfile)) {
+          $("#headerProgress").style.display = "block";
+          $("#headerTitle").style.display = "none";
+          renderHeaderProgress();
+        } else {
+          $("#headerProgress").style.display = "none";
+          $("#headerTitle").style.display = "block";
+          $("#headerTitle").textContent = "DietManager";
+        }
+      }
+      function renderHeaderProgress() {
+        const p = state.profile;
+        if (!p) return;
+        const eaten = todayKcal();
+        const goal = p.dailyKcal;
+        $("#hpLabel").innerHTML = `<b>${eaten}</b> / ${goal} ккал`;
+        const pct = Math.min(100, (eaten / goal) * 100);
+        $("#hpProg").style.width = pct + "%";
+        const wrap = $("#hpProgWrap");
+        wrap.classList.toggle("warn", eaten / goal >= 0.9 && eaten <= goal);
+        wrap.classList.toggle("over", eaten > goal);
+        const delta = eaten - goal;
+        const el = $("#hpDelta");
+        el.classList.toggle("neg", delta > 0);
+        const sign = delta > 0 ? "+" : "";
+        $("#hpDeltaText").textContent = `Δ ${sign}${delta}`;
+      }
+      function toggleDeltaModal() {
+        renderDelta();
+        $("#deltaModal").classList.add("open");
+        document.body.classList.add("locked");
+      }
+      function closeDeltaModal() {
+        $("#deltaModal").classList.remove("open");
+        document.body.classList.remove("locked");
+      }
+      function renderDelta() {
+        const p = state.profile;
+        if (!p) return;
+        const eaten = todayKcal();
+        const delta = eaten - p.dailyKcal;
+        const kg = delta / 7700;
+        const sign = delta > 0 ? "+" : "";
+        const verb = delta > 0 ? "набор" : "убыль";
+        $("#deltaModalBody").innerHTML = `
+    <div class="info-card">
+      <div class="row"><span>Съедено сегодня</span><span>${eaten} ккал</span></div>
+      <div class="row"><span>Норма</span><span>${p.dailyKcal} ккал</span></div>
+      <div class="row"><span>Отклонение</span>
+        <span style="color:${delta > 0 ? "var(--danger)" : "var(--accent)"}">${sign}${delta} ккал</span></div>
+      <div class="row"><span>${verb === "набор" ? "Прибавка" : "Убыль"} массы</span>
+        <span style="color:var(--accent)">≈ ${(Math.abs(kg) * 1000).toFixed(0)} г</span></div>
+    </div>
+    <div style="font-size:14px;color:var(--muted);margin-top:12px;line-height:1.6">
+      1 кг жировой массы ≈ 7700 ккал. Фактическое изменение может отличаться.
+    </div>
+  `;
+      }
+      function updateFab(screen) {
+        const fab = $("#plateFab");
+        const icon = $("#fabIcon");
+        if (!state.profile) {
+          fab.style.display = "none";
+          return;
+        }
+        fab.style.display = "flex";
+        if (screen === "main") {
+          fab.classList.remove("back");
+          icon.textContent = "🥣";
+        } else {
+          fab.classList.add("back");
+          icon.textContent = "✕";
+        }
+      }
+      function onFabClick() {
+        const activeScreen = document.querySelector(".screen.active");
+        if (activeScreen && activeScreen.id === "scr-main") nav("plate");
+        else nav("main");
+      }
+      function openDrawer() {
+        $("#drawer").classList.add("open");
+        $("#overlay").classList.add("open");
+      }
+      function closeDrawer() {
+        $("#drawer").classList.remove("open");
+        $("#overlay").classList.remove("open");
+      }
+
+      /* ============================================================
+   SLIDER
+   ============================================================ */
+      const SLIDER_MIN = 1000,
+        SLIDER_MAX = 3500,
+        SLIDER_STEP = 10;
+      const sliderState = { value: 2000, userTouched: false };
+
+      function readFormProfile() {
+        return {
+          user: $("#w-user").value.trim(),
+          weight: parseFloat($("#w-weight").value) || 0,
+          height: parseFloat($("#w-height").value) || 0,
+          age: parseInt($("#w-age").value) || 0,
+          targetWeight: parseFloat($("#w-target").value) || 0,
+          sex: $("#w-sex").value,
+          act: $("#w-act").value,
+          deficit: (
+            document.querySelector("#w-deficit button.sel") || {
+              dataset: { d: "0.20" },
+            }
+          ).dataset.d,
+        };
+      }
+      function updateSliderUI() {
+        const p = readFormProfile();
+        const hasData = p.weight && p.height && p.age;
+        const track = $("#vsliderTrack");
+        const knob = $("#vsliderKnob");
+        const fill = $("#vsliderFill");
+        if (!hasData) {
+          $("#calcKcal").textContent = "—";
+          $("#proj1").textContent = "—";
+          $("#proj3").textContent = "—";
+          $("#proj6").textContent = "—";
+          return;
+        }
+        if (!sliderState.userTouched) {
+          const tdee = calcTDEE(p);
+          const deficit = parseFloat(p.deficit || 0.2);
+          sliderState.value = clampSlider(Math.round(tdee * (1 - deficit)));
+        }
+        const val = sliderState.value;
+        $("#calcKcal").textContent = val;
+        const fmt = (kg) => {
+          if (Math.abs(kg) < 0.05) return "≈ 0 кг";
+          return `${kg > 0 ? "+" : "−"}${Math.abs(kg).toFixed(1)} кг`;
+        };
+        $("#proj1").textContent = fmt(projectWeightLoss(p, val, 1));
+        $("#proj3").textContent = fmt(projectWeightLoss(p, val, 3));
+        $("#proj6").textContent = fmt(projectWeightLoss(p, val, 6));
+        const pct = (val - SLIDER_MIN) / (SLIDER_MAX - SLIDER_MIN);
+        const h = track.clientHeight || 260;
+        const y = h * pct;
+        knob.style.bottom = y + "px";
+        fill.style.height = y + "px";
+        $("#vmaxLbl").textContent = SLIDER_MAX;
+        $("#vminLbl").textContent = SLIDER_MIN;
+      }
+      function clampSlider(v) {
+        return Math.max(
+          SLIDER_MIN,
+          Math.min(SLIDER_MAX, Math.round(v / SLIDER_STEP) * SLIDER_STEP),
+        );
+      }
+      function setSliderValue(v) {
+        sliderState.value = clampSlider(v);
+        updateSliderUI();
+      }
+      function initSlider() {
+        const slider = $("#vslider");
+        let dragging = false;
+        function valueFromEvent(e) {
+          const track = $("#vsliderTrack").getBoundingClientRect();
+          const y = (e.touches ? e.touches[0].clientY : e.clientY) - track.top;
+          const pct = 1 - Math.max(0, Math.min(1, y / track.height));
+          return SLIDER_MIN + pct * (SLIDER_MAX - SLIDER_MIN);
+        }
+        function onDown(e) {
+          dragging = true;
+          sliderState.userTouched = true;
+          setSliderValue(valueFromEvent(e));
+          ratchetSound(3);
+          e.preventDefault();
+        }
+        function onMove(e) {
+          if (!dragging) return;
+          setSliderValue(valueFromEvent(e));
+          ratchetSound(2);
+          e.preventDefault();
+        }
+        function onUp() {
+          dragging = false;
+        }
+        slider.addEventListener("mousedown", onDown);
+        window.addEventListener("mousemove", onMove);
+        window.addEventListener("mouseup", onUp);
+        slider.addEventListener("touchstart", onDown, { passive: false });
+        window.addEventListener("touchmove", onMove, { passive: false });
+        window.addEventListener("touchend", onUp);
+        slider.addEventListener(
+          "wheel",
+          (e) => {
+            e.preventDefault();
+            sliderState.userTouched = true;
+            setSliderValue(
+              sliderState.value + (e.deltaY < 0 ? SLIDER_STEP : -SLIDER_STEP),
+            );
+            ratchetSound(2);
+          },
+          { passive: false },
+        );
+      }
+      function fillWelcomeForm(p) {
+        if (!p) return;
+        $("#w-user").value = p.user || "";
+        $("#w-weight").value = p.weight || "";
+        $("#w-height").value = p.height || "";
+        $("#w-age").value = p.age || "";
+        $("#w-target").value = p.targetWeight || "";
+        $("#w-sex").value = p.sex || "m";
+        $("#w-act").value = p.act || "1.55";
+        const d = String(p.deficit || "0.20");
+        document
+          .querySelectorAll("#w-deficit button")
+          .forEach((b) => b.classList.toggle("sel", b.dataset.d === d));
+        if (p.dailyKcal) {
+          sliderState.value = clampSlider(p.dailyKcal);
+          sliderState.userTouched = true;
+        } else {
+          sliderState.userTouched = false;
+        }
+        updateSliderUI();
+      }
+      document.querySelectorAll("#w-deficit button").forEach((b) => {
+        b.addEventListener("click", () => {
+          document
+            .querySelectorAll("#w-deficit button")
+            .forEach((x) => x.classList.remove("sel"));
+          b.classList.add("sel");
+          sliderState.userTouched = false;
+          updateSliderUI();
+        });
+      });
+      [
+        "#w-weight",
+        "#w-height",
+        "#w-age",
+        "#w-sex",
+        "#w-act",
+        "#w-target",
+      ].forEach((sel) => {
+        document.addEventListener("input", (e) => {
+          if (e.target.matches(sel)) updateSliderUI();
+        });
+      });
+      async function saveProfileFromForm() {
+        const p = readFormProfile();
+        const pass = $("#w-pass").value.trim();
+        if (!p.user) {
+          toast("Введите имя");
+          return;
+        }
+        if (!pass) {
+          toast("Придумайте пароль");
+          return;
+        }
+        if (!p.weight || !p.height || !p.age) {
+          toast("Заполните вес, рост, возраст");
+          return;
+        }
+
+        const prev = state.profile || {};
+        const passHash = await sha256(pass);
+        const dailyKcal = clampSlider(sliderState.value);
+
+        const profile = {
+          user: p.user,
+          passHash,
+          name: p.user,
+          weight: p.weight,
+          height: p.height,
+          age: p.age,
+          sex: p.sex,
+          act: p.act,
+          deficit: p.deficit,
+          targetWeight: p.targetWeight || p.weight,
+          dailyKcal,
+          updatedAt: Date.now(),
+        };
+        state.profile = profile;
+        state.isAdmin = false;
+        saveState();
+        updateAdminUI();
+        pushOrQueue("saveUser", profile).then(() => updateSyncStatus());
+
+        const fmt = (kg) => {
+          if (Math.abs(kg) < 0.05) return "≈ 0 кг";
+          return `${kg > 0 ? "+" : "−"}${Math.abs(kg).toFixed(1)} кг`;
+        };
+        const dir =
+          profile.targetWeight < profile.weight
+            ? "похудение"
+            : profile.targetWeight > profile.weight
+              ? "набор"
+              : "поддержание";
+        $("#w-result").innerHTML = `
+    <div class="info-card">
+      <div class="lbl">Твоя норма (${dir})</div>
+      <div class="num">${dailyKcal} ккал/день</div>
+      <div class="row"><span>За 1 месяц</span><span>${fmt(projectWeightLoss(p, dailyKcal, 1))}</span></div>
+      <div class="row"><span>За 3 месяца</span><span>${fmt(projectWeightLoss(p, dailyKcal, 3))}</span></div>
+      <div class="row"><span>За 6 месяцев</span><span>${fmt(projectWeightLoss(p, dailyKcal, 6))}</span></div>
+    </div>
+  `;
+        toast("Профиль сохранён");
+        setTimeout(() => enterApp(), 800);
+      }
+      function updateAdminUI() {
+        $("#adminLink").style.display = state.isAdmin ? "flex" : "none";
+        $("#adminBadge").style.display = state.isAdmin
+          ? "inline-block"
+          : "none";
+      }
+      function enterApp() {
+        if (!state.profile) {
+          nav("login");
+          return;
+        }
+        renderHeaderProgress();
+        renderPlateBadge();
+        updateAdminUI();
+        nav("main");
+      }
+      function editProfile() {
+        if (!state.profile) {
+          nav("welcome");
+          return;
+        }
+        fillWelcomeForm(state.profile);
+        nav("welcome");
+        $("#welcomeTitle").textContent = "Редактирование профиля";
+      }
+      function renderProfile() {
+        const p = state.profile;
+        if (!p) {
+          $("#profileView").innerHTML =
+            '<div class="empty">Профиль не задан</div>';
+          return;
+        }
+        const fmt = (kg) => {
+          if (Math.abs(kg) < 0.05) return "≈ 0 кг";
+          return `${kg > 0 ? "+" : "−"}${Math.abs(kg).toFixed(1)} кг`;
+        };
+        const dir =
+          p.targetWeight < p.weight
+            ? "похудение"
+            : p.targetWeight > p.weight
+              ? "набор"
+              : "поддержание";
+        $("#profileView").innerHTML = `
+    <div class="info-card">
+      <div class="lbl">Норма калорий (${dir})</div>
+      <div class="num">${p.dailyKcal} ккал/день</div>
+      <div class="row"><span>За 1 месяц</span><span>${fmt(projectWeightLoss(p, p.dailyKcal, 1))}</span></div>
+      <div class="row"><span>За 3 месяца</span><span>${fmt(projectWeightLoss(p, p.dailyKcal, 3))}</span></div>
+      <div class="row"><span>За 6 месяцев</span><span>${fmt(projectWeightLoss(p, p.dailyKcal, 6))}</span></div>
+    </div>
+    <div class="info-card">
+      <div class="row"><span>Имя</span><span>${esc(p.user)}</span></div>
+      <div class="row"><span>Пол</span><span>${p.sex === "m" ? "Мужской" : "Женский"}</span></div>
+      <div class="row"><span>Вес</span><span>${p.weight} кг</span></div>
+      <div class="row"><span>Рост</span><span>${p.height} см</span></div>
+      <div class="row"><span>Возраст</span><span>${p.age} лет</span></div>
+      <div class="row"><span>Цель</span><span>${p.targetWeight} кг</span></div>
+      <div class="row"><span>Активность</span><span>${p.act}</span></div>
+      <div class="row"><span>Дефицит</span><span>${Math.round(parseFloat(p.deficit || 0.2) * 100)}%</span></div>
+    </div>
+  `;
+        updateSyncStatus();
+      }
+      function logout() {
+        if (!confirm("Выйти из профиля?")) return;
+        localStorage.removeItem("dm_profile");
+        localStorage.removeItem("dm_plate");
+        state.profile = null;
+        state.plate = [];
+        state.isAdmin = false;
+        updateAdminUI();
+        $("#l-user").value = "";
+        $("#l-pass").value = "";
+        $("#loginStatus").textContent = "";
+        nav("login");
+        updateFab("login");
+        $("#headerProgress").style.display = "none";
+        $("#headerTitle").style.display = "block";
+        $("#headerTitle").textContent = "DietManager";
+      }
+      function confirmResetAll() {
+        const msg =
+          "Сбросить ВСЕ локальные данные?\n\n" +
+          "• Профиль\n• История на этом устройстве\n• Тарелка\n• Неотправленная очередь\n• Список «недавних»\n• Локальная копия продуктов\n\n" +
+          "Данные в Google Sheets НЕ удалятся.\n\nПродолжить?";
+        if (!confirm(msg)) return;
+        [
+          "dm_profile",
+          "dm_meals",
+          "dm_plate",
+          "dm_pending",
+          "dm_foods",
+          "dm_recentFoods",
+          "dm_recentMeals",
+        ].forEach((k) => localStorage.removeItem(k));
+        state.profile = null;
+        state.meals = [];
+        state.plate = [];
+        state.pending = [];
+        state.foods = DEFAULT_FOODS;
+        state.recentFoods = [];
+        state.recentMeals = [];
+        state.isAdmin = false;
+        saveState();
+        updateAdminUI();
+        toast("Все данные сброшены");
+        $("#l-user").value = "";
+        $("#l-pass").value = "";
+        nav("login");
+        updateFab("login");
+      }
+      async function syncNow() {
+        toast("Синхронизация...");
+        const data = await apiGet("getFoods");
+        if (data && data.ok && Array.isArray(data.foods) && data.foods.length) {
+          state.foods = data.foods.map((f) => ({
+            ...f,
+            kcal: parseFloat(f.kcal) || 0,
+            emoji: guessEmoji(f),
+          }));
+          saveState();
+          renderCats();
+          renderGrid();
+        }
+        if (state.profile) {
+          const u = await apiGet("getUser", { user: state.profile.user });
+          if (u && u.ok && u.user)
+            state.profile = { ...state.profile, ...u.user };
+          const m = await apiGet("getMeals", { user: state.profile.user });
+          if (m && m.ok && Array.isArray(m.meals)) {
+            const serverIds = new Set(m.meals.map((x) => String(x.id)));
+            const localOnly = state.meals.filter(
+              (x) => !serverIds.has(String(x.id)),
+            );
+            state.meals = [...m.meals.map(parseMeal), ...localOnly];
+            saveState();
+          }
+          renderHeaderProgress();
+          renderHistory();
+          renderPlate();
+        }
+        await flushPending();
+        updateSyncStatus();
+        toast("Готово");
+      }
+      function parseMeal(m) {
+        return {
+          id: m.id,
+          user: m.user,
+          name: m.name,
+          items:
+            typeof m.items === "string"
+              ? JSON.parse(m.items || "[]")
+              : m.items || [],
+          totalKcal: parseFloat(m.totalKcal) || 0,
+          timestamp: parseInt(m.timestamp) || Date.now(),
+        };
+      }
+
+      /* ============================================================
+   ПОИСК
+   ============================================================ */
+      function onSearchInput() {
+        state.searchQuery = $("#searchInput").value.trim().toLowerCase();
+        $("#searchClear").classList.toggle("show", !!state.searchQuery);
+        renderGrid();
+      }
+      function clearSearch() {
+        $("#searchInput").value = "";
+        state.searchQuery = "";
+        $("#searchClear").classList.remove("show");
+        renderGrid();
+      }
+
+      /* ============================================================
+   CATS
+   ============================================================ */
+      function updateCatsScrollMask() {
+        const el = $("#cats");
+        if (!el) return;
+        const sl = el.scrollLeft;
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        const hasLeft = sl > 2;
+        const hasRight = sl < maxScroll - 2;
+        el.classList.toggle("scroll-left", hasLeft && !hasRight);
+        el.classList.toggle("scroll-right", !hasLeft && hasRight);
+        el.classList.toggle("scroll-both", hasLeft && hasRight);
+      }
+      function renderCats() {
+        const el = $("#cats");
+        el.innerHTML = Object.entries(CATEGORIES)
+          .map(
+            ([k, v]) => `
+    <button data-cat="${k}" class="${state.currentCat === k ? "sel" : ""}">${v.name}</button>
+  `,
+          )
+          .join("");
+        el.querySelectorAll("button").forEach((b) => {
+          b.onclick = () => {
+            state.currentCat = b.dataset.cat;
+            renderCats();
+            renderGrid();
+          };
+        });
+        setTimeout(updateCatsScrollMask, 0);
+      }
+      document.addEventListener(
+        "scroll",
+        (e) => {
+          if (e.target && e.target.id === "cats") updateCatsScrollMask();
+        },
+        true,
+      );
+      window.addEventListener("resize", updateCatsScrollMask);
+
+      /* ============================================================
+   GRID
+   ============================================================ */
+      function guessEmoji(f) {
+        if (f.emoji) return f.emoji;
+        const found = DEFAULT_FOODS.find((d) => d.id === f.id);
+        if (found) return found.emoji;
+        const cat = CATEGORIES[f.category];
+        return (cat && cat.emoji) || "🍽";
+      }
+      function foodTile(f, isRecent) {
+        const img = f.image
+          ? `<img src="${IMG_BASE}${esc(f.image)}" onerror="this.style.display='none'" alt="">`
+          : "";
+        const star = isRecent ? '<div class="recent-star">★</div>' : "";
+        return `
+    <div class="tile" data-id="${esc(f.id)}">
+      <div class="tile-inner">
+        <div class="imgwrap">${f.emoji || guessEmoji(f)}${img}</div>
+        <div class="name">${esc(f.name)}</div>
+        <div class="kcal">${f.kcal} ккал/100г</div>
+        <button class="edit" data-edit="${esc(f.id)}" title="Изменить">✎</button>
+        ${star}
+      </div>
+    </div>
+  `;
+      }
+      function renderGrid() {
+        const q = state.searchQuery;
+        const recentIds = state.recentFoods.map((r) => r.id);
+        let list =
+          state.currentCat === "all"
+            ? state.foods
+            : state.foods.filter((f) => f.category === state.currentCat);
+        if (q) {
+          list = list.filter((f) => (f.name || "").toLowerCase().includes(q));
+        }
+        let recentFoods = [];
+        if (!q && state.currentCat === "all") {
+          recentFoods = state.recentFoods
+            .map((r) => state.foods.find((f) => f.id === r.id))
+            .filter(Boolean);
+        }
+        const recentBlock = $("#recentBlock");
+        if (recentFoods.length) {
+          recentBlock.style.display = "block";
+          $("#recentGrid").innerHTML = recentFoods
+            .map((f) => foodTile(f, true))
+            .join("");
+        } else {
+          recentBlock.style.display = "none";
+        }
+        if (!q && state.currentCat === "all") {
+          list = [...list].sort((a, b) => {
+            const ai = recentIds.indexOf(a.id);
+            const bi = recentIds.indexOf(b.id);
+            if (ai === -1 && bi === -1) return 0;
+            if (ai === -1) return 1;
+            if (bi === -1) return -1;
+            return ai - bi;
+          });
+        }
+        if (q) {
+          $("#allLabel").textContent = `Найдено: ${list.length}`;
+        } else {
+          $("#allLabel").textContent =
+            state.currentCat === "all"
+              ? "Все продукты"
+              : (CATEGORIES[state.currentCat] || {}).name || "Продукты";
+        }
+        const el = $("#foodGrid");
+        let html = list.map((f) => foodTile(f, false)).join("");
+        if (!q) {
+          html += `
+      <div class="add-food-tile" id="addFoodBtn">
+        <div class="add-food-tile-inner">
+          <div class="plus">＋</div>
+          <div>Продукт</div>
+        </div>
+      </div>
+    `;
+        }
+        el.innerHTML = html;
+        [el, $("#recentGrid")].forEach((grid) => {
+          if (!grid) return;
+          grid.querySelectorAll(".tile").forEach((t) => {
+            t.addEventListener("click", (ev) => {
+              if (ev.target.dataset.edit) return;
+              openWeightModal(t.dataset.id, null);
+            });
+          });
+          grid.querySelectorAll(".edit").forEach((b) => {
+            b.addEventListener("click", (ev) => {
+              ev.stopPropagation();
+              openFoodEdit(b.dataset.edit);
+            });
+          });
+        });
+        const addBtn = $("#addFoodBtn");
+        if (addBtn) addBtn.addEventListener("click", () => openFoodEdit(null));
+      }
+
+      /* ============================================================
+   WEIGHT PICKER
+   ============================================================ */
+      const DIAL_MIN = 5,
+        DIAL_MAX = 1000,
+        ITEM_H = 56;
+
+      function openWeightModal(foodId, existingPlateUid = null) {
+        let food;
+        if (existingPlateUid) {
+          const item = state.plate.find((x) => x.uid === existingPlateUid);
+          if (!item) return;
+          food = state.foods.find((x) => x.id === item.id) || {
+            id: item.id,
+            name: item.name,
+            kcal: (item.kcal * 100) / item.grams,
+            emoji: item.emoji,
+          };
+          state.pickerItem = { food, grams: item.grams };
+          state.editingPlateUid = existingPlateUid;
+        } else {
+          food = state.foods.find((x) => x.id === foodId);
+          if (!food) return;
+          state.pickerItem = { food, grams: 100 };
+          state.editingPlateUid = null;
+        }
+        $("#wm-title").textContent =
+          (food.emoji || guessEmoji(food)) + " " + food.name;
+        buildDial();
+        setPickerGrams(state.pickerItem.grams, false);
+        $("#wm-confirm").textContent = state.editingPlateUid
+          ? "✓ Сохранить граммовку"
+          : "✓ Добавить в тарелку";
+        $("#wm-remove").style.display = state.editingPlateUid
+          ? "block"
+          : "none";
+        $("#weightModal").classList.add("open");
+        document.body.classList.add("locked");
+      }
+      function closeWeightModal() {
+        $("#weightModal").classList.remove("open");
+        document.body.classList.remove("locked");
+        state.pickerItem = null;
+        state.editingPlateUid = null;
+      }
+      function buildDial() {
+        const list = $("#dialList");
+        let html = "";
+        for (let g = DIAL_MIN; g <= DIAL_MAX; g += 5) {
+          html += `<div class="picker-item" data-g="${g}">${g}</div>`;
+        }
+        list.innerHTML = html;
+        list.style.transform = "translateY(0)";
+        const dial = $("#dial");
+        const newDial = dial.cloneNode(true);
+        dial.parentNode.replaceChild(newDial, dial);
+        setupDialEvents(newDial);
+      }
+      function setupDialEvents(dial) {
+        let startY = 0,
+          startTransform = 0,
+          dragging = false,
+          lastGrams = 100,
+          acc = 0,
+          lastDy = 0;
+        dial.addEventListener(
+          "wheel",
+          (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const step = e.deltaY > 0 ? 5 : -5;
+            setPickerGrams(state.pickerItem.grams + step, true);
+          },
+          { passive: false },
+        );
+        dial.addEventListener(
+          "touchstart",
+          (e) => {
+            dragging = true;
+            startY = e.touches[0].clientY;
+            startTransform = currentTranslate();
+            lastGrams = state.pickerItem.grams;
+            acc = 0;
+            e.preventDefault();
+          },
+          { passive: false },
+        );
+        dial.addEventListener(
+          "touchmove",
+          (e) => {
+            if (!dragging) return;
+            const dy = e.touches[0].clientY - startY;
+            dial.querySelector(".picker-list").style.transform =
+              `translateY(${startTransform + dy}px)`;
+            acc += Math.abs(dy - lastDy);
+            lastDy = dy;
+            if (acc > 14) {
+              acc = 0;
+              ratchetSound(1);
+            }
+            e.preventDefault();
+          },
+          { passive: false },
+        );
+        dial.addEventListener("touchend", (e) => {
+          if (!dragging) return;
+          dragging = false;
+          lastDy = 0;
+          const dy = e.changedTouches[0].clientY - startY;
+          const idxDelta = Math.round(dy / ITEM_H);
+          setPickerGrams(lastGrams - idxDelta * 5, true);
+        });
+        dial.addEventListener("mousedown", (e) => {
+          dragging = true;
+          startY = e.clientY;
+          startTransform = currentTranslate();
+          lastGrams = state.pickerItem.grams;
+          acc = 0;
+          lastDy = 0;
+          e.preventDefault();
+        });
+        window.addEventListener("mousemove", (e) => {
+          if (!dragging) return;
+          const dy = e.clientY - startY;
+          dial.querySelector(".picker-list").style.transform =
+            `translateY(${startTransform + dy}px)`;
+          acc += Math.abs(dy - lastDy);
+          lastDy = dy;
+          if (acc > 14) {
+            acc = 0;
+            ratchetSound(1);
+          }
+        });
+        window.addEventListener("mouseup", (e) => {
+          if (!dragging) return;
+          dragging = false;
+          lastDy = 0;
+          const dy = e.clientY - startY;
+          const idxDelta = Math.round(dy / ITEM_H);
+          setPickerGrams(lastGrams - idxDelta * 5, true);
+        });
+        function currentTranslate() {
+          const m = dial
+            .querySelector(".picker-list")
+            .style.transform.match(/-?[\d.]+/);
+          return m ? parseFloat(m[0]) : 0;
+        }
+      }
+      function setPickerGrams(grams, playSound) {
+        if (!state.pickerItem) return;
+        grams = Math.max(
+          DIAL_MIN,
+          Math.min(DIAL_MAX, Math.round(grams / 5) * 5),
+        );
+        const prev = state.pickerItem.grams;
+        state.pickerItem.grams = grams;
+        if (playSound && prev !== grams) ratchetSound(1);
+        const idx = (grams - DIAL_MIN) / 5;
+        const centerOffset = 180 - ITEM_H / 2;
+        const translateY = centerOffset - idx * ITEM_H;
+        $("#dialList").style.transform = `translateY(${translateY}px)`;
+        $("#weightBig").innerHTML = grams + "<small>грамм</small>";
+        const kcal = Math.round((state.pickerItem.food.kcal * grams) / 100);
+        $("#kcalPreview").textContent = kcal;
+        $("#dialList")
+          .querySelectorAll(".picker-item")
+          .forEach((el) => {
+            el.classList.toggle("cur", parseInt(el.dataset.g) === grams);
+          });
+      }
+      function confirmWeight() {
+        if (!state.pickerItem) return;
+        const { food, grams } = state.pickerItem;
+        const kcal = Math.round((food.kcal * grams) / 100);
+        if (state.editingPlateUid) {
+          const item = state.plate.find((x) => x.uid === state.editingPlateUid);
+          if (item) {
+            item.grams = grams;
+            item.kcal = kcal;
+          }
+          toast(`Обновлено: ${food.name} ${grams}г`);
+        } else {
+          state.plate.push({
+            uid: uid(),
+            id: food.id,
+            name: food.name,
+            emoji: food.emoji || guessEmoji(food),
+            grams,
+            kcal,
+          });
+          state.recentFoods = touchRecent(
+            state.recentFoods,
+            { id: food.id },
+            "id",
+            20,
+          );
+          toast(`+ ${food.name} ${grams}г (${kcal} ккал)`);
+        }
+        saveState();
+        renderPlateBadge();
+        renderGrid();
+        closeWeightModal();
+        const activeScreen = document.querySelector(".screen.active");
+        if (activeScreen && activeScreen.id === "scr-plate") renderPlate();
+      }
+      function removeEditingPlateItem() {
+        if (!state.editingPlateUid) return;
+        state.plate = state.plate.filter(
+          (x) => x.uid !== state.editingPlateUid,
+        );
+        saveState();
+        renderPlateBadge();
+        closeWeightModal();
+        renderPlate();
+        toast("Позиция удалена");
+      }
+
+      /* ============================================================
+   PLATE
+   ============================================================ */
+      function togglePastMeals() {
+        const tog = $("#pastMealsToggle");
+        const list = $("#pastMealsList");
+        tog.classList.toggle("open");
+        const open = tog.classList.contains("open");
+        list.classList.toggle("open", open);
+        if (open) renderPastMeals();
+      }
+      function renderPastMeals() {
+        const list = $("#pastMealsList");
+        const map = new Map();
+        const sorted = [...state.meals].sort(
+          (a, b) => b.timestamp - a.timestamp,
+        );
+        for (const m of sorted) {
+          const sig =
+            m.name + "::" + m.items.map((i) => i.id + ":" + i.grams).join(",");
+          if (!map.has(sig)) map.set(sig, m);
+        }
+        const unique = [...map.values()].slice(0, 10);
+        if (!unique.length) {
+          list.innerHTML =
+            '<div class="empty" style="padding:20px">Нет прошлых блюд</div>';
+          return;
+        }
+        list.innerHTML = unique
+          .map((m) => {
+            const d = new Date(m.timestamp);
+            const dateStr = `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}`;
+            return `
+      <div class="past-meal">
+        <div class="info" onclick="loadPastMeal('${esc(m.id)}')">
+          <div style="font-weight:600;overflow:hidden;text-overflow:ellipsis;
+            white-space:nowrap">${esc(m.name)}</div>
+          <div class="meta">${dateStr} · ${m.items.length} поз.</div>
+        </div>
+        <div class="k" onclick="loadPastMeal('${esc(m.id)}')">${m.totalKcal} ккал</div>
+        <button class="rm" onclick="event.stopPropagation();deletePastMeal('${esc(m.id)}')">🗑</button>
+      </div>
+    `;
+          })
+          .join("");
+      }
+      function loadPastMeal(mealId) {
+        const m = state.meals.find((x) => x.id === mealId);
+        if (!m) return;
+        if (
+          state.plate.length &&
+          !confirm("Заменить текущее содержимое тарелки на это блюдо?")
+        )
+          return;
+        state.plate = m.items.map((it) => ({
+          uid: uid(),
+          id: it.id,
+          name: it.name,
+          emoji: (state.foods.find((f) => f.id === it.id) || {}).emoji || "🍽",
+          grams: it.grams,
+          kcal: it.kcal,
+        }));
+        $("#plate-name").value = m.name;
+        state.recentMeals = touchRecent(
+          state.recentMeals,
+          { name: m.name, items: m.items, totalKcal: m.totalKcal },
+          "name",
+          10,
+        );
+        saveState();
+        renderPlate();
+        renderPlateBadge();
+        toast("Блюдо загружено в тарелку");
+      }
+      function deletePastMeal(mealId) {
+        const m = state.meals.find((x) => x.id === mealId);
+        if (!m) return;
+        if (
+          !confirm(
+            `Удалить блюдо «${m.name}» от ${fmtDate(m.timestamp)} из истории?\n\nОно также удалится с сервера, и ккал пересчитаются.`,
+          )
+        )
+          return;
+        state.meals = state.meals.filter((x) => x.id !== mealId);
+        saveState();
+        renderPastMeals();
+        renderHeaderProgress();
+        renderHistory();
+        toast("Блюдо удалено");
+        pushOrQueue("deleteMeal", { id: mealId }).then(updateSyncStatus);
+      }
+      function renderPlate() {
+        const el = $("#plateItems");
+        if (!state.plate.length) {
+          el.innerHTML =
+            '<div class="empty">Тарелка пуста.<br>Перейди на «Основное» и добавь продукты.</div>';
+          $("#plateTotal").innerHTML = "";
+          $("#plateCommitBtn").disabled = true;
+          $("#plateCommitBtn").style.opacity = 0.5;
+          return;
+        }
+        $("#plateCommitBtn").disabled = false;
+        $("#plateCommitBtn").style.opacity = 1;
+        el.innerHTML = state.plate
+          .map(
+            (it) => `
+    <div class="plate-item" onclick="openWeightModal('${it.id}', '${it.uid}')">
+      <div class="info">
+        <div class="nm">${it.emoji || "🍽"} ${esc(it.name)}</div>
+        <div class="gr">${it.grams} г · нажми, чтобы изменить</div>
+      </div>
+      <div class="k">${it.kcal}</div>
+      <button class="rm" onclick="event.stopPropagation();removePlateItem('${it.uid}')">✕</button>
+    </div>
+  `,
+          )
+          .join("");
+        const total = state.plate.reduce((s, x) => s + x.kcal, 0);
+        $("#plateTotal").innerHTML =
+          `Итого: <b style="color:var(--accent)">${total}</b> ккал`;
+      }
+      function removePlateItem(uidv) {
+        state.plate = state.plate.filter((x) => x.uid !== uidv);
+        saveState();
+        renderPlateBadge();
+        renderPlate();
+      }
+      function clearPlate() {
+        if (!state.plate.length) return;
+        if (!confirm("Очистить тарелку?")) return;
+        state.plate = [];
+        saveState();
+        renderPlateBadge();
+        renderPlate();
+      }
+      async function commitPlate() {
+        if (!state.plate.length) return;
+        const name = $("#plate-name").value.trim() || "Блюдо";
+        const totalKcal = state.plate.reduce((s, x) => s + x.kcal, 0);
+        const meal = {
+          id: uid(),
+          user: state.profile.user,
+          name,
+          items: state.plate.map((x) => ({
+            id: x.id,
+            name: x.name,
+            grams: x.grams,
+            kcal: x.kcal,
+          })),
+          totalKcal,
+          timestamp: Date.now(),
+        };
+        state.meals.push(meal);
+        state.recentMeals = touchRecent(
+          state.recentMeals,
+          { name, items: meal.items, totalKcal },
+          "name",
+          10,
+        );
+        state.plate = [];
+        saveState();
+        renderPlateBadge();
+        renderHeaderProgress();
+        renderPlate();
+        $("#plate-name").value = "";
+        toast(`Съедено: ${totalKcal} ккал`);
+        pushOrQueue("saveMeal", {
+          id: meal.id,
+          user: meal.user,
+          name: meal.name,
+          items: JSON.stringify(meal.items),
+          totalKcal: meal.totalKcal,
+          timestamp: meal.timestamp,
+        }).then(updateSyncStatus);
+        nav("main");
+      }
+      function renderPlateBadge() {
+        const n = state.plate.length;
+        $("#plateBadge").style.display = n ? "inline-block" : "none";
+        $("#plateBadge").textContent = n;
+        $("#plateBadgeMenu").textContent = n ? `(${n})` : "";
+      }
+      function todayKcal() {
+        const today = fmtDate(Date.now());
+        return state.meals
+          .filter((m) => fmtDate(m.timestamp) === today)
+          .reduce((s, m) => s + m.totalKcal, 0);
+      }
+
+      /* ============================================================
+   FOOD EDIT
+   ============================================================ */
+      function buildEmojiGrid(selected) {
+        const grid = $("#fe-emoji-grid");
+        grid.innerHTML = EMOJI_SET.map(
+          (e) =>
+            `<button data-emoji="${e}" class="${e === selected ? "sel" : ""}">${e}</button>`,
+        ).join("");
+        grid.querySelectorAll("button").forEach((b) => {
+          b.onclick = () => {
+            state.pickerEmoji = b.dataset.emoji;
+            grid
+              .querySelectorAll("button")
+              .forEach((x) => x.classList.remove("sel"));
+            b.classList.add("sel");
+            $("#fe-emoji-preview").textContent = state.pickerEmoji;
+          };
+        });
+      }
+      function openFoodEdit(id) {
+        const isNew = !id;
+        let f;
+        if (isNew) {
+          f = {
+            id: uid(),
+            name: "",
+            category: "other",
+            kcal: 0,
+            image: "",
+            emoji: "🍽",
+          };
+          state.editingFood = f;
+          $("#fe-title").textContent = "＋ Новый продукт";
+          $("#fe-delete").style.display = "none";
+        } else {
+          f = state.foods.find((x) => x.id === id);
+          if (!f) return;
+          state.editingFood = f;
+          $("#fe-title").textContent = "Изменение: " + f.name;
+          $("#fe-delete").style.display = "block";
+        }
+        state.pickerEmoji = f.emoji || "🍽";
+        $("#fe-name").value = f.name;
+        $("#fe-kcal").value = f.kcal || "";
+        $("#fe-img").value = f.image || "";
+        $("#fe-emoji-preview").textContent = state.pickerEmoji;
+        const sel = $("#fe-cat");
+        sel.innerHTML = Object.entries(CATEGORIES)
+          .filter(([k]) => k !== "all")
+          .map(
+            ([k, v]) =>
+              `<option value="${k}" ${f.category === k ? "selected" : ""}>${v.name}</option>`,
+          )
+          .join("");
+        buildEmojiGrid(state.pickerEmoji);
+        $("#foodEditModal").classList.add("open");
+        document.body.classList.add("locked");
+      }
+      function closeFoodEdit() {
+        $("#foodEditModal").classList.remove("open");
+        document.body.classList.remove("locked");
+        state.editingFood = null;
+      }
+      async function saveFoodEdit() {
+        const f = state.editingFood;
+        if (!f) return;
+        const name = $("#fe-name").value.trim();
+        const kcal = parseFloat($("#fe-kcal").value);
+        const category = $("#fe-cat").value;
+        const image = $("#fe-img").value.trim();
+        if (!name) {
+          toast("Введите название");
+          return;
+        }
+        if (!kcal || kcal <= 0) {
+          toast("Введите калорийность");
+          return;
+        }
+        const isNew = !state.foods.find((x) => x.id === f.id);
+        Object.assign(f, {
+          name,
+          kcal,
+          category,
+          image: image || "",
+          emoji: state.pickerEmoji || "🍽",
+        });
+        if (isNew) state.foods.push(f);
+        saveState();
+        renderGrid();
+        closeFoodEdit();
+        toast(isNew ? "Продукт добавлен" : "Сохранено");
+        pushOrQueue(isNew ? "addFood" : "updateFood", {
+          id: f.id,
+          name: f.name,
+          category: f.category,
+          kcal: f.kcal,
+          image: f.image,
+        }).then(updateSyncStatus);
+      }
+      function deleteCurrentFood() {
+        const f = state.editingFood;
+        if (!f) return;
+        if (
+          !confirm(
+            `Удалить продукт «${f.name}»?\n\nОн исчезнет у всех пользователей. Прошлые приёмы пищи не изменятся.`,
+          )
+        )
+          return;
+        state.foods = state.foods.filter((x) => x.id !== f.id);
+        state.recentFoods = state.recentFoods.filter((r) => r.id !== f.id);
+        saveState();
+        renderGrid();
+        closeFoodEdit();
+        toast("Продукт удалён");
+        pushOrQueue("deleteFood", { id: f.id }).then(updateSyncStatus);
+      }
+
+      /* ============================================================
+   HISTORY
+   ============================================================ */
+      function renderHistory() {
+        const el = $("#historyView");
+        if (!state.meals.length) {
+          el.innerHTML = '<div class="empty">Пока нет записей</div>';
+          return;
+        }
+        const byMonth = {};
+        state.meals.forEach((m) => {
+          const d = new Date(m.timestamp);
+          const mKey = `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
+          const dKey = fmtDate(m.timestamp);
+          byMonth[mKey] = byMonth[mKey] || {};
+          byMonth[mKey][dKey] = byMonth[mKey][dKey] || [];
+          byMonth[mKey][dKey].push(m);
+        });
+        const monthsSorted = Object.keys(byMonth).sort().reverse();
+        el.innerHTML = monthsSorted
+          .map((mKey, idx) => {
+            const [y, mo] = mKey.split("-");
+            const monthName = `${MONTHS_RU[parseInt(mo) - 1]} ${y}`;
+            const days = byMonth[mKey];
+            const daysSorted = Object.keys(days).sort().reverse();
+            const monthTotal = daysSorted.reduce(
+              (s, dk) => s + days[dk].reduce((ss, m) => ss + m.totalKcal, 0),
+              0,
+            );
+            const daysHtml = daysSorted
+              .map((dk) => {
+                const meals = days[dk].sort(
+                  (a, b) => b.timestamp - a.timestamp,
+                );
+                const dayTotal = meals.reduce((s, m) => s + m.totalKcal, 0);
+                const dObj = new Date(dk + "T00:00:00");
+                const dayNum = dObj.getDate();
+                const wd = WEEKDAYS_RU[dObj.getDay()];
+                const monthShort = MONTHS_RU[dObj.getMonth()].toLowerCase();
+                const mealsHtml = meals
+                  .map(
+                    (m) => `
+        <div class="hist-meal" data-meal="${esc(m.id)}">
+          <div class="hist-meal-head" onclick="toggleHistMeal('${esc(m.id)}')">
+            <div class="nm">${esc(m.name)}<span class="t">${fmtTime(m.timestamp)}</span></div>
+            <div class="k">${m.totalKcal} ккал</div>
+            <div class="arr">›</div>
+          </div>
+          <div class="hist-meal-body">
+            ${m.items
+              .map(
+                (it) => `
+              <div class="hist-item">
+                <span>${esc(it.name)} <span class="g">· ${it.grams} г</span></span>
+                <span class="kk">${it.kcal} ккал</span>
+              </div>
+            `,
+              )
+              .join("")}
+          </div>
+          <div class="hist-meal-actions">
+            <button onclick="deletePastMeal('${esc(m.id)}')">🗑 Удалить блюдо</button>
+          </div>
+        </div>
+      `,
+                  )
+                  .join("");
+                return `
+        <div class="hist-day">
+          <div class="hist-day-head">
+            <div class="hist-day-num">${dayNum}</div>
+            <div class="hist-day-meta">
+              <div class="hist-day-name">${wd.charAt(0).toUpperCase() + wd.slice(1)}, ${monthShort}</div>
+              <div class="hist-day-wd">${dk}</div>
+            </div>
+            <div class="hist-day-total">${dayTotal} ккал</div>
+          </div>
+          ${mealsHtml}
+        </div>
+      `;
+              })
+              .join("");
+            return `
+      <details class="hist-month" ${idx === 0 ? "open" : ""}>
+        <summary><span>${monthName}</span><span class="sum">${monthTotal} ккал</span></summary>
+        ${daysHtml}
+      </details>
+    `;
+          })
+          .join("");
+      }
+      function toggleHistMeal(mealId) {
+        const el = document.querySelector(`.hist-meal[data-meal="${mealId}"]`);
+        if (el) el.classList.toggle("open");
+      }
+
+      /* ============================================================
+   ADMIN
+   ============================================================ */
+      let adminUsersCache = [];
+      function renderAdmin() {
+        if (!state.isAdmin) {
+          nav("main");
+          return;
+        }
+        switchAdminTab("users");
+      }
+      function switchAdminTab(tab) {
+        document
+          .querySelectorAll(".admin-tabs button")
+          .forEach((b) => b.classList.toggle("sel", b.dataset.tab === tab));
+        $("#adminTab-users").style.display = tab === "users" ? "block" : "none";
+        $("#adminTab-foods").style.display = tab === "foods" ? "block" : "none";
+        if (tab === "foods") renderAdminFoods();
+      }
+      async function adminLoadUsers() {
+        toast("Загрузка...");
+        const data = await apiGet("getUsers");
+        if (!data || !data.ok) {
+          toast("Не удалось загрузить");
+          return;
+        }
+        adminUsersCache = data.users || [];
+        renderAdminUsers();
+      }
+      function renderAdminUsers() {
+        const el = $("#adminUsersList");
+        if (!adminUsersCache.length) {
+          el.innerHTML =
+            '<div class="empty">Нет пользователей или нажми «Загрузить»</div>';
+          return;
+        }
+        el.innerHTML = adminUsersCache
+          .map(
+            (u) => `
+    <div class="admin-user-card">
+      <div style="min-width:0;flex:1">
+        <div class="nm">${esc(u.user)}</div>
+        <div class="meta">${u.weight || "?"} кг · цель ${u.targetWeight || "?"} · ${u.dailyKcal || "?"} ккал</div>
+      </div>
+      <button class="del" onclick="adminDeleteUser('${esc(u.user)}')">🗑</button>
+    </div>
+  `,
+          )
+          .join("");
+      }
+      async function adminDeleteUser(user) {
+        if (user === ADMIN_USER) {
+          toast("Нельзя удалить админа");
+          return;
+        }
+        if (
+          !confirm(
+            `Удалить пользователя «${user}»?\n\nПрофиль удалится из Sheets, а также все его приёмы пищи.`,
+          )
+        )
+          return;
+        toast("Удаление...");
+        state.pending.push({
+          action: "deleteUser",
+          payload: { user },
+          ts: Date.now(),
+        });
+        adminUsersCache = adminUsersCache.filter((u) => u.user !== user);
+        renderAdminUsers();
+        toast("Пользователь удалён");
+        flushPending();
+      }
+      function renderAdminFoods() {
+        const q = ($("#adminFoodFilter").value || "").toLowerCase();
+        const el = $("#adminFoodsList");
+        let list = state.foods;
+        if (q)
+          list = list.filter((f) => (f.name || "").toLowerCase().includes(q));
+        if (!list.length) {
+          el.innerHTML = '<div class="empty">Ничего не найдено</div>';
+          return;
+        }
+        el.innerHTML = list
+          .map(
+            (f) => `
+    <div class="admin-user-card">
+      <div style="min-width:0;flex:1">
+        <div class="nm">${f.emoji || "🍽"} ${esc(f.name)}</div>
+        <div class="meta">${f.kcal} ккал/100г · ${(CATEGORIES[f.category] || {}).name || f.category}</div>
+      </div>
+      <button class="del" onclick="adminDeleteFood('${esc(f.id)}')">🗑</button>
+    </div>
+  `,
+          )
+          .join("");
+      }
+      async function adminDeleteFood(id) {
+        const f = state.foods.find((x) => x.id === id);
+        if (!f) return;
+        if (
+          !confirm(
+            `Удалить продукт «${f.name}»?\n\nОн исчезнет у всех пользователей.`,
+          )
+        )
+          return;
+        state.foods = state.foods.filter((x) => x.id !== id);
+        state.recentFoods = state.recentFoods.filter((r) => r.id !== id);
+        saveState();
+        renderAdminFoods();
+        renderGrid();
+        toast("Продукт удалён");
+        pushOrQueue("deleteFood", { id }).then(updateSyncStatus);
+      }
+
+      /* ============================================================
+   INIT
+   ============================================================ */
+      async function init() {
+        loadState();
+        renderCats();
+        renderGrid();
+        renderPlateBadge();
+        updateOnlineUI();
+        updateSyncStatus();
+        initSlider();
+        updateSliderUI();
+        updateAdminUI();
+
+        if ("serviceWorker" in navigator) {
+          // SW остаётся в корне app/ (из-за ограничений scope на github.io)
+          navigator.serviceWorker
+            .register("sw.js")
+            .catch((e) => console.log("SW", e));
+        }
+
+        apiGet("getFoods").then((data) => {
+          if (
+            data &&
+            data.ok &&
+            Array.isArray(data.foods) &&
+            data.foods.length
+          ) {
+            state.foods = data.foods.map((f) => ({
+              ...f,
+              kcal: parseFloat(f.kcal) || 0,
+              emoji: guessEmoji(f),
+            }));
+            saveState();
+            renderGrid();
+          } else if (!state.foods.length) {
+            state.foods = DEFAULT_FOODS;
+            saveState();
+            renderGrid();
+          }
+        });
+
+        // Стартовый экран — логин
+        if (state.profile) {
+          // Локальный профиль есть, но не авто-вход: покажем логин
+          $("#l-user").value = state.profile.user || "";
+        }
+        nav("login");
+        updateFab("login");
+
+        setInterval(flushPending, 30000);
+        window.addEventListener("online", () => {
+          updateOnlineUI();
+          flushPending();
+        });
+        window.addEventListener("offline", updateOnlineUI);
+      }
+      init();
+    </script>
+  </body>
+</html>

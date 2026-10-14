@@ -13,6 +13,13 @@ const APPS = [
         description: 'Продвинутый калькулятор с научными функциями',
     },
     {
+        id: 'dietManager',
+        url: 'dietManager.html',
+        title: 'Диета',
+        icon: 'fas fa-calculator',
+        description: 'Приложение для подсчета и контроля калорий!',
+    },
+    {
         id: 'recorder',
         url: 'recorder.html',
         title: 'Запись экрана',
