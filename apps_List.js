@@ -5,47 +5,52 @@
 // password: пароль {строка}
 
 const APPS = [
-    {
-        id: 'calculator',
-        url: 'alcoCalc.html',
-        title: 'Калькулятор разбодяживания',
-        icon: 'fas fa-calculator',
-        description: 'Продвинутый калькулятор с научными функциями',
-    },
-    {
-        id: 'dietManager',
-        url: 'dietManager.html',
-        title: 'Диета',
-        icon: 'fas fa-calculator',
-        description: 'Приложение для подсчета и контроля калорий!',
-    },
-    {
-        id: 'recorder',
-        url: 'recorder.html',
-        title: 'Запись экрана',
-        icon: 'fas fa-film',
-        description: 'Способ записи вкладок хрома',
-    },
-    {
-        id: 'notes',
-        url: 'questing.html',
-        title: 'Новогодние вопросы',
-        icon: 'fas fa-sticky-note',
-        description: 'Захади и отвечай на вопросы ',
-    },
-    {
-        id: 'weather',
-        url: 'bigFive.html',
-        title: 'Тест личности',
-    },
-    {
-        id: 'wedding',
-        url: 'wedding.html',
-        title: 'Свадебныое приглашение',
-    },
-    {
-        id: 'quests',
-        url: 'quests.html',
-        title: 'Квесты',
-    },
+  {
+    id: "calculator",
+    url: "alcoCalc.html",
+    title: "Калькулятор разбодяживания",
+    icon: "fas fa-calculator",
+    description: "Продвинутый калькулятор с научными функциями",
+  },
+  {
+    id: "dietManager",
+    url: "dietManager.html",
+    title: "Диета",
+    icon: "fas fa-calculator",
+    description: "Приложение для подсчета и контроля калорий!",
+  },
+  {
+    id: "recorder",
+    url: "recorder.html",
+    title: "Запись экрана",
+    icon: "fas fa-film",
+    description: "Способ записи вкладок хрома",
+  },
+  {
+    id: "notes",
+    url: "questing.html",
+    title: "Новогодние вопросы",
+    icon: "fas fa-sticky-note",
+    description: "Захади и отвечай на вопросы ",
+  },
+  {
+    id: "weather",
+    url: "bigFive.html",
+    title: "Тест личности",
+  },
+  {
+    id: "wedding",
+    url: "wedding.html",
+    title: "Свадебныое приглашение",
+  },
+  {
+    id: "quests",
+    url: "quests.html",
+    title: "Квесты",
+  },
+  {
+    id: "testForMyBestSister",
+    url: "testForMyBestSister.html",
+    title: "Тесты РЖД",
+  },
 ];
