@@ -1,0 +1,3725 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Тест — Транспортная безопасность (2 категория ФАЖТ)</title>
+    <style>
+      :root {
+        --bg: #0f172a;
+        --panel: #1e293b;
+        --panel2: #273449;
+        --panel3: #334155;
+        --text: #e2e8f0;
+        --muted: #94a3b8;
+        --accent: #3b82f6;
+        --ok: #22c55e;
+        --bad: #ef4444;
+        --warn: #f59e0b;
+        --border: #334155;
+        --rail-w: 36px;
+
+        --fs-base: 16.8px;
+        --fs-accent: 19.6px;
+        --fs-small: 15.6px;
+        --fs-tiny: 14.4px;
+        --fs-h: 19.2px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        font-size: var(--fs-base);
+        line-height: 1.5;
+      }
+      header {
+        padding: 14px 20px;
+        background: var(--panel);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        position: sticky;
+        top: 0;
+        z-index: 40;
+      }
+      header h1 {
+        font-size: var(--fs-h);
+        margin: 0;
+        font-weight: 600;
+      }
+      .nav-btns {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      button {
+        font: inherit;
+        font-size: var(--fs-small);
+        cursor: pointer;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 9px 16px;
+        background: var(--panel2);
+        color: var(--text);
+        transition: 0.15s;
+      }
+      button:hover {
+        background: var(--panel3);
+      }
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      button.primary:hover {
+        filter: brightness(1.1);
+      }
+      button.danger {
+        background: transparent;
+        border-color: var(--bad);
+        color: var(--bad);
+      }
+      button.danger:hover {
+        background: rgba(239, 68, 68, 0.15);
+      }
+      button:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      main.with-rail {
+        padding-right: calc(20px + var(--rail-w));
+      }
+
+      .screen {
+        display: none;
+      }
+      .screen.active {
+        display: block;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .card h2 {
+        font-size: var(--fs-h) !important;
+      }
+
+      .mode-card {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 18px;
+        border-radius: 12px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        cursor: pointer;
+        transition: 0.15s;
+      }
+      .mode-card:hover {
+        border-color: var(--accent);
+        background: var(--panel2);
+      }
+      .mode-card .title {
+        font-weight: 600;
+        font-size: var(--fs-accent);
+      }
+      .mode-card .sub {
+        color: var(--muted);
+        font-size: var(--fs-small);
+      }
+      .mode-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+        gap: 12px;
+      }
+
+      .hint {
+        color: var(--muted);
+        font-size: var(--fs-small);
+        line-height: 1.5;
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .spread {
+        justify-content: space-between;
+      }
+
+      .q-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .q-progress {
+        font-size: var(--fs-accent);
+        color: var(--muted);
+      }
+      .q-text {
+        font-size: var(--fs-accent);
+        line-height: 1.5;
+        margin-bottom: 18px;
+        font-weight: 500;
+      }
+
+      .answers {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .answer {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        padding: 13px 15px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--panel2);
+        cursor: pointer;
+        transition: 0.15s;
+        line-height: 1.5;
+        font-size: var(--fs-base);
+      }
+      .answer:hover {
+        border-color: var(--accent);
+      }
+      .answer.selected {
+        border-color: var(--accent);
+        background: rgba(59, 130, 246, 0.15);
+      }
+      .answer.correct {
+        border-color: var(--ok);
+        background: rgba(34, 197, 94, 0.15);
+      }
+      .answer.wrong {
+        border-color: var(--bad);
+        background: rgba(239, 68, 68, 0.15);
+      }
+      .answer.locked {
+        cursor: default;
+      }
+      .answer.locked:hover {
+        border-color: var(--border);
+      }
+      .answer.locked.correct:hover {
+        border-color: var(--ok);
+      }
+      .answer.locked.wrong:hover {
+        border-color: var(--bad);
+      }
+      .answer .mark {
+        flex: 0 0 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 2px solid var(--muted);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 700;
+        margin-top: 1px;
+      }
+      .answer.selected .mark {
+        border-color: var(--accent);
+        background: var(--accent);
+        color: #fff;
+      }
+      .answer.correct .mark {
+        border-color: var(--ok);
+        background: var(--ok);
+        color: #fff;
+      }
+      .answer.wrong .mark {
+        border-color: var(--bad);
+        background: var(--bad);
+        color: #fff;
+      }
+
+      /* ===== Нижняя закреплённая панель: 30% / 20% / 25% / 25% ===== */
+      .bottom-bar {
+        position: fixed;
+        left: 0;
+        right: var(--rail-w);
+        bottom: 0;
+        background: var(--panel);
+        border-top: 1px solid var(--border);
+        padding: 12px 20px;
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 10px;
+        z-index: 30;
+        height: 64px;
+      }
+      .bottom-bar button {
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+      }
+      /* 30% — досрочное завершение (слева) */
+      .bottom-bar .danger {
+        flex: 0 0 30%;
+        max-width: 30%;
+      }
+      /* 20% — пустота */
+      .bottom-bar .spacer {
+        flex: 0 0 20%;
+        max-width: 20%;
+      }
+      /* 25% — назад */
+      .bottom-bar #btnPrev {
+        flex: 0 0 22%;
+        max-width: 22%;
+      }
+      /* 25% — вперёд */
+      .bottom-bar #btnNext {
+        flex: 0 0 25%;
+        max-width: 25%;
+      }
+
+      .q-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+        gap: 8px;
+      }
+      .q-grid button {
+        padding: 11px 0;
+        font-size: var(--fs-tiny);
+        min-width: 0;
+        border-radius: 8px;
+        font-weight: 600;
+      }
+      .q-grid button.answered {
+        background: rgba(59, 130, 246, 0.25);
+        border-color: var(--accent);
+      }
+      .q-grid button.current {
+        outline: 2px solid var(--warn);
+        outline-offset: 1px;
+      }
+      .q-grid button.correct {
+        background: rgba(34, 197, 94, 0.3);
+        border-color: var(--ok);
+      }
+      .q-grid button.wrong {
+        background: rgba(239, 68, 68, 0.3);
+        border-color: var(--bad);
+      }
+      .q-grid button.skipped {
+        background: rgba(148, 163, 184, 0.12);
+      }
+
+      .result-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--panel2);
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+      }
+      .result-row .meta {
+        font-size: var(--fs-small);
+        color: var(--muted);
+      }
+      .result-row .score {
+        font-weight: 700;
+        font-size: var(--fs-accent);
+      }
+      .result-row .score.ok {
+        color: var(--ok);
+      }
+      .result-row .score.bad {
+        color: var(--bad);
+      }
+
+      .review-q {
+        border-bottom: 1px solid var(--border);
+        padding: 16px 0;
+      }
+      .review-q:last-child {
+        border-bottom: none;
+      }
+      .review-q .rq-text {
+        font-weight: 500;
+        margin-bottom: 12px;
+        line-height: 1.5;
+        font-size: var(--fs-accent);
+      }
+      .rq-status {
+        font-size: var(--fs-tiny);
+        margin-left: 8px;
+        padding: 3px 9px;
+        border-radius: 999px;
+      }
+      .rq-status.ok {
+        background: rgba(34, 197, 94, 0.2);
+        color: var(--ok);
+      }
+      .rq-status.bad {
+        background: rgba(239, 68, 68, 0.2);
+        color: var(--bad);
+      }
+      .rq-status.skip {
+        background: rgba(148, 163, 184, 0.2);
+        color: var(--muted);
+      }
+      .review-q .answer {
+        cursor: default;
+        padding: 9px 13px;
+        font-size: var(--fs-small);
+        margin-bottom: 6px;
+      }
+
+      .empty {
+        color: var(--muted);
+        text-align: center;
+        padding: 30px 0;
+      }
+      .badge {
+        font-size: var(--fs-small);
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: var(--panel2);
+        border: 1px solid var(--border);
+        color: var(--muted);
+      }
+
+      .toggle {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        font-size: var(--fs-base);
+        cursor: pointer;
+        user-select: none;
+        margin-bottom: 12px;
+        line-height: 1.45;
+      }
+      .toggle:last-child {
+        margin-bottom: 0;
+      }
+      .toggle input[type="checkbox"] {
+        flex: 0 0 18px;
+        width: 18px;
+        height: 18px;
+        margin: 2px 0 0 0;
+        accent-color: var(--accent);
+        cursor: pointer;
+      }
+
+      /* ================= ПРАВАЯ ПАНЕЛЬ ================= */
+      .rail {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: var(--rail-w);
+        background: var(--panel);
+        border-left: 1px solid var(--border);
+        z-index: 35;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .rail.visible {
+        display: flex;
+      }
+
+      .rail-btn {
+        flex: 0 0 auto;
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--panel2);
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        line-height: 1;
+      }
+      .rail-btn:hover {
+        background: var(--panel3);
+        color: var(--text);
+      }
+
+      .rail-close {
+        display: none;
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: var(--rail-w);
+        border: none;
+        border-left: 1px solid var(--border);
+        border-radius: 0;
+        background: var(--panel2);
+        color: var(--text);
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        line-height: 1;
+        z-index: 70;
+      }
+      .rail-close:hover {
+        background: var(--panel3);
+      }
+      .rail-close.visible {
+        display: flex;
+      }
+
+      .drawer-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        z-index: 50;
+        display: none;
+      }
+      .drawer-backdrop.open {
+        display: block;
+      }
+      .drawer {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: min(380px, 92vw);
+        background: var(--panel);
+        border-left: 1px solid var(--border);
+        z-index: 60;
+        transform: translateX(100%);
+        transition: transform 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        padding: 18px;
+        overflow-y: auto;
+        padding-right: 50px;
+      }
+      .drawer.open {
+        transform: translateX(0);
+      }
+      .drawer h3 {
+        font-size: var(--fs-small);
+        margin: 0 0 12px;
+        color: var(--muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .drawer .drawer-nav {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .drawer .drawer-nav button {
+        flex: 1;
+      }
+      .drawer .legend {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        font-size: var(--fs-tiny);
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .drawer .legend span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+        display: inline-block;
+        border: 1px solid var(--border);
+      }
+      .dot.answered {
+        background: rgba(59, 130, 246, 0.5);
+        border-color: var(--accent);
+      }
+      .dot.current {
+        background: transparent;
+        outline: 2px solid var(--warn);
+      }
+      .dot.correct {
+        background: rgba(34, 197, 94, 0.6);
+        border-color: var(--ok);
+      }
+      .dot.wrong {
+        background: rgba(239, 68, 68, 0.6);
+        border-color: var(--bad);
+      }
+      .dot.skipped {
+        background: rgba(148, 163, 184, 0.25);
+      }
+
+      @media (max-width: 600px) {
+        main.with-rail {
+          padding-right: calc(12px + var(--rail-w));
+        }
+        .bottom-bar {
+          padding: 10px 12px;
+          height: auto;
+          min-height: 64px;
+          gap: 6px;
+        }
+        .bottom-bar button {
+          font-size: var(--fs-tiny);
+          padding: 8px 6px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Тест: Транспортная безопасность — 2 категория ФАЖТ</h1>
+      <div class="nav-btns">
+        <button id="navChoose">Выбор теста</button>
+        <button id="navHistory">История</button>
+      </div>
+    </header>
+
+    <aside class="rail" id="rail">
+      <button class="rail-btn" id="railBtn" title="Список вопросов">‹</button>
+    </aside>
+
+    <button class="rail-close" id="railClose" title="Закрыть">✕</button>
+
+    <div class="drawer-backdrop" id="drawerBackdrop"></div>
+    <aside class="drawer" id="drawer">
+      <h3 id="drawerTitle">Вопросы</h3>
+      <div class="drawer-nav">
+        <button id="drawerPrev">← Назад</button>
+        <button id="drawerNext">Вперёд →</button>
+      </div>
+      <div class="legend">
+        <span><i class="dot answered"></i>отвечен</span>
+        <span><i class="dot current"></i>текущий</span>
+        <span><i class="dot correct"></i>верно</span>
+        <span><i class="dot wrong"></i>неверно</span>
+        <span><i class="dot skipped"></i>пропущен</span>
+      </div>
+      <div class="q-grid" id="drawerGrid"></div>
+    </aside>
+
+    <main id="mainArea">
+      <section id="screen-choose" class="screen active">
+        <div class="card" id="resume-card" style="display: none">
+          <div class="row spread">
+            <div>
+              <div style="font-weight: 600; margin-bottom: 4px">
+                Есть незавершённый тест
+              </div>
+              <div class="hint" id="resume-info"></div>
+            </div>
+            <div class="row">
+              <button class="primary" id="btnResume">Продолжить</button>
+              <button class="danger" id="btnAbandon">Завершить досрочно</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 style="margin-top: 0; font-size: 16px">Случайный тест</h2>
+          <p class="hint">
+            Вопросы и варианты ответов перемешиваются при каждом запуске.
+          </p>
+          <div class="row">
+            <button class="primary" id="btnRandom53">
+              Случайные 53 вопроса
+            </button>
+            <button id="btnRandomAll">Все вопросы в случайном порядке</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 style="margin-top: 0; font-size: 16px">Фиксированные блоки</h2>
+          <p class="hint">
+            Заранее сформированные блоки. Выберите один для прохождения.
+          </p>
+          <div class="mode-grid" id="fixedBlocks"></div>
+        </div>
+
+        <div class="card">
+          <h2 style="margin-top: 0; font-size: 16px">Настройки</h2>
+          <p class="hint" style="margin-top: 0">
+            Выбрать можно только один режим отображения ответов.
+          </p>
+          <label class="toggle">
+            <input type="checkbox" id="optAfterFinish" />
+            Показывать правильные ответы после завершения теста
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="optAfterAnswer" />
+            Показывать правильные ответы после ответа на вопрос (сразу после
+            выбора ответа)
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="optAllImmediately" />
+            Показывать все правильные и неправильные ответы (сразу все ответы)
+          </label>
+        </div>
+      </section>
+
+      <section id="screen-test" class="screen">
+        <div class="card" style="margin-bottom: 80px">
+          <div class="q-head">
+            <div class="q-progress" id="testProgress"></div>
+            <div class="badge" id="testModeBadge"></div>
+          </div>
+          <div class="q-text" id="qText"></div>
+          <div class="answers" id="answers"></div>
+        </div>
+
+        <div class="bottom-bar">
+          <button class="danger" id="btnFinishEarly">Завершить</button>
+          <span class="spacer"></span>
+          <button id="btnPrev">← Назад</button>
+          <button id="btnNext">Вперёд →</button>
+        </div>
+      </section>
+
+      <section id="screen-history" class="screen">
+        <div class="card">
+          <div class="row spread" style="margin-bottom: 14px">
+            <h2 style="margin: 0; font-size: 16px">История тестов</h2>
+            <button class="danger" id="btnClearAll">
+              Очистить пользовательские параметры
+            </button>
+          </div>
+          <div id="historyList"></div>
+        </div>
+      </section>
+
+      <section id="screen-review" class="screen">
+        <div class="card">
+          <div class="row spread" style="margin-bottom: 14px">
+            <h3 style="margin: 0; font-size: 16px" id="reviewTitle"></h3>
+            <button id="btnCloseReview">← Назад к истории</button>
+          </div>
+          <div id="reviewList"></div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      /* ============================================================
+   ДАННЫЕ ВОПРОСОВ — ВСТАВЬ СВОЙ МАССИВ СЮДА
+   Формат:
+     { id: 1, text: "текст вопроса",
+       answers: ["вар1","вар2","вар3","вар4"],
+       correct: 0 }   // correct — ИНДЕКС правильного ответа (0-based)
+   ============================================================ */
+      const QUESTIONS = [
+        {
+          id: 1,
+          text: "Силы обеспечения транспортной безопасности – это:",
+          answers: [
+            "лица, ответственные за обеспечение транспортной безопасности и персонал, непосредственно связанный с обеспечением транспортной безопасности объектов транспортной инфраструктуры и/или транспортных средств, а также подразделения транспортной безопасности",
+            "лица, ответственные за обеспечение транспортной безопасности в субъекте транспортной инфраструктуры, на объекте транспортной инфраструктуры, транспортном средстве, включая персонал субъекта транспортной инфраструктуры или подразделения транспортной безопасности, непосредственно связанный с обеспечением транспортной безопасности объектов транспортной инфраструктуры или транспортных средств",
+            "сотрудники специализированных организации в области обеспечения транспортной безопасности",
+            "лица, осуществляющие досмотр на объектах транспортной инфраструктуры и/или транспортных средствах",
+          ],
+          correct: 1,
+        },
+        {
+          id: 2,
+          text: "Целями обеспечения транспортной безопасности являются:",
+          answers: [
+            "обеспечение безопасности движения поездов",
+            "защита зданий, сооружений и оборудования предприятий транспортного комплекса от актов незаконного вмешательства",
+            "устойчивое и безопасное функционирование транспортного комплекса, защита интересов личности, общества и государства в сфере транспортного комплекса от актов незаконного вмешательства",
+            "обеспечение взаимодействия правоохранительных органов и транспортных предприятий по защите от актов незаконного вмешательства",
+          ],
+          correct: 2,
+        },
+        {
+          id: 3,
+          text: "Подразделения транспортной безопасности – это:",
+          answers: [
+            "персонал государственных организаций и/или юридических лиц, привлеченный на законном (договорном) основании для осуществления функций по защите объектов транспортной инфраструктуры и/или транспортных средств от актов незаконного вмешательства",
+            "частные охранные предприятия",
+            "осуществляющие защиту объектов транспортной инфраструктуры и транспортных средств от актов незаконного вмешательства (в том числе на основании договора с субъектом транспортной инфраструктуры) подразделения ведомственной охраны федеральных органов исполнительной власти в области транспорта и (или) аккредитованные для этой цели в установленном порядке юридические лица",
+            "вневедомственная охрана железнодорожного транспорта",
+          ],
+          correct: 2,
+        },
+        {
+          id: 4,
+          text: "Подготовка сил обеспечения транспортной безопасности включает в себя:",
+          answers: [
+            "теоретическую и физическую подготовку",
+            "физическую, практическую и тренажерную подготовку",
+            "теоретическую, тренажерную и практическую подготовку",
+            "все вышеперечисленное",
+          ],
+          correct: 2,
+        },
+        {
+          id: 5,
+          text: "Проверка уровня физической подготовки назначается для работников:",
+          answers: [
+            "включенных в состав группы быстрого реагирования",
+            "осуществляющих досмотр, дополнительный досмотр, повторный досмотр в целях обеспечения транспортной безопасности",
+            "назначенных в качестве лиц, ответственных за обеспечение транспортной безопасности в субъекте транспортной инфраструктуры",
+            "1 и 2 варианты ответа",
+          ],
+          correct: 0,
+        },
+        {
+          id: 6,
+          text: "Для проверки соответствия уровня физической подготовки дается:",
+          answers: [
+            "одна попытка",
+            "две попытки",
+            "три попытки",
+            "не ограничено, в целях улучшения результата",
+          ],
+          correct: 0,
+        },
+        {
+          id: 7,
+          text: "В соответствии с Постановлением Правительства РФ от 01.06.2023 г. N 906 «Об аккредитации юридических лиц для обработки персональных данных отдельных категорий лиц, принимаемых на работу, непосредственно связанную с обеспечением транспортной безопасности...» аккредитация проводится:",
+          answers: [
+            "Компетентными органами в области обеспечения транспортной безопасности",
+            "Органами аттестации",
+            "Росжелдором",
+            "Ространснадзором",
+          ],
+          correct: 0,
+        },
+        {
+          id: 8,
+          text: "Свидетельство об аккредитации юридических лиц для проведения проверки в целях принятия органами аттестации решения об аттестации сил обеспечения транспортной безопасности выдается сроком на:",
+          answers: [
+            "2 года, но не свыше срока полномочий органа аккредитации",
+            "3 года",
+            "5 лет",
+            "10 лет",
+          ],
+          correct: 2,
+        },
+        {
+          id: 9,
+          text: "Основанием для продления срока действия свидетельства об аккредитации юридических лиц для проведения проверки в целях принятия органами аттестации решения об аттестации сил обеспечения транспортной безопасности является:",
+          answers: [
+            "проведение аттестующей организацией не менее 2 проверок в целях аттестации за период действия свидетельства об аккредитации",
+            "проведение аттестующей организацией не менее 3 проверок в целях аттестации за год",
+            "проведение аттестующей организацией 1 проверки в целях аттестации за период действия свидетельства об аккредитации",
+            "проведение аттестующей организацией согласно плановой проверки в целях аттестации за период действия свидетельства об аккредитации",
+          ],
+          correct: 0,
+        },
+        {
+          id: 10,
+          text: "Планы обеспечения транспортной безопасности объектов транспортной инфраструктуры и (или) транспортных средств на основании результатов проведенной оценки уязвимости объектов транспортной инфраструктуры и (или) транспортных средств разрабатывают:",
+          answers: [
+            "компетентные органы в области обеспечения транспортной безопасности",
+            "субъекты транспортной инфраструктуры (перевозчики)",
+            "подразделения транспортной безопасности",
+            "подразделения ведомственной охраны федеральных органов исполнительной власти в области транспорта и (или) аккредитованные для этой цели в установленном порядке юридические лица",
+          ],
+          correct: 1,
+        },
+        {
+          id: 11,
+          text: "План обеспечения транспортной безопасности разрабатывается на основании:",
+          answers: [
+            "уведомления о присвоении категории",
+            "решения о присвоении (установлении) второго или третьего уровня безопасности",
+            "результатов проведенной оценки уязвимости",
+            "паспорта антитеррористической защищенности объектов транспортной инфраструктуры",
+          ],
+          correct: 2,
+        },
+        {
+          id: 12,
+          text: "Применительно к транспортным средствам железнодорожного транспорта существует:",
+          answers: [
+            "6 категорий",
+            "Не категорируются",
+            "5 категорий",
+            "3 категории",
+          ],
+          correct: 1,
+        },
+        {
+          id: 13,
+          text: "Согласно Федеральному закону от 09.02.2007 г. № 16-ФЗ «О транспортной безопасности» оценка уязвимости объектов транспортной инфраструктуры проводится:",
+          answers: [
+            "юридическими лицами, индивидуальными предпринимателями и физическими лицами, являющимися собственниками объектов транспортной инфраструктуры или использующими их на ином законном основании",
+            "должностными лицами, ответственными за обеспечение транспортной безопасности в субъекте транспортной инфраструктуры, на объекте транспортной инфраструктуры, включая персонал субъекта транспортной инфраструктуры или подразделения транспортной безопасности, непосредственно связанный с обеспечением транспортной безопасности объектов транспортной инфраструктуры",
+            "специализированными организациями в области обеспечения транспортной безопасности с учетом требований по обеспечению транспортной безопасности на основе публичного договора",
+            "подразделениями транспортной безопасности",
+          ],
+          correct: 2,
+        },
+        {
+          id: 14,
+          text: "Согласно Федеральному закону от 09.02.2007 г. № 16-ФЗ «О транспортной безопасности» оценка уязвимости транспортных средств проводится:",
+          answers: [
+            "только специализированными организациями в области обеспечения транспортной безопасности с учетом требований по обеспечению транспортной безопасности на основе публичного договора",
+            "субъектами транспортной инфраструктуры либо специализированными организациями в области обеспечения транспортной безопасности с учетом требований по обеспечению транспортной безопасности на основе публичного договора",
+            "только субъектами транспортной инфраструктуры",
+            "должностными лицами, ответственными за обеспечение транспортной безопасности в субъекте транспортной инфраструктуры, на объекте транспортной инфраструктуры, транспортном средстве, включая персонал субъекта транспортной инфраструктуры или подразделения транспортной безопасности, непосредственно связанный с обеспечением транспортной безопасности объектов транспортной инфраструктуры или транспортных средств",
+          ],
+          correct: 1,
+        },
+        {
+          id: 15,
+          text: "Согласно Федеральному закону от 09.02.2007 г. № 16-ФЗ «О транспортной безопасности» субъекты транспортной инфраструктуры – это:",
+          answers: [
+            "организации, имеющие в собственности, хозяйственном ведении или оперативном управлении обособленное имущество и отвечающие по своим обязательствам этим имуществом, имеющие право от своего имени приобретать и осуществлять имущественные и личные неимущественные права, нести обязанности, быть истцом и ответчиком в суде",
+            "предприятия и организации, имеющие на балансе и эксплуатирующие транспортные средства и объекты транспортной инфраструктуры",
+            "юридические лица, индивидуальные предприниматели и физические лица, являющиеся собственниками объектов транспортной инфраструктуры и (или) транспортных средств или использующие их на ином законном основании",
+            "лица, ответственные за обеспечение транспортной безопасности в субъекте транспортной инфраструктуры",
+          ],
+          correct: 2,
+        },
+        {
+          id: 16,
+          text: "Специализированные организации в области обеспечения транспортной безопасности – это:",
+          answers: [
+            "юридические лица, аккредитованные компетентными органами в области обеспечения транспортной безопасности в порядке, устанавливаемом Правительством РФ, для проведения оценки уязвимости объектов транспортной инфраструктуры и транспортных средств",
+            "юридические лица, аккредитованные компетентными органами в области обеспечения транспортной безопасности в порядке, устанавливаемом Правительством РФ, для составления плана обеспечения транспортной безопасности объектов транспортной инфраструктуры и транспортных средств",
+            "юридические лица, индивидуальные предприниматели и физические лица, являющиеся собственниками объектов транспортной инфраструктуры и (или) транспортных средств или использующие их на ином законном основании",
+            "предприятия и организации, имеющие на балансе и эксплуатирующие транспортные средства и объекты транспортной инфраструктуры",
+          ],
+          correct: 0,
+        },
+        {
+          id: 17,
+          text: "Согласно Федеральному закону от 09.02.2007 г. № 16-ФЗ «О транспортной безопасности» уровень безопасности – это:",
+          answers: [
+            "степень защиты жизни и здоровья граждан от чрезвычайных ситуаций природного и техногенного характера",
+            "совокупность технико-технологических, социальных и организационно-управленческих факторов, воздействующих как положительно, так и отрицательно на транспортный комплекс",
+            "степень защищенности транспортного комплекса, соответствующая степени угрозы совершения акта незаконного вмешательства",
+            "степень защищенности от возникновения чрезвычайных ситуаций и совершения актов незаконного вмешательства",
+          ],
+          correct: 2,
+        },
+        {
+          id: 18,
+          text: "На территории РФ постоянно действует (если не объявлен иной уровень безопасности) следующий уровень безопасности ОТИ и ТС:",
+          answers: [
+            "1 уровень",
+            "зеленый уровень",
+            "3 уровень",
+            "синий уровень",
+          ],
+          correct: 0,
+        },
+        {
+          id: 19,
+          text: "Самая высокая категория, присваиваемая объектам транспортной инфраструктуры и транспортным средствам:",
+          answers: [
+            "1 категория",
+            "категория А",
+            "наивысшая категория",
+            "4 категория",
+          ],
+          correct: 0,
+        },
+        {
+          id: 20,
+          text: "Что из нижеперечисленного не входит в Перечень потенциальных угроз совершения актов незаконного вмешательства в деятельность ОТИ и ТС:",
+          answers: [
+            "угроза взрыва",
+            "угроза блокировки",
+            "угроза хищения",
+            "угроза захвата",
+          ],
+          correct: 1,
+        },
+        {
+          id: 21,
+          text: "Количество уровней безопасности, установленных постановлением Правительства РФ от 29.12.2020 г. № 2344 на территории РФ:",
+          answers: ["2", "3", "4", "в зависимости от субъекта РФ 3 или 4"],
+          correct: 1,
+        },
+        {
+          id: 22,
+          text: "Уровень безопасности N 1 объектов транспортной инфраструктуры и транспортных средств:",
+          answers: [
+            "объявляется субъектом транспортной инфраструктуры",
+            "объявляется руководителем объекта транспортной инфраструктуры",
+            "объявляется ответственным за транспортную безопасность на объектах транспортной инфраструктуры",
+            "действует постоянно",
+          ],
+          correct: 3,
+        },
+        {
+          id: 23,
+          text: "Уровень безопасности N 2 объектов транспортной инфраструктуры и транспортных средств:",
+          answers: [
+            "объявляется руководителем объекта транспортной инфраструктуры",
+            "объявляется субъектом транспортной инфраструктуры",
+            "объявляется ответственным за транспортную безопасность на объектах транспортной инфраструктуры",
+            "действует постоянно",
+          ],
+          correct: 1,
+        },
+        {
+          id: 24,
+          text: "Уровень безопасности N 3 объектов транспортной инфраструктуры и транспортных средств:",
+          answers: [
+            "объявляется руководителем объекта транспортной инфраструктуры",
+            "объявляется ответственным за транспортную безопасность на объектах транспортной инфраструктуры",
+            "объявляется субъектом транспортной инфраструктуры",
+            "действует постоянно",
+          ],
+          correct: 2,
+        },
+        {
+          id: 25,
+          text: "Что не входит в перечень уровней террористической опасности:",
+          answers: [
+            "низкий («зелёный»)",
+            "повышенный («синий»)",
+            "высокий («желтый»)",
+            "критический («красный»)",
+          ],
+          correct: 0,
+        },
+        {
+          id: 26,
+          text: "Повышенный («синий») уровень террористической опасности устанавливается:",
+          answers: [
+            "при наличии подтвержденной информации о реальной возможности совершения террористического акта",
+            "при наличии информации о совершенном террористическом акте либо о совершении действий, создающих непосредственную угрозу террористического акта",
+            "при наличии требующей подтверждения информации о реальной возможности совершения террористического акта",
+            "при наличии любой информации",
+          ],
+          correct: 2,
+        },
+        {
+          id: 27,
+          text: "Высокий («желтый») уровень террористической опасности устанавливается:",
+          answers: [
+            "при наличии требующей подтверждения информации о реальной возможности совершения террористического акта",
+            "при наличии подтвержденной информации о реальной возможности совершения террористического акта",
+            "при наличии информации о совершенном террористическом акте либо о совершении действий, создающих непосредственную угрозу террористического акта",
+            "при наличии любой информации",
+          ],
+          correct: 1,
+        },
+        {
+          id: 28,
+          text: "Критический («красный») уровень террористической опасности устанавливается:",
+          answers: [
+            "при наличии требующей подтверждения информации о реальной возможности совершения террористического акта",
+            "при наличии подтвержденной информации о реальной возможности совершения террористического акта",
+            "при наличии информации о совершенном террористическом акте либо о совершении действий, создающих непосредственную угрозу террористического акта",
+            "при наличии любой информации",
+          ],
+          correct: 2,
+        },
+        {
+          id: 29,
+          text: "Уровень террористической опасности подлежит отмене, если:",
+          answers: [
+            "в результате принятых мер устранена угроза террористической опасности",
+            "в результате принятых мер частично (в основном) устранена угроза террористической опасности",
+            "по решению председателя антитеррористической комиссии",
+            "совершён террористический акт",
+          ],
+          correct: 0,
+        },
+        {
+          id: 30,
+          text: "Уровень террористической опасности может устанавливаться на срок:",
+          answers: [
+            "не регламентировано",
+            "не менее 20 суток",
+            "30 суток",
+            "по согласованию с ФСБ России",
+          ],
+          correct: 0,
+        },
+        {
+          id: 31,
+          text: "Транспортный комплекс – это:",
+          answers: [
+            "субъекты транспортной инфраструктуры, транспортные средства",
+            "железнодорожный транспорт",
+            "объекты и субъекты транспортной инфраструктуры, транспортные средства",
+            "все вышеперечисленное",
+          ],
+          correct: 2,
+        },
+        {
+          id: 32,
+          text: "Ответственность за обеспечение транспортной безопасности возлагается на:",
+          answers: [
+            "Министерство транспорта РФ",
+            "Министерство внутренних дел РФ",
+            "компетентные органы в области обеспечения транспортной безопасности",
+            "субъектов транспортной инфраструктуры, перевозчиков, если иное не установлено федеральными законами",
+            "Федеральные агентства по видам транспорта Министерства транспорта РФ",
+          ],
+          correct: 3,
+        },
+        {
+          id: 33,
+          text: "Согласно Федеральному закону от 09.02.2007 г. № 16-ФЗ «О транспортной безопасности» результаты проведенной оценки уязвимости ОТИ и ТС утверждаются:",
+          answers: [
+            "территориальными управлениями компетентных органов в области обеспечения транспортной безопасности",
+            "Ространснадзором",
+            "компетентными органами в области обеспечения транспортной безопасности",
+            "руководителем субъекта транспортной инфраструктуры",
+          ],
+          correct: 2,
+        },
+        {
+          id: 34,
+          text: "Сведения о результатах проведенной оценки уязвимости ОТИ и ТС являются:",
+          answers: [
+            "общедоступной информацией",
+            "информацией с ограничениями в части касающейся отдельных положений",
+            "информацией ограниченного доступа",
+            "все вышеперечисленное",
+          ],
+          correct: 2,
+        },
+        {
+          id: 35,
+          text: "На носителях, содержащих информацию ограниченного доступа проставляется пометка:",
+          answers: [
+            "«для служебного пользования»",
+            "«информация ограниченного доступа»",
+            "«секретный документ»",
+            "«из организации не выносить»",
+          ],
+          correct: 0,
+        },
+        {
+          id: 36,
+          text: "Допуск к носителям информации, содержащим информацию ограниченного доступа, могут иметь:",
+          answers: [
+            "руководитель секретного отдела",
+            "два сотрудника с допуском к данной информации",
+            "все работники организации",
+            "только работники организаций, отвечающие требованиям законодательства о транспортной безопасности (ст. 10 Федерального закона от 09.02.2007 № 16-ФЗ «О транспортной безопасности»)",
+          ],
+          correct: 3,
+        },
+        {
+          id: 37,
+          text: "Категорирование объектов транспортной инфраструктуры и транспортных средств осуществляется:",
+          answers: [
+            "Ространснадзором",
+            "Министерством транспорта РФ",
+            "компетентными органами в области обеспечения транспортной безопасности",
+            "субъектом транспортной инфраструктуры",
+          ],
+          correct: 2,
+        },
+        {
+          id: 38,
+          text: "Что из нижеперечисленного не входит в перечень ограничений при выполнении работ, непосредственно связанных с обеспечением транспортной безопасности:",
+          answers: [
+            "лица, имеющие непогашенную или неснятую судимость за совершение умышленного преступления",
+            "лица, не прошедшие подготовку и аттестацию сил обеспечения транспортной безопасности",
+            "лица, достигшие пенсионного возраста",
+            "состоящие на учете в учреждениях органов здравоохранения по поводу психического заболевания, алкоголизма или наркомании",
+          ],
+          correct: 2,
+        },
+        {
+          id: 39,
+          text: "Что из нижеперечисленного не входит в перечень данных, необходимых для передачи в АЦБПДП:",
+          answers: ["дата поездки", "гражданство", "адрес регистрации", "пол"],
+          correct: 2,
+        },
+        {
+          id: 40,
+          text: "Оценка уязвимости ОТИ и ТС проводится в целях:",
+          answers: [
+            "определения степени защищенности объектов транспортной инфраструктуры и транспортных средств от потенциальных угроз совершения актов незаконного вмешательства в деятельность объектов транспортной инфраструктуры и транспортных средств",
+            "выполнения физическими лицами, следующими либо находящимися на объектах транспортной инфраструктуры или транспортных средствах, требований, установленных Правительством РФ",
+            "установления соответствия знаний, умений, навыков сил обеспечения транспортной безопасности",
+            "все вышеперечисленное",
+          ],
+          correct: 0,
+        },
+        {
+          id: 41,
+          text: "Срок проведения оценки уязвимости не должен превышать:",
+          answers: ["1 месяца", "3 месяцев", "6 месяцев", "9 месяцев"],
+          correct: 0,
+        },
+        {
+          id: 42,
+          text: "Решение об утверждении результатов проведенной оценки уязвимости либо об отказе в их утверждении принимается компетентным органом в срок:",
+          answers: [
+            "не превышающий 10 дней",
+            "не превышающий 30 дней",
+            "не превышающий 40 дней",
+            "не превышающий 60 дней",
+          ],
+          correct: 1,
+        },
+        {
+          id: 43,
+          text: "В какой срок с момента изменения характеристик ОТИ или ТС, обуславливающих изменение присвоенной категории, проводится дополнительная оценка уязвимости:",
+          answers: ["10 дней", "1 месяц", "2 месяца", "3 месяца"],
+          correct: 3,
+        },
+        {
+          id: 44,
+          text: "Решение об утверждении плана обеспечения транспортной безопасности либо об отказе в их утверждении принимается компетентным органом в срок:",
+          answers: [
+            "не превышающий 10 дней",
+            "не превышающий 30 дней",
+            "не превышающий 40 дней",
+            "не превышающий 60 дней",
+          ],
+          correct: 1,
+        },
+        {
+          id: 45,
+          text: "Обеспечение транспортной безопасности – это:",
+          answers: [
+            "реализация определяемой государством системы правовых, экономических, организационных и иных мер по обеспечению безопасности движения поездов",
+            "реализация определяемой государством системы правовых, экономических, организационных и иных мер по защите зданий, сооружений и оборудования предприятий транспортного комплекса от актов незаконного вмешательства",
+            "реализация определяемой государством системы правовых, экономических, организационных и иных мер, соответствующих угрозам совершения актов незаконного вмешательства",
+            "обеспечение взаимодействия правоохранительных органов и транспортных предприятий по защите от актов незаконного вмешательства",
+          ],
+          correct: 2,
+        },
+        {
+          id: 46,
+          text: "Угроза взрыва – это:",
+          answers: [
+            "возможность размещения или совершения действий в целях размещения каким бы то ни было способом на объектах транспортной инфраструктуры и/или транспортных средств взрывных устройств (взрывчатых веществ), которые могут разрушить объекты транспортной инфраструктуры и/или транспортных средств, нанести им и/или их грузу повреждения",
+            "возможность совершения хищения элементов на объектах транспортной инфраструктуры и/или транспортных средствах, которое может привести их в негодное для эксплуатации состояние, угрожающее жизни или здоровью персонала, пассажиров и других лиц",
+            "возможность разрушения объектов транспортной инфраструктуры и/или транспортных средств или нанесения им и/или их грузу, здоровью персонала, пассажирам и другим лицам повреждений путем взрыва (обстрела)",
+            "возможность создания препятствия, делающего невозможным движение транспортного средства или ограничивающего функционирование объект транспортной инфраструктуры, угрожающего жизни или здоровью персонала, пассажиров и других лиц",
+          ],
+          correct: 2,
+        },
+        {
+          id: 47,
+          text: "Уровень безопасности объектов транспортной инфраструктуры и транспортных средств N 1:",
+          answers: [
+            "степень защищенности транспортного комплекса от непосредственных угроз, заключающихся в наличии совокупности конкретных условий и факторов, создающих опасность совершения акта незаконного вмешательства в деятельность транспортного комплекса",
+            "степень защищенности транспортного комплекса от потенциальных угроз, заключающихся в наличии совокупности вероятных условий и факторов, создающих опасность совершения акта незаконного вмешательства в деятельность транспортного комплекса",
+            "степень защищенности транспортного комплекса от угрозы взрыва",
+            "степень защищенности транспортного комплекса от угрозы хищения",
+          ],
+          correct: 1,
+        },
+        {
+          id: 48,
+          text: "Уровень безопасности объектов транспортной инфраструктуры и транспортных средств N 2:",
+          answers: [
+            "степень защищенности транспортного комплекса от непосредственных угроз, заключающихся в наличии совокупности конкретных условий и факторов, создающих опасность совершения акта незаконного вмешательства в деятельность транспортного комплекса",
+            "степень защищенности транспортного комплекса от потенциальных угроз, заключающихся в наличии совокупности вероятных условий и факторов, создающих опасность совершения акта незаконного вмешательства в деятельность транспортного комплекса",
+            "степень защищенности транспортного комплекса от прямых угроз, заключающихся в наличии совокупности условий и факторов, создавших опасность совершения акта незаконного вмешательства в деятельность транспортного комплекса",
+            "степень защищенности транспортного комплекса от угрозы хищения",
+          ],
+          correct: 0,
+        },
+        {
+          id: 49,
+          text: "Уровень безопасности объектов транспортной инфраструктуры и транспортных средств N 3:",
+          answers: [
+            "степень защищенности транспортного комплекса от потенциальных угроз, заключающихся в наличии совокупности вероятных условий и факторов, создающих опасность совершения акта незаконного вмешательства в деятельность транспортного комплекса",
+            "степень защищенности транспортного комплекса от прямых угроз, заключающихся в наличии совокупности условий и факторов, создавших опасность совершения акта незаконного вмешательства в деятельность транспортного комплекса",
+            "степень защищенности транспортного комплекса от непосредственных угроз, заключающихся в наличии совокупности конкретных условий и факторов, создающих опасность совершения акта незаконного вмешательства в деятельность транспортного комплекса",
+            "степень защищенности транспортного комплекса от угрозы хищения",
+          ],
+          correct: 1,
+        },
+        {
+          id: 50,
+          text: "Уберите лишнее. Физические лица, следующие либо находящиеся на объекте транспортной инфраструктуры или транспортном средстве, обязаны:",
+          answers: [
+            "осуществлять проход (проезд) в зону транспортной безопасности в соответствии с правилами проведения досмотра, дополнительного досмотра и повторного досмотра в целях обеспечения транспортной безопасности, включающими перечень необходимых документов, устанавливаемыми Министерством транспорта РФ по согласованию с Министерством внутренних дел РФ и Федеральной службой безопасности РФ",
+            "принимать материальные объекты для их перевозки на транспортном средстве только с уведомлением об этом сил обеспечения транспортной безопасности и прохождения процедуры досмотра",
+            "выполнять требования сил обеспечения транспортной безопасности, направленные на обеспечение транспортной безопасности, а также не предпринимать действий, препятствующих выполнению ими служебных обязанностей",
+            "информировать силы обеспечения транспортной безопасности о событиях или действиях, создающих угрозу транспортной безопасности объекта транспортной инфраструктуры или транспортного средства",
+          ],
+          correct: 1,
+        },
+        {
+          id: 51,
+          text: "Требования по обеспечению транспортной безопасности являются:",
+          answers: [
+            "обязательными для исполнения всеми субъектами транспортной инфраструктуры, но не распространяются на всех юридических и/или физических лиц, находящихся на объектах транспортной инфраструктуры и/или транспортных средств",
+            "обязательными для исполнения всеми субъектами транспортной инфраструктуры и распространяются на всех юридических и/или физических лиц, находящихся на объектах транспортной инфраструктуры и/или транспортных средств",
+            "обязательными для исполнения всеми субъектами транспортной инфраструктуры и распространяются на всех юридических и/или физических лиц, находящихся на объектах транспортной инфраструктуры и/или транспортных средств на территории любого государства",
+            "обязательными для исполнения всеми юридическими и/или физическими лицами, находящихся на объектах транспортной инфраструктуры и/или транспортных средств",
+          ],
+          correct: 1,
+        },
+        {
+          id: 52,
+          text: "Субъект транспортной инфраструктуры обязан обеспечить проведение оценки уязвимости ОТИ и/или ТС и предоставление на утверждение в Федеральное агентство железнодорожного транспорта в установленном порядке ее результатов в течении:",
+          answers: [
+            "одного месяца с момента получения уведомления о включении ОТИ и/или ТС в Реестр категорированных объектов и о присвоенной категории",
+            "двух месяцев с момента получения уведомления о включении ОТИ и/или ТС в Реестр категорированных объектов и о присвоенной категории",
+            "трех месяцев со дня размещения на официальном сайте Федерального агентства железнодорожного транспорта в сети «Интернет» сведений о присвоении категории объекту транспортной инфраструктуры и (или) транспортному средству, которое сопровождается соответствующим уведомлением субъекта транспортной инфраструктуры по электронной почте и в письменном виде",
+            "шести месяцев со дня размещения на официальном сайте Федерального агентства железнодорожного транспорта в сети «Интернет» сведений о присвоении категории объекту транспортной инфраструктуры и (или) транспортному средству, которое сопровождается соответствующим уведомлением субъекта транспортной инфраструктуры по электронной почте и в письменном виде",
+          ],
+          correct: 2,
+        },
+        {
+          id: 53,
+          text: "Субъект транспортной инфраструктуры обязан разработать и предоставить на утверждение в Федеральное агентство железнодорожного транспорта план обеспечения транспортной безопасности в установленном в течение:",
+          answers: [
+            "одного месяца с момента утверждения результатов оценки уязвимости ОТИ и/или ТС",
+            "трех месяцев с момента утверждения результатов оценки уязвимости ОТИ и/или ТС",
+            "трех месяцев с момента получения уведомления о включении ОТИ и/или ТС в Реестр категорированных объектов и о присвоенной категории",
+            "шести месяцев с момента утверждения результатов оценки уязвимости ОТИ и/или ТС",
+          ],
+          correct: 1,
+        },
+        {
+          id: 54,
+          text: "Уполномоченным федеральным органом исполнительной власти по осуществлению федерального государственного контроля (надзора) в области транспортной безопасности является:",
+          answers: [
+            "Федеральная служба по надзору в сфере транспорта и ее территориальные органы",
+            "Генеральная прокуратура",
+            "Федеральная служба безопасности РФ",
+            "Министерство внутренних дел РФ",
+            "Министерство транспорта РФ",
+          ],
+          correct: 0,
+        },
+        {
+          id: 55,
+          text: "Работники подразделений транспортной безопасности обязаны проходить медицинские осмотры:",
+          answers: [
+            "каждые 6 месяцев",
+            "1 раз в год",
+            "2 раза в год",
+            "1 раз в 2 года",
+          ],
+          correct: 1,
+        },
+        {
+          id: 56,
+          text: "Значение категории, присвоенной объекту транспортной инфраструктуры или транспортному средству меняется в случае:",
+          answers: [
+            "изменения наивысшего (наивысших) количественных показателей критериев категорирования",
+            "изменения уровня безопасности",
+            "изменение степени угрозы совершения акта незаконного вмешательства",
+            "изменения уровня террористической опасности",
+          ],
+          correct: 0,
+        },
+        {
+          id: 57,
+          text: "Уберите лишнее. Критериями категорирования объектов транспортной инфраструктуры или транспортных средств являются:",
+          answers: [
+            "количественные показатели статистических данных (сведений) о совершенных и предотвращенных актах незаконного вмешательства на территории РФ",
+            "заведомо ложные сообщения об угрозе совершения и/или совершении акта незаконного вмешательства",
+            "количественные показатели о возможных погибших или получивших вред здоровью людей",
+            "количественные показатели о возможном материальном ущербе и ущербе окружающей природной среде",
+          ],
+          correct: 1,
+        },
+        {
+          id: 58,
+          text: "По результатам категорирования объектов транспортной инфраструктуры и/или транспортных средств присваивается категория, соответствующая:",
+          answers: [
+            "наименьшему количественному показателю любого из критериев категорирования",
+            "среднему показателю любого из критериев категорирования",
+            "высшему количественному показателю любого из критериев категорирования",
+            "наивысшему количественному показателю любого из критериев категорирования",
+          ],
+          correct: 3,
+        },
+        {
+          id: 59,
+          text: "Акт незаконного вмешательства – это:",
+          answers: [
+            "не выполнение физическими лицами, следующими либо находящимися на объектах транспортной инфраструктуры или транспортных средствах, требований, установленных Правительством РФ",
+            "противоправное действие (бездействие), в том числе террористический акт, угрожающее безопасной деятельности транспортного комплекса, повлекшее за собой причинение вреда жизни и здоровью людей, материальный ущерб либо создавшее угрозу наступления таких последствий",
+            "неисполнение силами обеспечения транспортной безопасности своих функциональных задач",
+            "все вышеперечисленное",
+          ],
+          correct: 1,
+        },
+        {
+          id: 60,
+          text: "Зона транспортной безопасности – это:",
+          answers: [
+            "участки объектов транспортной инфраструктуры или транспортных средств, допуск физических лиц и перемещение материальных объектов в которые осуществляется по перевозочным документам и/или пропускам установленных видов в соответствии с номенклатурами (перечнями) должностей и с учетом предметов и веществ, которые запрещены или ограничены для перемещения",
+            "участки объектов транспортной инфраструктуры или транспортных средств, доступ в которые ограничен для пассажиров и осуществляется для физических лиц и материальных объектов по пропускам установленных видов в соответствии с номенклатурами (перечнями) должностей с учетом предметов и веществ, которые запрещены или ограничены для перемещения",
+            "объект транспортной инфраструктуры, его часть (наземная, подземная, воздушная, надводная), транспортное средство, его часть, для которых в соответствии с требованиями по обеспечению транспортной безопасности устанавливается особый режим прохода (проезда) физических лиц (транспортных средств) и проноса (провоза) грузов, багажа, ручной клади, личных вещей либо перемещения животных",
+            "объект, на котором установлен особый режим прохода, проезда и перемещения",
+          ],
+          correct: 2,
+        },
+        {
+          id: 61,
+          text: "Компетентные органы в области обеспечения транспортной безопасности – это:",
+          answers: [
+            "федеральные органы исполнительной власти, уполномоченные Правительством РФ осуществлять функции по оказанию государственных услуг в области обеспечения транспортной безопасности",
+            "федеральные органы исполнительной власти в области обеспечения транспортной безопасности",
+            "федеральные органы исполнительной власти, осуществляющие функции по выработке государственной политики в сфере внутренних дел",
+            "аккредитованные юридические лица",
+          ],
+          correct: 0,
+        },
+        {
+          id: 62,
+          text: "Перевозчик – это:",
+          answers: [
+            "организация, находящаяся в ведении компетентных органов в области обеспечения транспортной безопасности и уполномоченные ими на аттестацию сил обеспечения транспортной безопасности",
+            "юридическое лицо, принявшие на себя обязанность перевезти пассажира",
+            "юридическое лицо или индивидуальный предприниматель, принявшие на себя обязанность доставить пассажира, вверенный им отправителем груз, багаж, грузобагаж из пункта отправления в пункт назначения, а также выдать груз, багаж, грузобагаж управомоченному на его получение лицу (получателю)",
+            "юридическое или физическое лицо, ответственное за обеспечение транспортной безопасности",
+          ],
+          correct: 2,
+        },
+        {
+          id: 63,
+          text: "Согласно Федеральному закону от 09.02.2007 г. № 16-ФЗ «О транспортной безопасности» оценка уязвимости ОТИ и ТС – это:",
+          answers: [
+            "определение перечня угроз в отношении объектов транспортной инфраструктуры и транспортных средств",
+            "определение степени защищенности объекта транспортной инфраструктуры и транспортного средства от потенциальных угроз совершения актов незаконного вмешательства в деятельность объектов транспортной инфраструктуры и транспортных средств",
+            "определение перечня компетентных органов в области обеспечения транспортной безопасности",
+            "до 100 человек",
+          ],
+          correct: 1,
+        },
+        {
+          id: 64,
+          text: "Согласно Федеральному закону от 09.02.2007 г. № 16-ФЗ «О транспортной безопасности» к транспортным средствам железнодорожного транспорта относится:",
+          answers: [
+            "только пассажирские вагоны",
+            "железнодорожный подвижной состав, осуществляющий перевозку пассажиров и (или) грузов повышенной опасности",
+            "только тяговый подвижной состав",
+            "железнодорожный подвижной состав, осуществляющий перевозку пассажиров и всех видов грузов на путях общего пользования, включая моторвагонный подвижной состав",
+          ],
+          correct: 1,
+        },
+        {
+          id: 65,
+          text: "Порядок проведения оценки уязвимости объектов транспортной инфраструктуры и транспортных средств определен:",
+          answers: [
+            "Приказом Минтранса РФ, ФСБ РФ, МВД РФ от 5 марта 2010 г. № 52/112/134",
+            "Приказом Минтранса РФ от 21 февраля 2011 г. № 62",
+            "Приказом Минтранса РФ от 8 февраля 2011 г. № 43",
+            "Приказом Минтранса РФ от 01 ноября 2021 г. № 370",
+          ],
+          correct: 3,
+        },
+        {
+          id: 66,
+          text: "Основанием для проведения плановой проверки является. Уберите лишнее.",
+          answers: [
+            "истечение одного года со дня государственной регистрации субъекта транспортной инфраструктуры объектов транспортной инфраструктуры",
+            "истечение одного года со дня государственной регистрации перевозчика",
+            "истечение одного года со дня окончания проведения последней плановой проверки",
+            "истечение срока исполнения субъектом транспортной инфраструктуры, перевозчиком, застройщиком объектов транспортной инфраструктуры выданного органом государственного контроля (надзора) предписания об устранении выявленного нарушения требований по обеспечению транспортной безопасности",
+          ],
+          correct: 3,
+        },
+        {
+          id: 67,
+          text: "Предварительное уведомление субъекта транспортной инфраструктуры, перевозчика, застройщика объектов транспортной инфраструктуры о проведении внеплановой выездной проверки:",
+          answers: [
+            "допускается письменное уведомление за один рабочий день до проверки",
+            "допускается телефонный звонок за один час до проверки",
+            "допускается извещение на сайте Ространснадзора в день начала проверки",
+            "предусмотрено уведомление не менее чем за 24 часа до начала ее проведения любым доступным способом, за исключением внеплановой выездной проверки по основаниям, указанным в подпунктах 2, 3 пункта 58 соответствующего Регламента Ространснадзора",
+          ],
+          correct: 3,
+        },
+        {
+          id: 68,
+          text: "В перечень работ, непосредственно связанных с обеспечением транспортной безопасности в соответствии с постановлением Правительства РФ от 18.09.2023 г. N 1518 входят:",
+          answers: [
+            "аккредитация специализированных организаций в области транспортной безопасности",
+            "оценка уязвимости объектов транспортной инфраструктуры и транспортных средств",
+            "категорирование объектов транспортной инфраструктуры и транспортных средств",
+            "все вышеперечисленное",
+          ],
+          correct: 3,
+        },
+        {
+          id: 69,
+          text: "О проведении плановой проверки субъект уведомляется Управлением (территориальным органом Ространснадзора) не позднее:",
+          answers: [
+            "одного рабочего дня до начала ее проведения",
+            "трех рабочих дней до начала ее проведения",
+            "пяти рабочих дней до начала ее проведения",
+            "тридцати рабочих дней до начала ее проведения",
+          ],
+          correct: 1,
+        },
+        {
+          id: 70,
+          text: "Проверка уровня физической подготовки не назначается для работников:",
+          answers: [
+            "ФГП ВО ЖДТ России, включенных в состав группы быстрого реагирования",
+            "Подразделения транспортной безопасности, включенных в состав группы быстрого реагирования",
+            "ФГУП УВО Минтранса, включенных в состав группы быстрого реагирования",
+            "осуществляющих досмотр, дополнительный досмотр, повторный досмотр в целях обеспечения транспортной безопасности",
+          ],
+          correct: 3,
+        },
+        {
+          id: 71,
+          text: "К обработке персональных данных отдельных категорий лиц, принимаемых на работу, непосредственно связанную с обеспечением транспортной безопасности, или выполняющих такую работу не относится:",
+          answers: [
+            "проверка документов, указанных в Правилах аттестации сил обеспечения транспортной безопасности, получение дополнительной информации у лиц, располагающих указанными документами и (или) информацией о содержании указанных документов",
+            "проверка законности получения документов об образовании",
+            "исследование перечня организаций и физических лиц, в отношении которых имеются сведения об их причастности к экстремистской деятельности или терроризму, размещенного на официальном сайте Федеральной службы по финансовому мониторингу в сети «Интернет»",
+            "все вышеперечисленное",
+          ],
+          correct: 1,
+        },
+        {
+          id: 72,
+          text: "Согласно Федеральному закону от 09.02.2007 г. № 16-ФЗ «О транспортной безопасности» аттестация сил обеспечения транспортной безопасности – это:",
+          answers: [
+            "итоговые выпускные экзамены после обучения на курсах повышения квалификации по транспортной безопасности",
+            "рассмотрение документов о присвоенной квалификации, выдаваемых учебными заведениями",
+            "проверка наличия лицензий (сертификатов) на виды деятельности, осуществляемые при обеспечении транспортной безопасности",
+            "установление соответствия знаний, умений, навыков сил обеспечения транспортной безопасности, личностных (психофизиологических) качеств, уровня физической подготовки отдельных категорий сил обеспечения транспортной безопасности требованиям законодательства РФ о транспортной безопасности в целях принятия субъектом транспортной инфраструктуры решения о допуске (невозможности допуска) сил обеспечения транспортной безопасности к выполнению работы, непосредственно связанной с обеспечением транспортной безопасности, либо об отстранении от выполнения такой работы",
+          ],
+          correct: 3,
+        },
+        {
+          id: 73,
+          text: "Согласно Федеральному закону от 09.02.2007 г. № 16-ФЗ «О транспортной безопасности» аттестующие организации – это:",
+          answers: [
+            "компетентные органы в области обеспечения транспортной безопасности",
+            "Министерство транспорта РФ",
+            "юридические лица, аккредитованные компетентными органами в области обеспечения транспортной безопасности",
+            "комиссия, сформированная приказом руководителя субъекта транспортной инфраструктуры",
+          ],
+          correct: 2,
+        },
+        {
+          id: 74,
+          text: "Согласно Федеральному закону от 09.02.2007 г. № 16-ФЗ «О транспортной безопасности» органы аттестации – это:",
+          answers: [
+            "учебные центры транспортной безопасности, осуществляющие подготовку сил обеспечения транспортной безопасности и осуществляющие прием итоговых выпускных экзаменов",
+            "компетентные органы в области обеспечения транспортной безопасности, их территориальные подразделения, а также организации, находящиеся в ведении компетентных органов в области обеспечения транспортной безопасности и уполномоченные ими на аттестацию сил обеспечения транспортной безопасности",
+            "должностные лица субъекта транспортной инфраструктуры, осуществляющие прием экзаменов перед назначением на должность, связанную с транспортной безопасностью",
+            "представители Ространснадзора, осуществляющие проверку субъекта транспортной инфраструктуры, связанную с транспортной безопасностью",
+          ],
+          correct: 1,
+        },
+        {
+          id: 75,
+          text: "Порядок подготовки сил обеспечения транспортной безопасности определен:",
+          answers: [
+            "постановлением Правительства РФ от 26 февраля 2015 г. № 172 «О порядке аттестации сил обеспечения транспортной безопасности»",
+            "приказом Минтранса РФ от 21 августа 2014 г. № 231 «Об утверждении требований к знаниям, умениям, навыкам сил обеспечения транспортной безопасности...»",
+            "приказом Минтранса РФ от 12 июля 2021 г. № 232 «Об утверждении порядка подготовки сил обеспечения транспортной безопасности»",
+            "всеми вышеперечисленными документами",
+          ],
+          correct: 2,
+        },
+        {
+          id: 76,
+          text: "В каких случаях проводится внеочередная аттестация?",
+          answers: [
+            "наличие вынесенного постановления органа, уполномоченного осуществлять федеральный государственный контроль (надзор) в области транспортной безопасности, которым установлен факт несоблюдения требований законодательства РФ о транспортной безопасности в результате действия (бездействия) аттестованного лица",
+            "изменение должностных обязанностей аттестованного лица, в случае если такие изменения повлекли за собой дополнительные требования к его знаниям, умениям, навыкам и личностным (психофизиологическим) качествам",
+            "изменение требований к знаниям, умениям и навыкам аттестованных лиц, к личностным (психофизиологическим) качествам отдельных категорий аттестованных лиц",
+            "во всех перечисленных случаях",
+          ],
+          correct: 3,
+        },
+        {
+          id: 77,
+          text: "С какой периодичностью проводится аттестация для работников, назначенных в качестве лиц, ответственных за обеспечение транспортной безопасности в субъекте транспортной инфраструктуры?",
+          answers: [
+            "один раз в 5 лет",
+            "один раз в 4 года",
+            "один раз в 3 года",
+            "один раз в 2 года или один раз в 3 года, если работник прошёл повышение квалификации",
+          ],
+          correct: 0,
+        },
+        {
+          id: 78,
+          text: "В ходе проверки знаний, умений, навыков аттестуемому лицу необходимо:",
+          answers: [
+            "ответить на один тематический вопрос, решить практическую задачу и пройти письменный (компьютерный) тест, содержащий не менее 10 вопросов с четырьмя и более многовариантными ответами",
+            "ответить на три тематических вопроса, решить две практические задачи, содержащиеся в билетах, и пройти письменный (компьютерный) тест, содержащий не менее 50 вопросов с четырьмя и более многовариантными ответами",
+            "ответить на пять тематических вопросов, решить практическую задачу и пройти письменный (компьютерный) тест, содержащий не менее 100 вопросов с четырьмя и более многовариантными ответами",
+            "ответить на несколько тематических вопросов, решить одну-две практические задачи, содержащиеся в билетах, и пройти собеседование",
+          ],
+          correct: 1,
+        },
+        {
+          id: 79,
+          text: "Аттестованные лица подлежат внеочередной аттестации в случае:",
+          answers: [
+            "наличия вступившего в законную силу решения суда, которым установлен факт несоблюдения требований законодательства РФ о транспортной безопасности в результате действия (бездействия) аттестованного лица",
+            "изменения должностных обязанностей аттестованного лица, в случае если такие изменения повлекли за собой дополнительные требования к его знаниям, умениям, навыкам и личностным (психофизиологическим) качествам",
+            "изменения требований к знаниям, умениям и навыкам аттестованных лиц, к личностным (психофизиологическим) качествам отдельных категорий аттестованных лиц",
+            "во всех перечисленных случаях",
+          ],
+          correct: 3,
+        },
+        {
+          id: 80,
+          text: "Каким организациям передается информация об актах незаконного вмешательства:",
+          answers: [
+            "компетентному органу в области обеспечения транспортной безопасности, территориальному управлению федерального органа исполнительной власти, осуществляющего функции по контролю и надзору в сфере транспорта",
+            "уполномоченному подразделению федерального органа исполнительной власти в области обеспечения безопасности РФ",
+            "уполномоченному подразделению федерального органа исполнительной власти, осуществляющего функции по выработке государственной политики и нормативно-правовому регулированию в сфере внутренних дел",
+            "всем вышеуказанным организациям",
+          ],
+          correct: 3,
+        },
+        {
+          id: 81,
+          text: "Когда передается информация об актах незаконного вмешательства:",
+          answers: [
+            "в течение 3 часов",
+            "немедленно",
+            "незамедлительно",
+            "по указанию лица, ответственного за транспортную безопасность на объектах транспортной инфраструктуры",
+          ],
+          correct: 2,
+        },
+        {
+          id: 82,
+          text: "Форма передачи информации об актах незаконного вмешательства компетентным органам:",
+          answers: [
+            "по согласованной с Компетентным органом в области обеспечения транспортной безопасности",
+            "по указанию начальника объекта транспортной безопасности",
+            "по указанию лица, ответственного за транспортную безопасность на объектах транспортной инфраструктуры",
+            "информация передается в соответствии с приказом Минтранса России от 16.02.2011 № 56",
+          ],
+          correct: 3,
+        },
+        {
+          id: 83,
+          text: "Порядок, обеспечиваемый совокупностью мероприятий и правил, исключающих возможность бесконтрольного входа (выхода) работников и посетителей, въезда (выезда) транспортных средств, вноса (выноса) и ввоза (вывоза) материальных ценностей на охраняемые объекты (с охраняемых объектов) называется:",
+          answers: [
+            "внутриобъектовым режимом",
+            "контрольно-пропускным пунктом",
+            "пропускным режимом",
+            "подразделением охраны",
+          ],
+          correct: 2,
+        },
+        {
+          id: 84,
+          text: "Субъект транспортной инфраструктуры на объектах транспортной инфраструктуры первой категории обязан реализовать план обеспечения транспортной безопасности:",
+          answers: [
+            "в течение 6 месяцев со дня включения в реестр объектов транспортной инфраструктуры",
+            "в течение 2 лет со дня включения в реестр объектов транспортной инфраструктуры",
+            "ко дню включения в реестр объектов транспортной инфраструктуры",
+            "в течение 6 лет со дня включения в реестр объектов транспортной инфраструктуры",
+          ],
+          correct: 1,
+        },
+        {
+          id: 85,
+          text: "Автоматизированные централизованные базы персональных данных о пассажирах и персонале транспортных средств формируются при осуществлении следующих видов железнодорожных перевозок:",
+          answers: [
+            "местного сообщения",
+            "дальнего следования",
+            "пригородного сообщения",
+            "всех вышеперечисленных",
+          ],
+          correct: 1,
+        },
+        {
+          id: 86,
+          text: "К результатам предоставления государственной услуги по утверждению планов обеспечения транспортной безопасности ОТИ и (или) ТС не относится:",
+          answers: [
+            "утверждение Плана",
+            "отказ в утверждении Плана",
+            "утверждение изменений, вносимых в План",
+            "рекомендации по устранению замечаний в Плане",
+          ],
+          correct: 3,
+        },
+        {
+          id: 87,
+          text: "К абонентским средствам радиосвязи, применяемым на объектах транспортной инфраструктуры в интересах обеспечения транспортной безопасности предъявляются требования:",
+          answers: [
+            "соединения в частотных диапазонах, установленных Минтрансом России",
+            "соединения в частотных диапазонах, установленных Росжелдором",
+            "соединения в аналоговом режиме в частотных диапазонах, установленных решением Государственной комиссии по радиочастотам",
+            "передачи информации в сети в канальном или пакетном режимах",
+          ],
+          correct: 3,
+        },
+        {
+          id: 88,
+          text: "Проход в перевозочный сектор зоны транспортной безопасности разрешается:",
+          answers: [
+            "свободно всем категориям граждан",
+            "по документам установленного образца (проездным билетам) пассажирам и персоналу",
+            "только сотрудникам транспортной безопасности по специальным пропускам",
+            "только сотрудникам транспортной полиции",
+          ],
+          correct: 1,
+        },
+        {
+          id: 89,
+          text: "Заключительная часть отчета о проведенной оценке уязвимости содержит:",
+          answers: [
+            "информацию о наиболее вероятных способах реализации потенциальных угроз совершения актов незаконного вмешательства",
+            "информацию об оценке соответствия предоставленной документации и фактических результатов обследования ОТИ и ТС",
+            "информацию о выявленных недостатках в организации мероприятий по обеспечению транспортной безопасности",
+            "определение рекомендаций СТИ в отношении мер, которые необходимо дополнительно включить в систему мер по обеспечению транспортной безопасности ОТИ (ТС)",
+            "рекомендации субъекту транспортной инфраструктуры по изменению существующей системы мероприятий и мер транспортной безопасности",
+          ],
+          correct: 3,
+        },
+        {
+          id: 90,
+          text: "Уберите лишнее. Субъект транспортной инфраструктуры обязан:",
+          answers: [
+            "выделить и оборудовать отдельные помещения (участки) для размещения работников подразделений транспортной безопасности",
+            "предоставить помещения (участки) для проведения досмотра физических лиц",
+            "выделить и оборудовать помещения (участки помещений) для содержания задержанных нарушителей",
+            "выделить и оборудовать пункты управления обеспечением транспортной безопасности",
+          ],
+          correct: 2,
+        },
+        {
+          id: 91,
+          text: "Субъект транспортной инфраструктуры обязан информировать компетентный орган в области обеспечения транспортной безопасности о планируемых изменениях конструктивных или технических элементов, технологических процессов на ОТИ и ТС, приводящих к изменению установленной категории:",
+          answers: [
+            "за 6 месяцев до момента изменения",
+            "за 3 месяца до момента изменения",
+            "за месяц до момента изменения",
+            "незамедлительно",
+          ],
+          correct: 3,
+        },
+        {
+          id: 92,
+          text: "При проведении оценки уязвимости ОТИ и ТС в первую очередь проводится следующие действия:",
+          answers: [
+            "по изучению системы принятых на ОТИ и ТС мер по защите от актов незаконного вмешательства",
+            "по изучению технических и технологических характеристик ОТИ и ТС, организации его эксплуатации",
+            "по определению рекомендаций субъекту транспортной инфраструктуры по совершенствованию системы мер обеспечения транспортной безопасности на ОТИ и ТС",
+            "все вышеперечисленное",
+          ],
+          correct: 1,
+        },
+        {
+          id: 93,
+          text: "Реализация дополнительных мер, с момента получения сообщения об изменении уровня безопасности должна произойти для ОТИ и ТС четвертой и третьей категории в сроки, не превышающие:",
+          answers: ["3 часа", "6 часов", "9 часов", "12 часов"],
+          correct: 3,
+        },
+        {
+          id: 94,
+          text: "Реализация дополнительных мер, с момента получения сообщения об изменении уровня безопасности должна произойти для ОТИ и ТС первой категории в сроки, не превышающие:",
+          answers: ["3 часа", "6 часов", "8 часов", "10 часов"],
+          correct: 0,
+        },
+        {
+          id: 95,
+          text: "Реализация дополнительных мер, с момента получения сообщения об изменении уровня безопасности для ОТИ и ТС второй категории в сроки, не превышающие:",
+          answers: ["3 часа", "6 часов", "9 часов", "12 часов"],
+          correct: 1,
+        },
+        {
+          id: 96,
+          text: "Что проводит субъект транспортной инфраструктуры на ОТИ первой категории на основании данных видеонаблюдения при перемещении физических лиц и/или транспортных средств через КПП на границах зоны транспортной безопасности и/или критических элементах железнодорожных вокзалов:",
+          answers: [
+            "видеоидентификацию",
+            "видеообнаружение",
+            "видеораспознавание",
+            "видеомониторинг",
+          ],
+          correct: 0,
+        },
+        {
+          id: 97,
+          text: "Что выполняет субъект транспортной инфраструктуры для обнаружения и распознавания характера событий на основании данных видеонаблюдения в произвольном месте и в произвольное время в секторе свободного доступа, перевозочном секторе зоны транспортной безопасности и на критических элементах ОТИ первой категории?",
+          answers: [
+            "видеоидентификацию",
+            "видеообнаружение",
+            "видеораспознавание",
+            "видеомониторинг",
+          ],
+          correct: 2,
+        },
+        {
+          id: 98,
+          text: "Что проводит субъект транспортной инфраструктуры на ОТИ первой категории на основании данных видеонаблюдения за физическими лицами и транспортными средствами в произвольном месте и в произвольное время в технологическом секторе зоны транспортной безопасности ОТИ?",
+          answers: [
+            "видеоидентификацию",
+            "видеообнаружение",
+            "видеораспознавание",
+            "видеомониторинг",
+          ],
+          correct: 1,
+        },
+        {
+          id: 99,
+          text: "Что выполняет субъект транспортной инфраструктуры на ОТИ первой категории для обнаружения физических лиц и транспортных средств, являющихся объектами видеонаблюдения, в заданном месте и в заданное время по периметру зоны транспортной безопасности?",
+          answers: [
+            "видеоидентификация",
+            "видеообнаружение",
+            "видеораспознавание",
+            "видеомониторинг",
+          ],
+          correct: 3,
+        },
+        {
+          id: 100,
+          text: "Субъект транспортной инфраструктуры обязан объявить (установить) или отменить уровень безопасности ОТИ на основании решения об изменении степени угрозы совершения АНВ:",
+          answers: [
+            "в течении 3 часов",
+            "незамедлительно",
+            "по мере возможности",
+            "в кратчайший срок",
+          ],
+          correct: 1,
+        },
+        {
+          id: 101,
+          text: "Интенсивность проведения дополнительного досмотра для различных категорий ОТИ метрополитена с учетом уровней безопасности устанавливается в зависимости от:",
+          answers: [
+            "загруженности средств досмотра",
+            "процентного соотношения перемещаемых в зону транспортной безопасности объектов досмотра",
+            "наличия на ОТИ технических средств досмотра",
+            "решения компетентного органа в области обеспечения транспортной безопасности",
+          ],
+          correct: 0,
+        },
+        {
+          id: 102,
+          text: "Субъект транспортной инфраструктуры на ОТИ первой категории при первом уровне безопасности обязан проводить досмотр объектов досмотра при их перемещении:",
+          answers: [
+            "с территории, прилегающей к зоне транспортной безопасности ОТИ в секторы зоны транспортной безопасности, а также из сектора свободного доступа в перевозочный и технологический сектора зоны транспортной безопасности",
+            "с территории, прилегающей к зоне транспортной безопасности ОТИ в секторы зоны транспортной безопасности",
+            "из перевозочного сектора в технологический сектор зоны транспортной безопасности",
+            "из сектора свободного доступа в перевозочный и технологический сектора зоны транспортной безопасности",
+          ],
+          correct: 0,
+        },
+        {
+          id: 103,
+          text: "Субъект транспортной инфраструктуры на транспортных средствах первой категории при втором уровне безопасности обязан:",
+          answers: [
+            "не допускать посетителей на критические элементы объектов транспортной инфраструктуры",
+            "не допускать посетителей на территорию технологического сектора зоны транспортной безопасности и на критические элементы объектов транспортной инфраструктуры",
+            "не допускать посетителей на территорию перевозочного сектора зоны транспортной безопасности объектов транспортной инфраструктуры",
+            "допускать посетителей на территорию перевозочного сектора зоны транспортной безопасности транспортных средств",
+          ],
+          correct: 0,
+        },
+        {
+          id: 104,
+          text: "Интенсивность проведения дополнительного досмотра для различных категорий ОТИ и ТС железнодорожного транспорта с учетом уровней безопасности устанавливается в зависимости от:",
+          answers: [
+            "загруженности средств досмотра",
+            "процентного соотношения перемещаемых в зону транспортной безопасности объектов досмотра",
+            "наличия на ОТИ технических средств досмотра",
+            "решения компетентного органа в области обеспечения транспортной безопасности",
+          ],
+          correct: 1,
+        },
+        {
+          id: 105,
+          text: "Субъект транспортной инфраструктуры на ОТИ первой категории при первом уровне безопасности обязан выявлять нарушителей, совершение или подготовку к совершению актов незаконного вмешательства путем постоянного непрерывного контроля, выводимых техническими средствами ОТБ данных и показателей:",
+          answers: [
+            "не менее чем 2 работниками сил обеспечения транспортной безопасности",
+            "одним работником сил обеспечения транспортной безопасности",
+            "не менее чем тремя сотрудниками сил обеспечения транспортной безопасности",
+            "по мере возможности",
+          ],
+          correct: 0,
+        },
+        {
+          id: 106,
+          text: "Субъект транспортной инфраструктуры на ОТИ первой категории при втором уровне безопасности обязан проводить наблюдение и (или) собеседование:",
+          answers: [
+            "на контрольно-пропускных пунктах, постах в ходе досмотра, дополнительного досмотра и повторного досмотра",
+            "на контрольно-пропускных пунктах, постах в ходе досмотра, дополнительного досмотра и повторного досмотра, а также в секторе свободного доступа зоны транспортной безопасности",
+            "на контрольно-пропускных пунктах, постах в ходе досмотра, дополнительного досмотра и повторного досмотра, в перевозочном секторе зоны транспортной безопасности",
+            "в перевозочном и технологическом секторах зоны транспортной безопасности",
+          ],
+          correct: 1,
+        },
+        {
+          id: 107,
+          text: "Субъект транспортной инфраструктуры на ОТИ первой категории при втором уровне безопасности обязан не допускать посетителей:",
+          answers: [
+            "на критические элементы объектов транспортной инфраструктуры",
+            "на территорию технологического сектора зоны транспортной безопасности объектов транспортной инфраструктуры",
+            "на территорию сектора свободного доступа зоны транспортной безопасности объектов транспортной инфраструктуры",
+            "на территорию перевозочного сектора зоны транспортной безопасности объектов транспортной инфраструктуры объектов транспортной инфраструктуры",
+            "на объект транспортной инфраструктуры",
+          ],
+          correct: 0,
+        },
+        {
+          id: 108,
+          text: "Субъект транспортной инфраструктуры на ОТИ четвертой категории при втором уровне безопасности обязан не допускать посетителей:",
+          answers: [
+            "на критические элементы объектов транспортной инфраструктуры",
+            "на территорию технологического сектора зоны транспортной безопасности объектов транспортной инфраструктуры",
+            "на территорию сектора свободного доступа зоны транспортной безопасности объектов транспортной инфраструктуры",
+            "на территорию перевозочного сектора зоны транспортной безопасности объектов транспортной инфраструктуры",
+          ],
+          correct: 0,
+        },
+        {
+          id: 109,
+          text: "Субъект транспортной инфраструктуры на ОТИ третьей категории при первом уровне безопасности обязан выявлять нарушителей, совершение или подготовку к совершению актов незаконного вмешательства путем постоянного непрерывного контроля выводимых техническими средствами ОТБ данных и показателей:",
+          answers: [
+            "не менее чем 2 работниками сил обеспечения транспортной безопасности",
+            "одним работником сил обеспечения транспортной безопасности",
+            "не менее чем тремя сотрудниками сил обеспечения транспортной безопасности",
+            "по мере возможности",
+          ],
+          correct: 1,
+        },
+        {
+          id: 110,
+          text: "Субъект транспортной инфраструктуры на ОТИ первой категории при первом уровне безопасности в отношении объектов досмотра, перемещаемых из перевозочного сектора в технологический сектор зоны транспортной безопасности и наоборот, проводить досмотр:",
+          answers: [
+            "не обязан",
+            "обязан, за исключением лиц, обладающих постоянными пропусками для прохода на объект транспортной инфраструктуры",
+            "обязан в отношении всех без исключения объектов досмотра",
+            "обязан проводить только дополнительный досмотр",
+          ],
+          correct: 1,
+        },
+        {
+          id: 111,
+          text: "Субъект транспортной инфраструктуры на объекте транспортной инфраструктуры второй категории обязан обеспечить передачу данных с систем видеонаблюдения в соответствии с порядком передачи данных:",
+          answers: [
+            "не реже 1 раза в сутки",
+            "в режиме реального времени",
+            "по запросу",
+            "по указанию начальника",
+          ],
+          correct: 1,
+        },
+        {
+          id: 112,
+          text: "Субъект транспортной инфраструктуры на объекте транспортной инфраструктуры второй категории обязан обеспечить передачу данных о лицах, пропущенных в перевозочный и технологический секторы зоны транспортной безопасности или на критические элементы объекта транспортной инфраструктуры:",
+          answers: [
+            "не реже 1 раза в сутки",
+            "в режиме реального времени",
+            "по запросу",
+            "дистанционно",
+          ],
+          correct: 1,
+        },
+        {
+          id: 113,
+          text: "Срок хранения в электронном виде данных с технических средств ОТБ, обладающих необходимыми для этого конструктивными особенностями, на объектах транспортной инфраструктуры второй категории:",
+          answers: [
+            "не менее 15 дней",
+            "не менее 5 дней",
+            "не менее 30 суток",
+            "не менее 10 дней",
+          ],
+          correct: 2,
+        },
+        {
+          id: 114,
+          text: "Субъект транспортной инфраструктуры на ОТИ первой категории при третьем уровне безопасности обязан не допускать посетителей:",
+          answers: [
+            "на территорию перевозочного сектора зоны транспортной безопасности и на критические элементы объектов транспортной инфраструктуры",
+            "на территорию технологического сектора зоны транспортной безопасности объектов транспортной инфраструктуры",
+            "на территорию сектора свободного доступа зоны транспортной безопасности объектов транспортной инфраструктуры",
+            "на объект транспортной инфраструктуры",
+          ],
+          correct: 0,
+        },
+        {
+          id: 115,
+          text: "Субъект транспортной инфраструктуры на ОТИ третьей категории при первом уровне безопасности обязан проводить наблюдение и (или) собеседование:",
+          answers: [
+            "на контрольно-пропускных пунктах, постах в ходе досмотра, дополнительного досмотра и повторного досмотра",
+            "в секторе свободного доступа зоны транспортной безопасности",
+            "в перевозочном и технологическом секторах зоны транспортной безопасности",
+            "все вышеперечисленное",
+          ],
+          correct: 0,
+        },
+        {
+          id: 116,
+          text: "Субъект транспортной инфраструктуры на ОТИ второй категории при втором уровне безопасности обязан:",
+          answers: [
+            "не допускать посетителей на критические элементы объектов транспортной инфраструктуры",
+            "не допускать посетителей на территорию технологического сектора зоны транспортной безопасности и на критические элементы объектов транспортной инфраструктуры",
+            "не допускать посетителей на территорию перевозочного сектора зоны транспортной безопасности объектов транспортной инфраструктуры",
+            "все вышеперечисленное",
+          ],
+          correct: 0,
+        },
+        {
+          id: 117,
+          text: "Критический элемент на объектах транспортной инфраструктуры метрополитена — это:",
+          answers: [
+            "строения, помещения объектов транспортной инфраструктуры и/или транспортных средств, акт незаконного вмешательства в отношении которых, не приведет к полному прекращению его функционирования",
+            "строения, помещения, конструктивные, технологические и технические элементы объекта, совершение акта незаконного вмешательства в отношении которых приведет к полному или частичному прекращению функционирования объекта метрополитена и (или) метрополитена либо возникновению чрезвычайных ситуаций",
+            "строения, помещения, конструктивные, технологические и технические элементы объекта транспортной инфраструктуры и транспортного средства, совершение акта незаконного вмешательства, в отношении которых приведет к прекращению функционирования объекта транспортной инфраструктуры и (транспортного средства)",
+            "технологические и технические элементы объектов транспортной инфраструктуры и/или транспортных средств, обеспечивающие их функционирование",
+          ],
+          correct: 1,
+        },
+        {
+          id: 118,
+          text: "Субъект транспортной инфраструктуры на ОТИ четвертой категории при первом уровне безопасности обязан проводить наблюдение и (или) собеседование:",
+          answers: [
+            "на контрольно-пропускных пунктах, постах в ходе досмотра, дополнительного досмотра и повторного досмотра",
+            "в секторе свободного доступа зоны транспортной безопасности",
+            "в перевозочном и технологическом секторах зоны транспортной безопасности",
+            "все вышеперечисленное",
+          ],
+          correct: 0,
+        },
+        {
+          id: 119,
+          text: "Субъект транспортной инфраструктуры на ОТИ второй категории при втором уровне безопасности установленном только в отношении транспортных средств первой категории находящихся на ОТИ обязан:",
+          answers: [
+            "не допускать посетителей на критические элементы транспортных средств первой категории",
+            "не допускать посетителей на территорию перевозочного сектора зоны транспортной безопасности и на критические элементы объектов транспортной инфраструктуры и транспортных средств",
+            "не допускать посетителей на территорию перевозочного сектора зоны транспортной безопасности объектов транспортной инфраструктуры и транспортных средств первой категории",
+            "допускать посетителей только на территорию перевозочного сектора зоны транспортной безопасности объектов транспортной инфраструктуры",
+          ],
+          correct: 0,
+        },
+        {
+          id: 120,
+          text: "Субъект транспортной инфраструктуры на ОТИ первой категории обязан проводить на контрольно-пропускных пунктах, постах и в зоне транспортной безопасности ОТИ повторный досмотр объектов досмотра:",
+          answers: [
+            "в отношении которых будет выявлена связь с совершением или подготовкой к совершению акта незаконного вмешательства, включая материальные объекты досмотра, подозрительные на наличие предметов и веществ, которые запрещены или ограничены для перемещения",
+            "при получении информации об угрозе совершения акта незаконного вмешательства в целях выявления физических лиц, в действиях которых усматриваются признаки подготовки к совершению актов незаконного вмешательства, либо материально-технических объектов, которые могут быть использованы для подготовки и совершения актов незаконного вмешательства",
+            "при условии некачественного проведения дополнительного досмотра",
+            "по результатам наблюдения и собеседования",
+          ],
+          correct: 1,
+        },
+        {
+          id: 121,
+          text: "Субъект транспортной инфраструктуры на ОТИ второй категории при третьем уровне безопасности обязан выявлять нарушителей, совершение или подготовку к совершению актов незаконного вмешательства путем постоянного непрерывного контроля выводимых техническими средствами ОТБ данных и показателей:",
+          answers: [
+            "одним сотрудником сил обеспечения транспортной безопасности",
+            "двумя сотрудниками сил обеспечения транспортной безопасности",
+            "тремя сотрудниками сил обеспечения транспортной безопасности",
+            "увеличив численность сил обеспечения транспортной безопасности в соответствии с планом обеспечения транспортной безопасности",
+          ],
+          correct: 3,
+        },
+        {
+          id: 122,
+          text: "Субъект транспортной инфраструктуры на ОТИ третьей категории при втором уровне безопасности обязан проводить наблюдение и (или) собеседование:",
+          answers: [
+            "на контрольно-пропускных пунктах, постах в ходе досмотра, дополнительного досмотра и повторного досмотра, а также в секторе свободного доступа зоны транспортной безопасности",
+            "в секторе свободного доступа зоны транспортной безопасности",
+            "в перевозочном и технологическом секторах зоны транспортной безопасности",
+            "на контрольно-пропускных пунктах, постах в ходе досмотра, дополнительного досмотра и повторного досмотра",
+          ],
+          correct: 0,
+        },
+        {
+          id: 123,
+          text: "Субъект транспортной инфраструктуры на объектах транспортной инфраструктуры обязан:",
+          answers: [
+            "не допускать совершения актов незаконного вмешательства, включающих хищение, материальных объектов, находящихся на объекте транспортной инфраструктуры, на критических элементах и иных уязвимых участках объекта транспортной инфраструктуры, определенных в ходе оценки уязвимости",
+            "не допускать подготовки к совершению актов незаконного вмешательства, включающей, повреждение материальных объектов, находящихся на объекте транспортной инфраструктуры, на критических элементах и иных уязвимых участках объекта транспортной инфраструктуры, определенных в ходе оценки уязвимости",
+            "не допускать получения контроля нарушителем над объектом транспортной инфраструктуры, критическими элементами и иными уязвимыми участками объекта транспортной инфраструктуры, определенными в ходе оценки уязвимости",
+            "все вышеперечисленное",
+          ],
+          correct: 3,
+        },
+        {
+          id: 124,
+          text: "Субъект транспортной инфраструктуры на объектах транспортной инфраструктуры обязан:",
+          answers: [
+            "не допускать совершения актов незаконного вмешательства, включающей хищение, материальных объектов, находящихся на объекте транспортной инфраструктуры, на критических элементах и иных уязвимых участках объекта транспортной инфраструктуры, определенных в ходе оценки уязвимости",
+            "не допускать подготовки к совершению актов незаконного вмешательства, включающей, повреждение материальных объектов, находящихся на объекте транспортной инфраструктуры, на критических элементах и иных уязвимых участках объекта транспортной инфраструктуры, определенных в ходе оценки уязвимости",
+            "не допускать получения контроля нарушителем над объектом транспортной инфраструктуры, критическими элементами и иными уязвимыми участками объекта транспортной инфраструктуры, определенными в ходе оценки уязвимости",
+            "все вышеперечисленное",
+          ],
+          correct: 3,
+        },
+        {
+          id: 125,
+          text: "Субъект транспортной инфраструктуры на ОТИ третьей категории при первом уровне безопасности обязан проводить наблюдение и (или) собеседование:",
+          answers: [
+            "на контрольно-пропускных пунктах, постах в ходе досмотра, дополнительного досмотра и повторного досмотра",
+            "в секторе свободного доступа зоны транспортной безопасности",
+            "в перевозочном и технологическом секторах зоны транспортной безопасности",
+            "все вышеперечисленное",
+          ],
+          correct: 0,
+        },
+        {
+          id: 126,
+          text: "Субъект транспортной инфраструктуры на ОТИ первой категории при третьем уровне безопасности обязан выявлять нарушителей, совершение или подготовку к совершению акта незаконного вмешательства:",
+          answers: [
+            "на периметре границ зоны транспортной безопасности объекта транспортной инфраструктуры и в зоне транспортной безопасности объекта транспортной инфраструктуры",
+            "на периметре границ зоны транспортной безопасности объекта транспортной инфраструктуры",
+            "в зоне транспортной безопасности объекта транспортной инфраструктуры",
+            "на критическом элементе",
+            "на объекте транспортной инфраструктуры",
+          ],
+          correct: 0,
+        },
+        {
+          id: 127,
+          text: "Оснащение КПП техническими средствами досмотра может включать в себя:",
+          answers: [
+            "рамочный металлодетектор, стационарная рентгеновская установка для досмотра пассажиров, стационарная рентгеновская установка для досмотра багажа",
+            "система радиационного контроля, ручной металлодетектор",
+            "портативный обнаружитель паров ВВ, переносной рентгенотелевизионный комплекс, переносной комплекс обнаружения скрытно расположенных ВВ",
+            "все вышеперечисленное",
+          ],
+          correct: 3,
+        },
+        {
+          id: 128,
+          text: "На правильность работы детекторов паров взрывчатых веществ влияют:",
+          answers: [
+            "посторонние запахи",
+            "материалы отделки помещения",
+            "температура воздуха и влажность",
+            "ничего не влияет",
+          ],
+          correct: 2,
+        },
+        {
+          id: 129,
+          text: "Назовите технические средства для досмотра людей и ручной клади на КПП, где осуществляется досмотр, дополнительный досмотр, повторный досмотр:",
+          answers: [
+            "рентгентелевизионные, радиоскопические установки, стационарные, переносные и ручные металлодетекторы, газоаналитическая и химическая аппаратура и другие устройства обеспечивающие обнаружение оружия, взрывчатых веществ или других устройств, предметов и веществ, в отношении которых установлен запрет или ограничение на перемещение в зону транспортной безопасности или ее часть сертифицированные установленным порядком",
+            "стационарный металлообнаружитель арочного типа, стационарный рентгенотелевизионный интроскоп, стационарный пороговый сигнализатор гамма- и бета- изучений, детектор паров ВВ, ручной металлообнаружитель, портативный поисковый сигнализатор гамма- и бета- излучения",
+            "стационарный рентгенотелевизионный интроскоп (Инспектор), стационарный пороговый сигнализатор гамма- и бета- изучений, детектор паров ВВ типа МО1, ручной металлообнаружитель, портативный поисковый сигнализатор гамма- и бета- излучения",
+            "стационарный металлообнаружитель арочного типа (Рубикон), стационарный пороговый сигнализатор гамма- и бета- изучений, детектор паров ВВ типа МО1, ручной металлообнаружитель, портативный поисковый сигнализатор гамма- и бета- излучения",
+            "ручной металлообнаружитель, портативный поисковый сигнализатор гамма- и бета- излучения",
+          ],
+          correct: 0,
+        },
+        {
+          id: 130,
+          text: "Для досмотра ручной клади используются:",
+          answers: [
+            "видеоконтрольное устройство РТИ",
+            "досмотровые зеркала, аккумуляторные фонари",
+            "рентгеновские интроскопы",
+            "видеоконтрольное устройство РТИ, досмотровые зеркала, аккумуляторные фонари",
+          ],
+          correct: 2,
+        },
+        {
+          id: 131,
+          text: "Что включают в себя технические средства обеспечения транспортной безопасности?",
+          answers: [
+            "заграждения, противотаранное устройство, решетки, усиленные двери, заборы, шлюзы, шахты, колодцы, люки",
+            "системы и средства сигнализации, контроля доступа, досмотра, видеонаблюдения, аудио- и видеозаписи, связи, оповещения, сбора, обработки, приема и передачи информации, предназначенные для использования на объектах транспортной инфраструктуры и транспортных средствах в целях обеспечения транспортной безопасности",
+            "сертифицированные в установленном законодательстве порядке технические средства охраны",
+            "все перечисленное",
+          ],
+          correct: 1,
+        },
+        {
+          id: 132,
+          text: "Какая система позволяет оператору визуально контролировать ситуацию на территории зон транспортной безопасности объектов транспортной инфраструктуры?",
+          answers: [
+            "система охранной сигнализации",
+            "система пожарной сигнализации",
+            "система видеонаблюдения",
+            "система контроля и управления доступом",
+          ],
+          correct: 2,
+        },
+        {
+          id: 133,
+          text: "Назовите орган по сертификации средств связи приема и передачи информации:",
+          answers: [
+            "Министерство цифрового развития, связи и массовых коммуникаций РФ",
+            "Минсвязи России",
+            "Роскомсвязь",
+            "Минкомсвязи России",
+            "ФГУП «Защитаинфортанс» Минтранса России",
+          ],
+          correct: 0,
+        },
+        {
+          id: 134,
+          text: "Организация досмотра возлагается:",
+          answers: [
+            "на объекты транспортной инфраструктуры",
+            "на субъектов транспортной инфраструктуры и (или) перевозчиков",
+            "на специализированные организации",
+            "на юридические лица – подразделения транспортной безопасности",
+          ],
+          correct: 1,
+        },
+        {
+          id: 135,
+          text: "Организация дополнительного досмотра возлагается:",
+          answers: [
+            "на сотрудников ЧОП",
+            "на субъектов транспортной инфраструктуры и (или) перевозчиков",
+            "на лиц ответственных за транспортную безопасность на объектах транспортной инфраструктуры",
+            "на юридические лица – подразделения транспортной безопасности",
+          ],
+          correct: 1,
+        },
+        {
+          id: 136,
+          text: "Организация повторного досмотра возлагается:",
+          answers: [
+            "на лиц ответственных за обеспечение транспортной безопасности",
+            "на работников ЧОП",
+            "на субъектов транспортной инфраструктуры и (или) перевозчиков",
+            "на сотрудников полиции",
+          ],
+          correct: 2,
+        },
+        {
+          id: 137,
+          text: "Что осуществляется в ходе досмотра, дополнительного и повторного досмотра?",
+          answers: [
+            "мероприятия по обследованию физических лиц, транспортных средств, грузов, багажа, ручной клади и личных вещей, находящихся у физических лиц, направленные на обнаружение оружия, взрывчатых веществ и других устройств, предметов и веществ, в отношении которых установлен запрет на перевозку соответствующим видом транспорта",
+            "мероприятия по обследованию грузов, багажа, ручной клади и личных вещей, находящихся у физических лиц",
+            "мероприятия по обследованию транспортных средств",
+            "мероприятия по обследованию физических лиц, транспортных средств, грузов, багажа, ручной клади и личных вещей, находящихся у физических лиц, направленные на обнаружение оружия, взрывчатых веществ и других устройств, предметов и веществ, в отношении которых установлен запрет на перемещение в зону транспортной безопасности или ее часть, а также на выявление лиц, не имеющих правовых оснований для прохода, проезда в зону транспортной безопасности или ее часть",
+            "мероприятия по обследованию физических лиц",
+          ],
+          correct: 3,
+        },
+        {
+          id: 138,
+          text: "На что направлены мероприятия досмотра:",
+          answers: [
+            "на обнаружение оружия, взрывчатых веществ или других устройств, предметов и веществ, в отношении которых установлены запрет или ограничение на перемещение в зону транспортной безопасности или ее часть, а также на выявление лиц, не имеющих правовых оснований для прохода (проезда) в зону транспортной безопасности или ее часть",
+            "на обнаружение оружия, взрывчатых веществ или других устройств, в отношении которых установлены запрет или ограничение на перемещение в зону транспортной безопасности или ее часть",
+            "на обнаружение предметов и веществ, в отношении которых установлены запрет",
+            "на обнаружение наркотических веществ",
+          ],
+          correct: 0,
+        },
+        {
+          id: 139,
+          text: "Когда проводится наблюдение и (или) собеседование в целях обеспечения транспортной безопасности?",
+          answers: [
+            "в ходе проверки пропускных, проездных документов",
+            "в ходе досмотра, дополнительного досмотра, повторного досмотра на КПП (постах) в случаях, предусмотренных требованиями по обеспечению транспортной безопасности, проводятся наблюдение и (собеседование)",
+            "в ходе проверки пропускных, проездных документов и документов удостоверяющих личность",
+            "во всех перечисленных случаях",
+          ],
+          correct: 1,
+        },
+        {
+          id: 140,
+          text: "Что делается по результатам наблюдения и (или) собеседования в целях обеспечения транспортной безопасности?",
+          answers: [
+            "принимается решение о проведении дополнительного досмотра",
+            "принимается решение о проведении досмотра",
+            "принимается решение о проведении повторного досмотра",
+            "все вышеперечисленное",
+          ],
+          correct: 2,
+        },
+        {
+          id: 141,
+          text: "Какие мероприятия осуществляются в ходе дополнительного досмотра в целях обеспечения транспортной безопасности?",
+          answers: [
+            "осуществляются мероприятия по обследованию объектов досмотра в целях обнаружения, распознавания и идентификации выявленных в ходе досмотра, которые запрещены или ограничены для перемещение в зону транспортной безопасности или ее часть, а также по обследованию материально-технических объектов, которые могут быть использованы для совершения актов незаконного вмешательства",
+            "осуществляются мероприятия по обследованию объектов досмотра в целях распознавания и идентификации выявленных в ходе досмотра, которые запрещены или ограничены для перемещение в зону транспортной безопасности или ее часть",
+            "осуществляются мероприятия по обследованию объектов досмотра в целях идентификации выявленных в ходе досмотра, которые запрещены или ограничены для перемещение в зону транспортной безопасности или ее часть",
+            "осуществляются мероприятия по обследованию транспортных средств, грузов",
+          ],
+          correct: 0,
+        },
+        {
+          id: 142,
+          text: "Для какой цели осуществляется повторный досмотр:",
+          answers: [
+            "в целях распознавания и идентификации предметов и веществ, выявленных в ходе досмотра, которые могут быть использованы для совершения актов незаконного вмешательства",
+            "в целях выявления физических лиц, в действиях которых усматриваются признаки подготовки к совершению актов незаконного вмешательства, либо материально-технических объектов, которые могут быть использованы для совершения актов незаконного вмешательства",
+            "в целях распознавания и идентификации предметов, выявленных в ходе досмотра, а также по обследованию материально-технических объектов, которые могут быть использованы для совершения актов незаконного вмешательства",
+            "в целях обследования материально-технических объектов, которые могут быть использованы для совершения актов незаконного вмешательства",
+          ],
+          correct: 1,
+        },
+        {
+          id: 143,
+          text: "Когда проводится повторный досмотр в целях обеспечения транспортной безопасности:",
+          answers: [
+            "при выявлении в результате наблюдения и (или) собеседования) физических лиц, в действиях которых усматриваются признаки подготовки к совершению актов незаконного вмешательства",
+            "при получении субъектом транспортной инфраструктуры или перевозчиком информации об изменении уровня транспортной безопасности",
+            "при получении субъектом транспортной инфраструктуры или перевозчиком информации об угрозе совершения акта незаконного вмешательства",
+            "при получении субъектом транспортной инфраструктуры информации об угрозе совершения акта незаконного вмешательства на прилегающих к ОТИ объектах",
+            "в случаях, указанных в п.1 и п.3",
+          ],
+          correct: 4,
+        },
+        {
+          id: 144,
+          text: "Основания для пересечения объектами досмотра границ сектора свободного доступа зоны транспортной безопасности:",
+          answers: [
+            "отсутствие запрещенных или ограниченных для перемещения предметов и веществ, в отношении которых установлен запрет или ограничение на перемещение в зону транспортной безопасности перемещаемых без законных оснований, а также выполнение Требований по соблюдению транспортной безопасности",
+            "отсутствие запрещенных или ограниченных для перемещения предметов и веществ, в отношении которых установлен запрет или ограничение на перемещение в зону транспортной безопасности перемещаемых без законных оснований",
+            "выполнение объектом досмотра Требований по соблюдению транспортной безопасности",
+            "выполнение объектом досмотра Требований по соблюдению транспортной безопасности и правил перевозки пассажиров и багажа",
+          ],
+          correct: 0,
+        },
+        {
+          id: 145,
+          text: "Какие технические средства используются для проведения дополнительного досмотра в целях обеспечения транспортной безопасности на КПП железнодорожного вокзала отнесенного к 1 категории по транспортной безопасности:",
+          answers: [
+            "стационарные, переносные и ручные металлодетекторы",
+            "газоаналитическая и химическая аппаратура",
+            "рентгенотелевизионные, радиоскопические установки, стационарные, переносные и ручные металлодетекторы",
+            "обеспечивающие обнаружение, распознавание предметов и веществ включенных в перечни и (или) идентификацию оружия, боеприпасов, взрывчатых веществ или взрывных устройств, ядовитых или радиоактивных веществ, указанных в Перечнях, сопровождающееся вскрытием материальных объектов досмотра, для распознавания и идентификации их содержимого или без такового",
+          ],
+          correct: 3,
+        },
+        {
+          id: 146,
+          text: "Какие технические средства используются для проведения повторного досмотра в целях обеспечения транспортной безопасности на КПП железнодорожного вокзала отнесенного к 1 категории по транспортной безопасности:",
+          answers: [
+            "переносные и ручные металлодетекторы, газоаналитическая и химическая аппаратура",
+            "обеспечивающие обнаружение, выявление, распознавание предметов и веществ включенных в перечни",
+            "рентгенотелевизионные, радиоскопические установки, стационарные, переносные и ручные металлодетекторы",
+            "устройства, обеспечивающие обнаружение оружия, взрывчатых веществ",
+          ],
+          correct: 1,
+        },
+        {
+          id: 147,
+          text: "Чему подлежат технические средства обеспечения транспортной безопасности:",
+          answers: [
+            "обязательной инвентаризации",
+            "обязательному учету в компетентном органе",
+            "обязательной сертификации",
+            "ежегодной сертификации",
+          ],
+          correct: 2,
+        },
+        {
+          id: 148,
+          text: "Кем проводится досмотр в целях обеспечения транспортной безопасности:",
+          answers: [
+            "уполномоченными лицами из числа подготовленных и аттестованных работников подразделений транспортной безопасности",
+            "уполномоченными лицами из числа работников подразделений МВД России",
+            "уполномоченными лицами из числа работников субъекта транспортной инфраструктуры",
+            "уполномоченными лицами из числа работников ЧОП",
+          ],
+          correct: 0,
+        },
+        {
+          id: 149,
+          text: "Кем проводится дополнительный досмотр в целях обеспечения транспортной безопасности:",
+          answers: [
+            "лицами из числа работников назначенных приказом субъекта транспортной инфраструктуры",
+            "уполномоченными лицами из числа подготовленных и аттестованных работников подразделений транспортной безопасности",
+            "лицами из числа работников специализированных организаций в области обеспечения транспортной безопасности",
+            "уполномоченными лицами из числа работников подразделений МВД России, Росгвардии",
+            "уполномоченными лицами из числа работников органов государственного контроля (надзора) РФ",
+          ],
+          correct: 1,
+        },
+        {
+          id: 150,
+          text: "Кем проводится повторный досмотр, в целях обеспечения транспортной безопасности:",
+          answers: [
+            "лицами из числа работников федеральных органов исполнительной власти, осуществляющем функции по нормативно-правовому регулированию в сфере транспорта",
+            "лицами из числа работников федеральных органов исполнительной власти, осуществляющим функции по выработке государственной политики и нормативно-правовому регулированию в сфере внутренних дел",
+            "уполномоченными лицами из числа подготовленных и аттестованных работников подразделений транспортной безопасности",
+            "уполномоченными лицами из числа работников подразделений МВД России, Росгвардии",
+            "уполномоченными лицами из числа работников органов государственного контроля (надзора) РФ",
+          ],
+          correct: 2,
+        },
+        {
+          id: 151,
+          text: "Кем проводится наблюдение и (или) собеседование в целях обеспечения транспортной безопасности:",
+          answers: [
+            "уполномоченными лицами из числа подготовленных и аттестованных работников подразделений транспортной безопасности",
+            "уполномоченными лицами из числа работников субъекта транспортной инфраструктуры",
+            "уполномоченными лицами из числа работников органов государственного контроля (надзора) РФ",
+            "уполномоченными лицами из числа работников ФСБ России",
+            "уполномоченными лицами из числа работников подразделений МВД России",
+          ],
+          correct: 0,
+        },
+        {
+          id: 152,
+          text: "Как поступить в случае идентификации в ходе досмотра в целях обеспечения транспортной безопасности оружия, боеприпасов, патронов к оружию, взрывчатых веществ или взрывных устройств, при условии отсутствия законных оснований для их ношения или хранения:",
+          answers: [
+            "силы транспортной безопасности незамедлительно информируют об этом уполномоченные подразделения федерального органа исполнительной власти в сфере внутренних дел РФ для принятия мер",
+            "силы транспортной безопасности незамедлительно информируют об этом уполномоченные подразделения федерального органа исполнительной власти в области обеспечения безопасности РФ для принятия мер",
+            "силы обеспечения транспортной безопасности незамедлительно информируют об этом уполномоченные подразделения федерального органа исполнительной власти, осуществляющего функции по выработке и реализации государственной политики и нормативно-правовому регулированию в сфере внутренних дел, и федерального органа исполнительной власти в области обеспечения безопасности РФ для принятия мер реагирования в соответствии с их компетенцией",
+            "силы транспортной безопасности незамедлительно информируют об этом уполномоченные подразделения федерального органа государственного контроля (надзора) РФ",
+          ],
+          correct: 2,
+        },
+        {
+          id: 153,
+          text: "Лица, отказавшиеся от досмотра:",
+          answers: [
+            "в зону транспортной безопасности не допускаются",
+            "передаются в федеральный орган исполнительной власти в сфере внутренних дел РФ для принятия мер",
+            "передаются в федеральный орган исполнительной власти в области обеспечения безопасности РФ для принятия мер",
+            "передаются в федеральный орган государственного контроля (надзора) РФ",
+          ],
+          correct: 0,
+        },
+        {
+          id: 154,
+          text: "Отказ пассажира от досмотра, дополнительного досмотра и повторного досмотра в целях обеспечения транспортной безопасности:",
+          answers: [
+            "является основанием для возбуждения уголовного дела",
+            "является основанием для административного штрафа",
+            "является основанием для расторжения договора перевозки в одностороннем порядке",
+            "все вышеперечисленное",
+          ],
+          correct: 2,
+        },
+        {
+          id: 155,
+          text: "Правила проведения досмотра, дополнительного досмотра и повторного досмотра в целях обеспечения транспортной безопасности устанавливаются:",
+          answers: [
+            "федеральным органом исполнительной власти, осуществляющим функции по выработке государственной политики и нормативно-правовому регулированию в сфере транспорта, по согласованию с федеральным органом исполнительной власти в области обеспечения безопасности РФ",
+            "федеральным органом исполнительной власти, осуществляющим функции по выработке государственной политики и нормативно-правовому регулированию в сфере транспорта, по согласованию с федеральным органом исполнительной власти в области обеспечения безопасности РФ и федеральным органом исполнительной власти, осуществляющий функции по выработке и реализации государственной политики и нормативно-правовому регулированию в сфере внутренних дел",
+            "федеральным органом исполнительной власти, осуществляющим функции по выработке государственной политики и нормативно-правовому регулированию в сфере транспорта, по согласованию с федеральным органом исполнительной власти, осуществляющий функции по выработке и реализации государственной политики и нормативно-правовому регулированию в сфере внутренних дел",
+            "федеральным органом исполнительной власти, осуществляющим функции по выработке государственной политики и нормативно-правовому регулированию в сфере транспорта, по согласованию с федеральным органом государственного контроля (надзора) РФ",
+          ],
+          correct: 1,
+        },
+        {
+          id: 156,
+          text: "Правила проведения досмотра, дополнительного досмотра и повторного досмотра в целях обеспечения транспортной безопасности включают в себя в том числе:",
+          answers: [
+            "перечни оружия, взрывчатых веществ или других устройств, предметов и веществ, в отношении которых установлены запрет или ограничение на перемещение в зону транспортной безопасности или ее часть, а также порядок проведения наблюдения и (или) собеседования в целях обеспечения транспортной безопасности",
+            "перечни оружия или других устройств, предметов и веществ, в отношении которых установлены запрет или ограничение на перемещение в зону транспортной безопасности или ее часть",
+            "порядок проведения наблюдения и (или) собеседования в целях обеспечения транспортной безопасности",
+            "перечни взрывчатых веществ или других устройств, предметов и веществ, в отношении которых установлены запрет или ограничение на перемещение в зону транспортной безопасности или ее часть",
+            "все вышеперечисленное",
+          ],
+          correct: 0,
+        },
+        {
+          id: 157,
+          text: "Сектор свободного доступа зоны транспортной безопасности — это:",
+          answers: [
+            "территория объектов транспортной инфраструктуры доступ в которую физических лиц ограничивается",
+            "территория объектов транспортной инфраструктуры, в которую пронос (провоз) материальных объектов ограничивается",
+            "часть зоны транспортной безопасности, на которой в отношении перемещаемых объектов досмотра проводится досмотр, дополнительный досмотр и повторный досмотр, а выявление правовых оснований для прохода (проезда) не требуется",
+            "закрытая территория объектов транспортной инфраструктуры",
+          ],
+          correct: 2,
+        },
+        {
+          id: 158,
+          text: "Перевозочный сектор зоны транспортной безопасности – это:",
+          answers: [
+            "участки зоны транспортной безопасности объектов транспортной инфраструктуры или транспортных средств, допуск физических лиц и перемещение материальных объектов в которые осуществляются по электронным пропускам",
+            "участки зоны транспортной безопасности объектов транспортной инфраструктуры или транспортных средств, допуск физических лиц и перемещение материальных объектов в которые осуществляются по паспорту",
+            "участки зоны транспортной безопасности объектов транспортной инфраструктуры или транспортных средств, допуск физических лиц и перемещение материальных объектов в которые осуществляются по служебному удостоверению",
+            "участки зоны транспортной безопасности объектов транспортной инфраструктуры или транспортных средств, допуск физических лиц и перемещение материальных объектов в которые осуществляются по перевозочным документам и/или пропускам установленных видов в соответствии с номенклатурами (перечнями) должностей и с учетом предметов и веществ, которые запрещены или ограничены для перемещения",
+          ],
+          correct: 3,
+        },
+        {
+          id: 159,
+          text: "Технологический сектор зоны транспортной безопасности – это:",
+          answers: [
+            "участки зоны транспортной безопасности объектов транспортной инфраструктуры или транспортных средств, допуск физических лиц и перемещение материальных объектов в которые осуществляются по перевозочным документам и/или пропускам установленных видов в соответствии с номенклатурами (перечнями) должностей и с учетом предметов и веществ, которые запрещены или ограничены для перемещения",
+            "участки зоны транспортной безопасности объектов транспортной инфраструктуры или транспортных средств, доступ в которые ограничен для пассажиров и осуществляется для физических лиц и материальных объектов по пропускам установленных видов в соответствии с номенклатурами (перечнями) должностей с учетом предметов и веществ, которые запрещены или ограничены для перемещения",
+            "участки зоны транспортной безопасности объектов транспортной инфраструктуры или транспортных средств, доступ в которые не ограничен для пассажиров",
+            "участки зоны транспортной безопасности объектов транспортной инфраструктуры или транспортных средств, доступ в которые осуществляется для физических лиц и материальных объектов по электронным пропускам",
+          ],
+          correct: 1,
+        },
+        {
+          id: 160,
+          text: "Критический элемент объектов транспортной инфраструктуры или транспортных средств железнодорожного транспорта – это:",
+          answers: [
+            "строения, помещения объектов транспортной инфраструктуры и/или транспортных средств, акт незаконного вмешательства в отношении которых, не приведет к полному прекращению его функционирования",
+            "конструктивные элементы объектов транспортной инфраструктуры и/или транспортных средств, акт незаконного вмешательства в отношении которых, приведет к возникновению чрезвычайных ситуаций",
+            "строения, помещения, конструктивные, технологические и технические элементы объекта транспортной инфраструктуры и транспортного средства, совершение акта незаконного вмешательства в отношении которых приведет к прекращению функционирования объекта транспортной инфраструктуры и (транспортного средства)",
+            "технологические и технические элементы объектов транспортной инфраструктуры и/или транспортных средств, акт незаконного вмешательства в отношении которых, приведет к полнейшему прекращению его функционирования",
+          ],
+          correct: 2,
+        },
+        {
+          id: 161,
+          text: "Контрольно-пропускной пункт (пост) – это:",
+          answers: [
+            "специально оборудованное место на объектах транспортной инфраструктуры или транспортных средствах для осуществления контроля в установленном порядке за проходом людей и проездом транспортных средств в зону транспортной безопасности",
+            "место на объектах транспортной инфраструктуры или транспортных средствах для осуществления прохода людей и проезда транспортных средств в зону транспортной безопасности",
+            "не оборудованное место на объектах транспортной инфраструктуры или транспортных средствах для осуществления контроля в установленном порядке за проходом людей и проездом транспортных средств в зону транспортной безопасности",
+            "место, предназначенное для досмотра, дополнительного досмотра, повторного досмотра",
+          ],
+          correct: 0,
+        },
+        {
+          id: 162,
+          text: "Грузы повышенной опасности — это:",
+          answers: [
+            "грузы, которые могут быть использованы в террористических целях и привести к серьезным последствиям, таким, как многочисленные людские потери или массовые разрушения",
+            "опасные грузы, отнесенные Правительством РФ к грузам, представляющим повышенную опасность для жизни и здоровья людей и для окружающей среды",
+            "грузы, которыми могут воспользоваться террористы для убийства людей, а также для массовых разрушений",
+            "грузы, которые могут быть особо опасны для окружающих",
+          ],
+          correct: 1,
+        },
+        {
+          id: 163,
+          text: "В какой срок необходимо проинформировать уполномоченных представителей МВД России, обо всех физических лицах или материальных объектах, в случае выявления связи данных лиц и объектов с совершением или подготовкой акта незаконного вмешательства?",
+          answers: [
+            "незамедлительно",
+            "через 15 минут",
+            "в течение 15 минут",
+            "в течение 30 минут",
+          ],
+          correct: 0,
+        },
+        {
+          id: 164,
+          text: "Какие виды пропусков предусмотрены постановлениями Правительства РФ от 08 октября 2020 г. № 1633 и от 08 октября 2020 г. № 1641, устанавливающими требования по обеспечению транспортной безопасности... для ОТИ и ТС железнодорожного транспорта и метрополитена?",
+          answers: [
+            "постоянные",
+            "разовые",
+            "материальные",
+            "все вышеперечисленные",
+          ],
+          correct: 3,
+        },
+        {
+          id: 165,
+          text: "Количество категорий по транспортной безопасности объектам транспортной инфраструктуры и транспортным средствам устанавливается:",
+          answers: [
+            "Федеральным законом от 09.02.2007 г. № 16-ФЗ",
+            "Федеральным законом от 03.02.2014 г. № 15-ФЗ",
+            "Приказом Минтранса России от 07 сентября 2020 г. № 358",
+            "Приказом Минтранса России от 11 февраля 2010 г. № 34",
+          ],
+          correct: 2,
+        },
+        {
+          id: 166,
+          text: "Перечень объектов транспортной инфраструктуры и транспортных средств, не подлежащих категорированию, устанавливается:",
+          answers: [
+            "Федеральным законом от 09.02.2007 г. № 16-ФЗ",
+            "Федеральным законом от 3 февраля 2014 г. № 15-ФЗ",
+            "Приказом Минтранса России от 28 августа 2020 г. № 331",
+            "Приказом Минтранса России от 21 февраля 2011 г. № 62",
+          ],
+          correct: 2,
+        },
+        {
+          id: 167,
+          text: "Требования по обеспечению транспортной безопасности по видам транспорта, в том числе требования к антитеррористической защищенности объектов (территорий), учитывающие уровни безопасности, для различных категорий ОТИ и ТС, устанавливаются:",
+          answers: [
+            "Правительством РФ по представлению Министерства транспорта РФ, по согласованию с Федеральной службой безопасности РФ и Министерством внутренних дел РФ",
+            "Министерством транспорта РФ, по согласованию с Федеральной службой безопасности РФ и Министерством внутренних дел РФ",
+            "Министерством внутренних дел РФ по согласованию с Федеральной службой безопасности РФ",
+            "Федеральной службой безопасности РФ по согласованию с Министерством внутренних дел РФ",
+          ],
+          correct: 0,
+        },
+        {
+          id: 168,
+          text: "Реестр категорированных объектов транспортной инфраструктуры и/или транспортных средств ведется:",
+          answers: [
+            "специализированной организацией в области оценки уязвимости",
+            "компетентным органом в области обеспечения транспортной безопасности",
+            "субъектами транспортной инфраструктуры",
+            "оператором ЕГИС ОТБ",
+          ],
+          correct: 1,
+        },
+        {
+          id: 169,
+          text: "Перечни оружия, взрывчатых веществ или других устройств, предметов и веществ, в отношении которых установлен запрет или ограничение на перемещение в зону транспортной безопасности или ее часть устанавливаются нормативным правовым актом:",
+          answers: [
+            "Правительством РФ",
+            "Минтрансом России по согласованию с МВД России и ФСБ России",
+            "МВД России по согласованию с ФСБ России",
+            "субъектом транспортной инфраструктуры (перевозчиком) по согласованию с МВД России и ФСБ России",
+          ],
+          correct: 1,
+        },
+        {
+          id: 170,
+          text: "Правила проведения досмотра, дополнительного досмотра и повторного досмотра в целях обеспечения транспортной безопасности включают в себя, в том числе:",
+          answers: [
+            "перечни оружия",
+            "перечни взрывчатых веществ",
+            "перечни устройств, предметов и веществ, в отношении которых установлен запрет или ограничение на перемещение в зону транспортной безопасности или ее часть",
+            "все вышеперечисленное",
+          ],
+          correct: 3,
+        },
+        {
+          id: 171,
+          text: "Первая категория присваивается ОТИ и ТС железнодорожного транспорта, если количественные показатели о возможных погибших или получивших вред здоровью людей составляют:",
+          answers: [
+            "300 и более человек",
+            "от 26 до 50 человек",
+            "более 100 человек",
+            "до 100 человек",
+          ],
+          correct: 0,
+        },
+        {
+          id: 172,
+          text: "Вторая категория присваивается ОТИ и ТС железнодорожного транспорта, если количественные показатели о возможных погибших или получивших вред здоровью людей составляют:",
+          answers: [
+            "более 50 человек",
+            "от 200 до 300 человек",
+            "от 50 до 100 человек",
+            "до 100 человек",
+          ],
+          correct: 1,
+        },
+        {
+          id: 173,
+          text: "Третья категория присваивается ОТИ и ТС железнодорожного транспорта, если количественные показатели о возможных погибших или получивших вред здоровью людей составляют:",
+          answers: [
+            "более 50 человек",
+            "от 26 до 50 человек",
+            "от 100 до 200 человек",
+            "до 25 человек",
+          ],
+          correct: 2,
+        },
+        {
+          id: 174,
+          text: "Четвертая категория присваивается ОТИ и ТС железнодорожного транспорта, если количественные показатели о возможных погибших или получивших вред здоровью людей составляют:",
+          answers: [
+            "более 5 человек",
+            "от 2 до 5 человек",
+            "от 11 до 25 человек",
+            "до 100 человек",
+          ],
+          correct: 3,
+        },
+        {
+          id: 175,
+          text: "Первая категория присваивается ОТИ и ТС железнодорожного транспорта, если возможный материальный ущерб и ущерб окружающей природной среде составляет:",
+          answers: [
+            "500 млн. и более рублей",
+            "от 50 до 100 млн. рублей",
+            "от 10 до 50 млн. рублей",
+            "до 10 млн. рублей",
+          ],
+          correct: 0,
+        },
+        {
+          id: 176,
+          text: "Вторая категория присваивается ОТИ и ТС железнодорожного транспорта, если возможный материальный ущерб и ущерб окружающей природной среде составляет:",
+          answers: [
+            "более 100 млн. рублей",
+            "от 250 до 500 млн. рублей",
+            "от 10 до 50 млн. рублей",
+            "до 10 млн. рублей",
+          ],
+          correct: 1,
+        },
+        {
+          id: 177,
+          text: "Третья категория присваивается ОТИ и ТС железнодорожного транспорта, если возможный материальный ущерб и ущерб окружающей природной среде составляет:",
+          answers: [
+            "более 100 млн. рублей",
+            "от 50 до 100 млн. рублей",
+            "от 20 до 250 млн. рублей",
+            "до 10 млн. рублей",
+          ],
+          correct: 2,
+        },
+        {
+          id: 178,
+          text: "Четвертая категория присваивается ОТИ и ТС железнодорожного транспорта, если возможный материальный ущерб и ущерб окружающей природной среде составляет:",
+          answers: [
+            "более 100 млн. рублей",
+            "от 50 до 100 млн. рублей",
+            "от 10 до 50 млн. рублей",
+            "до 20 млн. рублей",
+          ],
+          correct: 3,
+        },
+        {
+          id: 179,
+          text: "Работы, непосредственно связанные с обеспечением транспортной безопасности, вправе выполнять лица:",
+          answers: [
+            "имеющие непогашенную или неснятую судимость за совершение умышленного преступления",
+            "прошедшие в порядке, установленном Федеральным законом от 9 февраля 2007 г. № 16-ФЗ, подготовку и аттестацию сил обеспечения транспортной безопасности и соответствующие требованиям ч. 1 ст. 10 ФЗ-16",
+            "состоящие на учете в учреждениях органов здравоохранения по поводу психического заболевания, алкоголизма или наркомании",
+            "досрочно прекратившие полномочия по государственной должности или уволенные с государственной службы... если после такого досрочного прекращения полномочий или такого увольнения прошло менее чем три года",
+          ],
+          correct: 1,
+        },
+        {
+          id: 180,
+          text: "В соответствии с приказом Минтранса России от 12.07.2021 г. № 232 «Об утверждении Порядка подготовки сил обеспечения транспортной безопасности» к числу обязательных видов подготовки не относится:",
+          answers: [
+            "техническая",
+            "теоретическая",
+            "тренажерная",
+            "практическая",
+          ],
+          correct: 0,
+        },
+        {
+          id: 181,
+          text: "Компетентными органами в области обеспечения транспортной безопасности являются:",
+          answers: [
+            "Министерство транспорта РФ и Федеральная служба по надзору в сфере транспорта",
+            "Федеральная служба безопасности РФ и Министерство внутренних дел РФ",
+            "субъекты транспортной инфраструктуры",
+            "Федеральные агентства по видам транспорта Министерства транспорта РФ",
+          ],
+          correct: 3,
+        },
+        {
+          id: 182,
+          text: "Количество категорий и критерии категорирования объектов транспортной инфраструктуры и транспортных средств устанавливаются:",
+          answers: [
+            "Правительством РФ",
+            "Министерством транспорта РФ",
+            "Компетентным органом в области обеспечения транспортной безопасности",
+            "МЧС России",
+          ],
+          correct: 1,
+        },
+        {
+          id: 183,
+          text: "В зависимости от количественных показателей статистических данных о совершенных и предотвращенных актов незаконного вмешательства на территории РФ за период последних 12-ти месяцев до момента категорирования применительно к ОТИ железнодорожного транспорта первая категория присваивается в случае, если зафиксировано:",
+          answers: [
+            "один совершенный и/или предотвращенный акт незаконного вмешательства в отношении категорируемого ОТИ и/или аналогичных ОТИ на территории субъекта РФ, в котором находится объект транспортной инфраструктуры",
+            "один совершенный и/или более двух предотвращенных актов незаконного вмешательства в отношении аналогичных категорируемому ОТИ объектов транспортной инфраструктуры на территории других субъектов РФ",
+            "два и более совершенных и/или предотвращенных актов незаконного вмешательства в отношении категорируемого ОТИ и/или аналогичных ОТИ на территории субъекта РФ, в котором находится объект транспортной инфраструктуры",
+            "три и более совершенный и/или предотвращенный акт незаконного вмешательства в отношении категорируемого ОТИ и/или аналогичных ОТИ на территории субъекта РФ, в котором находится объекта транспортной инфраструктуры",
+          ],
+          correct: 2,
+        },
+        {
+          id: 184,
+          text: "В зависимости от количественных показателей статистических данных о совершенных и предотвращенных актов незаконного вмешательства... применительно к ОТИ железнодорожного транспорта вторая категория присваивается в случае, если зафиксировано:",
+          answers: [
+            "один совершенный и/или предотвращенный акт незаконного вмешательства в отношении категорируемого ОТИ и/или аналогичных ОТИ на территории субъекта РФ, в котором находится объект транспортной инфраструктуры",
+            "два и более совершенных и/или предотвращенных актов незаконного вмешательства в отношении категорируемого ОТИ и/или аналогичных ОТИ на территории субъекта РФ, в котором находится объект транспортной инфраструктуры",
+            "один совершенный и/или предотвращенный акт незаконного вмешательства в отношении аналогичных категорируемому ОТИ объектов транспортной инфраструктуры на территории других субъектов РФ",
+            "не зафиксировано совершенных и/или предотвращенных актов незаконного вмешательства в отношении категорируемого ОТИ и/или аналогичных ОТИ на территории РФ",
+          ],
+          correct: 0,
+        },
+        {
+          id: 185,
+          text: "В зависимости от количественных показателей статистических данных о совершенных и предотвращенных актов незаконного вмешательства... применительно к ОТИ железнодорожного транспорта третья категория присваивается в случае, если зафиксировано:",
+          answers: [
+            "один совершенный и/или предотвращенный акт незаконного вмешательства в отношении категорируемого ОТИ и/или аналогичных ОТИ на территории субъекта РФ, в котором находится объект транспортной инфраструктуры",
+            "один и более совершенный и/или предотвращенный акт незаконного вмешательства в отношении аналогичных категорируемому ОТИ объектов транспортной инфраструктуры на территории других субъектов РФ",
+            "два и более совершенных и/или предотвращенных актов незаконного вмешательства в отношении категорируемого ОТИ и/или аналогичных ОТИ на территории субъекта РФ, в котором находится объект транспортной инфраструктуры",
+            "не зафиксировано совершенных и/или предотвращенных актов незаконного вмешательства в отношении категорируемого ОТИ и/или аналогичных ОТИ на территории РФ",
+          ],
+          correct: 1,
+        },
+        {
+          id: 186,
+          text: "В зависимости от количественных показателей статистических данных о совершенных и предотвращенных АНВ... применительно к ОТИ железнодорожного транспорта четвертая категория присваивается в случае, если зафиксировано:",
+          answers: [
+            "не зафиксировано предотвращенных актов незаконного вмешательства в отношении аналогичных категорируемому ОТИ объектов транспортной инфраструктуры на территории других субъектов РФ",
+            "не зафиксировано актов незаконного вмешательства в отношении категорируемого ОТИ и/или аналогичных ОТИ на территории субъекта РФ, в котором находится объект транспортной инфраструктуры",
+            "не зафиксировано совершенных актов незаконного вмешательства в отношении категорируемого ОТИ и/или аналогичных ОТИ на территории субъекта РФ, в котором находится объект транспортной инфраструктуры",
+            "не зафиксировано совершенных и/или предотвращенных актов незаконного вмешательства в отношении категорируемого ОТИ и/или аналогичных ОТИ на территории РФ",
+          ],
+          correct: 3,
+        },
+        {
+          id: 187,
+          text: "Компетентный орган в области обеспечения транспортной безопасности информирует субъекта транспортной инфраструктуры о присвоении или изменении ранее присвоенной категории ОТИ и/или ТС в срок:",
+          answers: [
+            "не более 30 рабочих дней с момента присвоения или изменения ранее присвоенной категории",
+            "не более 15 дней с момента присвоения или изменения ранее присвоенной категории",
+            "не более 15 рабочих дней с момента присвоения или изменения ранее присвоенной категории",
+            "не более 10 рабочих дней с момента присвоения или изменения ранее присвоенной категории",
+          ],
+          correct: 2,
+        },
+        {
+          id: 188,
+          text: "Объекты транспортной инфраструктуры и транспортные средства, не подлежащие категорированию, определяет:",
+          answers: [
+            "Федеральный орган исполнительной власти в области обеспечения безопасности РФ",
+            "Федеральный орган исполнительной власти, осуществляющий функции по выработке государственной политики и нормативно-правовому регулированию в сфере транспорта по согласованию с ФСБ России и МВД России",
+            "Федеральный орган исполнительной власти, осуществляющий функции по выработке и реализации государственной политики и нормативно-правовому регулированию в сфере внутренних дел",
+            "Правительство РФ",
+          ],
+          correct: 1,
+        },
+        {
+          id: 189,
+          text: "В соответствии с приказом Минтранса РФ от 05.02.2010 г. № 27 «О порядке ведения реестра аккредитованных организаций на проведение оценки уязвимости ОТИ и ТС» ведение Реестра аккредитованных организаций осуществляется:",
+          answers: [
+            "Правительством РФ",
+            "Министерством транспорта РФ",
+            "Компетентными органами в области обеспечения транспортной безопасности",
+            "Субъектом транспортной инфраструктуры",
+          ],
+          correct: 2,
+        },
+        {
+          id: 190,
+          text: "В соответствии с приказом Минтранса РФ от 05.02.2010 г. № 27 «О порядке ведения реестра аккредитованных организаций...» сведения из Реестра размещаются:",
+          answers: [
+            "на официальном сайте в сети Интернет Правительства РФ",
+            "на официальном сайте в сети Интернет Министерства транспорта РФ",
+            "на официальном сайте в сети Интернет компетентного органа в области обеспечения транспортной безопасности",
+            "на официальном сайте в сети Интернет ОАО «РЖД»",
+          ],
+          correct: 2,
+        },
+        {
+          id: 191,
+          text: "Порядок разработки планов обеспечения транспортной безопасности устанавливается:",
+          answers: [
+            "Правительством РФ",
+            "Федеральным органом исполнительной власти, осуществляющим функции по выработке государственной политики и нормативно-правовому регулированию в сфере транспорта, по согласованию с федеральным органом исполнительной власти в области обеспечения безопасности РФ и федеральным органом исполнительной власти, осуществляющим функции по выработке государственной политики и нормативно-правовому регулированию в сфере внутренних дел",
+            "Субъектом транспортной инфраструктуры, по согласованию с органами местного самоуправления и федеральным органом исполнительной власти, осуществляющим функции по выработке государственной политики и нормативно-правовому регулированию в сфере внутренних дел",
+            "Субъектом транспортной инфраструктуры, по согласованию с федеральным органом исполнительной власти в области обеспечения безопасности РФ и с федеральным органом исполнительной власти, осуществляющим функции по выработке государственной политики и нормативно-правовому регулированию в сфере внутренних дел",
+          ],
+          correct: 1,
+        },
+        {
+          id: 192,
+          text: "Согласно Федеральному закону от 06.03.2006 г. № 35-ФЗ «О противодействии терроризму» терроризм – это:",
+          answers: [
+            "комплекс диверсионных, подрывных, дестабилизирующих и иных мероприятий с применением боевой техники, оружия и специальных средств",
+            "противоправное действие (бездействие), угрожающее безопасной деятельности транспортного комплекса, повлекшее за собой причинение вреда жизни и здоровью людей, материальный ущерб либо создавшее угрозу наступления таких последствий",
+            "совершение взрыва, поджога или иных действий, устрашающих население и создающих опасность гибели человека, причинения значительного имущественного ущерба либо наступления иных тяжких последствий",
+            "идеология насилия и практика воздействия на принятие решения органами государственной власти, органами местного самоуправления или международными организациями, связанные с устрашением населения и (или) иными формами противоправных насильственных действий",
+          ],
+          correct: 3,
+        },
+        {
+          id: 193,
+          text: "Правила проведения досмотра, дополнительного досмотра и повторного досмотра в целях обеспечения транспортной безопасности обязательны для исполнения:",
+          answers: [
+            "субъектами транспортной инфраструктуры",
+            "подразделениями транспортной безопасности на объектах транспортной инфраструктуры и транспортных средствах",
+            "лицами, прибывающими либо находящимися на объектах транспортной инфраструктуры и транспортных средствах",
+            "все вышеперечисленное",
+          ],
+          correct: 3,
+        },
+        {
+          id: 194,
+          text: "Уголовная ответственность за неисполнение требований по обеспечению транспортной безопасности наступает в случае:",
+          answers: [
+            "неисполнения требований по соблюдению транспортной безопасности на объектах транспортной инфраструктуры и транспортных средствах, если это деяние повлекло по неосторожности причинение тяжкого вреда здоровью человека либо причинение ущерба свыше одного миллиона рублей, либо повлекшие по неосторожности смерть человека, либо смерть двух и более лиц",
+            "нарушения установленных в области обеспечения транспортной безопасности порядков и правил",
+            "неисполнения требований по соблюдению транспортной безопасности на объектах транспортной инфраструктуры и транспортных средствах, если это деяние повлекло по неосторожности причинение ущерба до одного миллиона рублей или совершение акта незаконного вмешательства",
+            "непредставления сведений в автоматизированные централизованные базы персональных данных о пассажирах и персонале транспортных средств",
+            "все вышеперечисленное",
+          ],
+          correct: 0,
+        },
+        {
+          id: 195,
+          text: "Перечень потенциальных угроз совершения актов незаконного вмешательства в деятельность объектов транспортной инфраструктуры и транспортных средств установлен:",
+          answers: [
+            "Приказом Минтранса России, ФСБ России, МВД России от 5 марта 2010 г. № 52/112/134",
+            "Приказом Минтранса России от 12 апреля 2010 г. № 87",
+            "Приказом Минтранса России от 11 февраля 2010 г. № 34",
+            "Приказом Минтранса России от 3 ноября 2015 г. № 325",
+          ],
+          correct: 0,
+        },
+        {
+          id: 196,
+          text: "Планы обеспечения транспортной безопасности объектов транспортной инфраструктуры и транспортных средств утверждаются:",
+          answers: [
+            "Правительством РФ",
+            "Министерством транспорта РФ",
+            "Компетентными органами в области обеспечения транспортной безопасности",
+            "Субъектом транспортной инфраструктуры",
+          ],
+          correct: 2,
+        },
+        {
+          id: 197,
+          text: "Количество этапов реализации планов и сроки их реализации определяются:",
+          answers: [
+            "Компетентными органами в области обеспечения транспортной безопасности",
+            "Планом обеспечения транспортной безопасности",
+            "Субъектом транспортной инфраструктуры",
+            "Субъектом транспортной инфраструктуры, по согласованию с органами местного самоуправления",
+          ],
+          correct: 1,
+        },
+        {
+          id: 198,
+          text: "Реализация планов обеспечения транспортной безопасности объектов транспортной инфраструктуры и (или) транспортных средств осуществляется:",
+          answers: [
+            "в течение трех месяцев со дня разработки плана",
+            "в течение трех месяцев со дня утверждения плана",
+            "по мере финансирования мероприятий, указанных в плане",
+            "поэтапно, количество этапов реализации планов и сроки их реализации определяются соответствующим планом обеспечения транспортной безопасности",
+          ],
+          correct: 3,
+        },
+        {
+          id: 199,
+          text: "Порядок аккредитации юридических лиц в качестве подразделений транспортной безопасности и требования к ним устанавливаются:",
+          answers: [
+            "Правительством РФ",
+            "Федеральным органом исполнительной власти, осуществляющим функции по выработке государственной политики и нормативно-правовому регулированию в сфере транспорта, по согласованию с федеральным органом исполнительной власти в области обеспечения безопасности РФ и федеральным органом исполнительной власти, осуществляющим функции по выработке и реализации государственной политики и нормативно-правовому регулированию в сфере внутренних дел",
+            "Федеральным органом исполнительной власти в области обеспечения безопасности РФ",
+            "Федеральным органом исполнительной власти, осуществляющим функции по выработке и реализации государственной политики и нормативно-правовому регулированию в сфере внутренних дел",
+          ],
+          correct: 1,
+        },
+        {
+          id: 200,
+          text: "В соответствии с постановлением Правительства РФ от 18.09.2023 г. N 1518 «Об утверждении перечня работ, непосредственно связанных с обеспечением транспортной безопасности» к такому перечню не относится:",
+          answers: [
+            "осуществление контроля и надзора в области обеспечения транспортной безопасности",
+            "разработка и реализация планов обеспечения транспортной безопасности объектов транспортной инфраструктуры и транспортных средств",
+            "работа, связанная с обеспечением безопасности движения транспортных средств",
+            "формирование и ведение информационных ресурсов единой государственной информационной системы обеспечения транспортной безопасности, в том числе автоматизированных централизованных баз персональных данных о пассажирах",
+          ],
+          correct: 2,
+        },
+        {
+          id: 201,
+          text: "В какие сроки застройщик объекта транспортной инфраструктуры обязан разработать, утвердить и направить в Ространснадзор план обеспечения транспортной безопасности строящегося объекта транспортной инфраструктуры?",
+          answers: [
+            "в течении одного месяца с момента включения объекта в реестр",
+            "в течении одного месяца с момента подписания договора на строительство",
+            "в течении одного месяца с момента получения разрешения на строительство",
+            "в течении одного месяца с момента начала строительства",
+          ],
+          correct: 1,
+        },
+        {
+          id: 202,
+          text: "Станция метрополитена включает в себя:",
+          answers: [
+            "прилегающий транспортно-пересадочный узел",
+            "вестибюли, эскалаторы или лестницы, платформенные и средние залы, помещения для обслуживания пассажиров, размещения эксплуатационного персонала и производственного оборудования, пересадочные сооружения и другие сооружения, оборудование и устройства, обеспечивающие функционирование метрополитена, участки главных путей линии станции, примыкающие тупик, станционные пути и соединительные пути с электродепо и (или) другой линией, примыкающие соединительные тоннели и (или) открытые участки, а также подземные, наземные и надземные переходы",
+            "приемо-отправочные пути, сортировочные пути, выставочные пути",
+            "все перечисленное выше",
+          ],
+          correct: 1,
+        },
+        {
+          id: 203,
+          text: "Тоннель метрополитена включает в себя:",
+          answers: [
+            "участки главных путей линии между смежными станциями; примыкающие соединительные пути с электродепо и (или) другой линией",
+            "перегонные и примыкающие соединительные тоннели и (или) открытые участки",
+            "притоннельные сооружения, зоны коллективной защиты пассажиров, а также другие сооружения, оборудование и устройства, обеспечивающие функционирование метрополитена",
+            "все вышеперечисленное",
+            "перечисленное в п. 1, 3",
+          ],
+          correct: 3,
+        },
+        {
+          id: 204,
+          text: "Транспортные средства метрополитена при категорировании могут иметь:",
+          answers: [
+            "четыре категории",
+            "три категории",
+            "одну категорию — 1",
+            "не категорируются",
+            "категорию по наивысшей категории объекта метрополитена где они эксплуатируются",
+          ],
+          correct: 3,
+        },
+        {
+          id: 205,
+          text: "Субъект транспортной инфраструктуры в отношении объекта метрополитена I категории при уровне безопасности N 2 обязан:",
+          answers: [
+            "проводить выборочно дополнительный досмотр объектов досмотра при их перемещении с прилегающей к зоне транспортной безопасности территории в технологический сектор зоны транспортной безопасности, а также в сектор свободного доступа зоны транспортной безопасности, обеспечивающий загруженность использования средств досмотра не менее чем на 70 процентов",
+            "проводить выборочно дополнительный досмотр объектов досмотра при их перемещении с прилегающей к зоне транспортной безопасности территории в технологический сектор зоны транспортной безопасности, а также в сектор свободного доступа зоны транспортной безопасности, обеспечивающий загруженность использования средств досмотра не менее чем на 80 процентов",
+            "проводить выборочно дополнительный досмотр объектов досмотра при их перемещении с прилегающей к зоне транспортной безопасности территории в технологический сектор зоны транспортной безопасности, а также в сектор свободного доступа зоны транспортной безопасности, обеспечивающий загруженность использования средств досмотра не менее чем на 90 процентов",
+            "проводить выборочно дополнительный досмотр объектов досмотра при их перемещении с прилегающей к зоне транспортной безопасности территории в технологический сектор зоны транспортной безопасности, а также в сектор свободного доступа зоны транспортной безопасности, обеспечивающий загруженность использования средств досмотра не менее чем на 100 процентов",
+          ],
+          correct: 1,
+        },
+        {
+          id: 206,
+          text: "При нахождении в зоне транспортной безопасности объектов метрополитена постоянные пропуска носятся на видном месте поверх одежды всеми владельцами, за исключением:",
+          answers: [
+            "сотрудников органов ФСБ России",
+            "сотрудников органов внутренних дел",
+            "сотрудников органов ФСБ России, сотрудников органов внутренних дел осуществляющих деятельность на объекте метрополитена",
+            "сотрудников Генпрокуратуры, Ространснадзора осуществляющих деятельность на объекте метрополитена",
+          ],
+          correct: 2,
+        },
+        {
+          id: 207,
+          text: "Постоянные пропуска выдаются работникам метрополитена на срок:",
+          answers: [
+            "действия трудового договора, но не более чем на 5 лет",
+            "не более чем на 3 года",
+            "не более чем на 3 года с ежегодным переоформлением",
+            "действия трудового договора",
+          ],
+          correct: 0,
+        },
+        {
+          id: 208,
+          text: "Субъект транспортной инфраструктуры метрополитена на объекте метрополитена 4 категории при 3 уровне безопасности обязан:",
+          answers: [
+            "увеличить численность (количество) групп быстрого реагирования",
+            "увеличить численность групп быстрого реагирования",
+            "увеличить количество групп быстрого реагирования",
+            "создать отряд быстрого реагирования",
+          ],
+          correct: 0,
+        },
+        {
+          id: 209,
+          text: "Субъект транспортной инфраструктуры в отношении объекта метрополитена I категории при уровне безопасности N 1 обязан:",
+          answers: [
+            "проводить выборочно дополнительный досмотр объектов досмотра при их перемещении с прилегающей к зоне транспортной безопасности территории в технологический сектор зоны транспортной безопасности, а также в сектор свободного доступа зоны транспортной безопасности, обеспечивающий загруженность использования средств досмотра не менее чем на 70 процентов",
+            "проводить выборочно дополнительный досмотр объектов досмотра при их перемещении с прилегающей к зоне транспортной безопасности территории в технологический сектор зоны транспортной безопасности, а также в сектор свободного доступа зоны транспортной безопасности, обеспечивающий загруженность использования средств досмотра не менее чем на 80 процентов",
+            "проводить выборочно дополнительный досмотр объектов досмотра при их перемещении с прилегающей к зоне транспортной безопасности территории в технологический сектор зоны транспортной безопасности, а также в сектор свободного доступа зоны транспортной безопасности, обеспечивающий загруженность использования средств досмотра не менее чем на 90 процентов",
+            "проводить выборочно дополнительный досмотр объектов досмотра при их перемещении с прилегающей к зоне транспортной безопасности территории в технологический сектор зоны транспортной безопасности, а также в сектор свободного доступа зоны транспортной безопасности, обеспечивающий загруженность использования средств досмотра не менее чем на 100 процентов",
+          ],
+          correct: 0,
+        },
+        {
+          id: 210,
+          text: "Субъект транспортной инфраструктуры в отношении объекта метрополитена I категории при уровне безопасности N 3 обязан:",
+          answers: [
+            "проводить выборочно дополнительный досмотр объектов досмотра при их перемещении с прилегающей к зоне транспортной безопасности территории в технологический сектор зоны транспортной безопасности, а также в сектор свободного доступа зоны транспортной безопасности, обеспечивающий загруженность использования средств досмотра не менее чем на 70 процентов",
+            "проводить выборочно дополнительный досмотр объектов досмотра при их перемещении с прилегающей к зоне транспортной безопасности территории в технологический сектор зоны транспортной безопасности, а также в сектор свободного доступа зоны транспортной безопасности, обеспечивающий загруженность использования средств досмотра не менее чем на 80 процентов",
+            "проводить выборочно дополнительный досмотр объектов досмотра при их перемещении с прилегающей к зоне транспортной безопасности территории в технологический сектор зоны транспортной безопасности, а также в сектор свободного доступа зоны транспортной безопасности, обеспечивающий загруженность использования средств досмотра не менее чем на 90 процентов",
+            "проводить выборочно дополнительный досмотр объектов досмотра при их перемещении с прилегающей к зоне транспортной безопасности территории в технологический сектор зоны транспортной безопасности, а также в сектор свободного доступа зоны транспортной безопасности, обеспечивающий загруженность использования средств досмотра не менее чем на 100 процентов",
+          ],
+          correct: 2,
+        },
+      ];
+
+      /* ============================================================
+   ХРАНИЛИЩЕ
+   ============================================================ */
+      const LS_CURRENT = "tb_current_test_v1";
+      const LS_HISTORY = "tb_history_v1";
+      const LS_SETTINGS = "tb_settings_v1";
+
+      const FIXED_BLOCKS = [
+        { id: "block1", title: "Блок 1", sub: "Вопросы 1–53", range: [1, 53] },
+        {
+          id: "block2",
+          title: "Блок 2",
+          sub: "Вопросы 54–106",
+          range: [54, 106],
+        },
+        {
+          id: "block3",
+          title: "Блок 3",
+          sub: "Вопросы 107–159",
+          range: [107, 159],
+        },
+        {
+          id: "block4",
+          title: "Блок 4",
+          sub: "Вопросы 160–210",
+          range: [160, 210],
+        },
+      ];
+
+      const ANSWER_MODES = ["afterFinish", "afterAnswer", "allImmediately"];
+
+      /* ============================================================
+   УТИЛИТЫ
+   ============================================================ */
+      const $ = (sel) => document.querySelector(sel);
+      const shuffle = (arr) => {
+        const a = arr.slice();
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      };
+      function loadJSON(key, fallback) {
+        try {
+          const raw = localStorage.getItem(key);
+          return raw ? JSON.parse(raw) : fallback;
+        } catch (e) {
+          return fallback;
+        }
+      }
+      function saveJSON(key, val) {
+        try {
+          localStorage.setItem(key, JSON.stringify(val));
+        } catch (e) {
+          console.warn("ls err", e);
+        }
+      }
+      function escapeHtml(s) {
+        return String(s).replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+      }
+
+      let settings = loadJSON(LS_SETTINGS, { answerMode: "afterFinish" });
+      if (!ANSWER_MODES.includes(settings.answerMode))
+        settings.answerMode = "afterFinish";
+      function getMode() {
+        return settings.answerMode;
+      }
+
+      /* ============================================================
+   НАВИГАЦИЯ
+   ============================================================ */
+      const RAIL_SCREENS = ["screen-test", "screen-review"];
+
+      function showScreen(name) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        const el = $("#screen-" + name);
+        if (el) el.classList.add("active");
+        updateRailVisibility();
+      }
+
+      function updateRailVisibility() {
+        const activeId =
+          (document.querySelector(".screen.active") || {}).id || "";
+        const rail = $("#rail");
+        const main = $("#mainArea");
+        if (RAIL_SCREENS.includes(activeId)) {
+          rail.classList.add("visible");
+          main.classList.add("with-rail");
+        } else {
+          rail.classList.remove("visible");
+          main.classList.remove("with-rail");
+          closeDrawer();
+        }
+      }
+
+      /* ============================================================
+   ТЕКУЩИЙ ТЕСТ
+   ============================================================ */
+      let current = null;
+      let testPos = 0;
+      let testFinished = false;
+      let reviewMode = false;
+      let reviewRecord = null;
+      let reviewCurrentPos = 0;
+
+      function saveCurrent() {
+        saveJSON(LS_CURRENT, current);
+      }
+      function clearCurrent() {
+        localStorage.removeItem(LS_CURRENT);
+        current = null;
+      }
+
+      /* ============================================================
+   ЗАПУСК ТЕСТОВ
+   ============================================================ */
+      function startRandom53() {
+        const picked = shuffle(QUESTIONS).slice(
+          0,
+          Math.min(53, QUESTIONS.length),
+        );
+        beginTest("random53", "Случайные 53 вопроса", picked);
+      }
+      function startRandomAll() {
+        beginTest(
+          "randomAll",
+          "Все вопросы (случайный порядок)",
+          shuffle(QUESTIONS),
+        );
+      }
+      function startBlock(block) {
+        const list = QUESTIONS.filter(
+          (q) => q.id >= block.range[0] && q.id <= block.range[1],
+        );
+        beginTest(
+          block.id,
+          block.title +
+            " (вопросы " +
+            block.range[0] +
+            "–" +
+            block.range[1] +
+            ")",
+          list,
+        );
+      }
+      function beginTest(mode, modeTitle, qList) {
+        if (!qList.length) {
+          alert("Нет вопросов для запуска теста.");
+          return;
+        }
+        const questions = qList.map((q) => {
+          const order = shuffle(q.answers.map((_, i) => i));
+          return { qid: q.id, correctIndex: q.correct, answersOrder: order };
+        });
+        current = {
+          mode,
+          modeTitle,
+          questions,
+          answers: {},
+          locked: {},
+          startedAt: new Date().toISOString(),
+          currentPos: 0,
+        };
+        saveCurrent();
+        enterTest();
+      }
+
+      /* ============================================================
+   ЭКРАН ТЕСТА
+   ============================================================ */
+      function enterTest() {
+        reviewMode = false;
+        reviewRecord = null;
+        testFinished = false;
+        testPos = current.currentPos || 0;
+        if (testPos < 0) testPos = 0;
+        if (testPos >= current.questions.length)
+          testPos = current.questions.length - 1;
+        showScreen("test");
+        $("#testModeBadge").textContent = current.modeTitle;
+        renderTest();
+      }
+
+      function getQuestionByPos(pos) {
+        const item = current.questions[pos];
+        return QUESTIONS.find((q) => q.id === item.qid);
+      }
+
+      function renderTest() {
+        const item = current.questions[testPos];
+        const q = getQuestionByPos(testPos);
+        if (!q) {
+          $("#qText").textContent =
+            "Вопрос не найден (проверьте массив QUESTIONS).";
+          return;
+        }
+
+        $("#testProgress").textContent =
+          `Вопрос ${testPos + 1} из ${current.questions.length}`;
+        $("#qText").textContent = q.text;
+
+        const mode = getMode();
+        const userPick = current.answers[testPos];
+
+        let showCorrectNow = false;
+        let showUserWrongNow = false;
+        let interactive = true;
+
+        if (mode === "allImmediately") {
+          showCorrectNow = true;
+          showUserWrongNow = userPick !== undefined;
+          interactive = userPick === undefined;
+        } else if (mode === "afterAnswer") {
+          if (userPick !== undefined) {
+            showCorrectNow = true;
+            showUserWrongNow = true;
+            interactive = false;
+          }
+        }
+
+        const answersEl = $("#answers");
+        answersEl.innerHTML = "";
+        item.answersOrder.forEach((origIdx) => {
+          const div = document.createElement("div");
+          div.className = "answer";
+          const isCorrect = origIdx === item.correctIndex;
+          const isPicked = userPick === origIdx;
+          let mark = "";
+
+          if (showCorrectNow && isCorrect) {
+            div.classList.add("correct");
+            mark = "✓";
+          } else if (showUserWrongNow && isPicked && !isCorrect) {
+            div.classList.add("wrong");
+            mark = "✕";
+          } else if (isPicked && !showCorrectNow) {
+            div.classList.add("selected");
+            mark = "✓";
+          }
+
+          if (
+            !interactive ||
+            (mode === "afterAnswer" && isPicked) ||
+            (mode === "allImmediately" && isPicked) ||
+            (showCorrectNow && isCorrect)
+          ) {
+            div.classList.add("locked");
+          }
+
+          div.innerHTML = `<span class="mark">${mark}</span><span>${escapeHtml(q.answers[origIdx])}</span>`;
+          if (interactive && !(isPicked && mode !== "afterFinish")) {
+            div.onclick = () => selectAnswer(origIdx);
+          }
+          answersEl.appendChild(div);
+        });
+
+        renderDrawerGrid();
+      }
+
+      function selectAnswer(origIdx) {
+        if (testFinished || reviewMode) return;
+        const mode = getMode();
+        if (mode !== "afterFinish" && current.locked[testPos]) return;
+        current.answers[testPos] = origIdx;
+        if (mode === "afterAnswer" || mode === "allImmediately") {
+          current.locked[testPos] = true;
+        }
+        current.currentPos = testPos;
+        saveCurrent();
+        renderTest();
+      }
+
+      function goPrev() {
+        if (!current) return;
+        if (testPos > 0) {
+          testPos--;
+          current.currentPos = testPos;
+          saveCurrent();
+          renderTest();
+        }
+      }
+      function goNext() {
+        if (!current) return;
+        if (testPos < current.questions.length - 1) {
+          testPos++;
+          current.currentPos = testPos;
+          saveCurrent();
+          renderTest();
+        }
+      }
+
+      /* ============================================================
+   ПАНЕЛЬ ВОПРОСОВ
+   ============================================================ */
+      function openDrawer() {
+        renderDrawerGrid();
+        $("#drawerBackdrop").classList.add("open");
+        $("#drawer").classList.add("open");
+        $("#railClose").classList.add("visible");
+      }
+      function closeDrawer() {
+        $("#drawerBackdrop").classList.remove("open");
+        $("#drawer").classList.remove("open");
+        $("#railClose").classList.remove("visible");
+      }
+
+      function renderDrawerGrid() {
+        const grid = $("#drawerGrid");
+        grid.innerHTML = "";
+
+        if (reviewRecord) {
+          $("#drawerTitle").textContent = "Вопросы (просмотр)";
+          reviewRecord.questions.forEach((d, pos) => {
+            const b = document.createElement("button");
+            b.textContent = pos + 1;
+            if (d.status === "ok") b.classList.add("correct");
+            else if (d.status === "bad") b.classList.add("wrong");
+            else b.classList.add("skipped");
+            if (reviewCurrentPos === pos) b.classList.add("current");
+            b.onclick = () => {
+              reviewCurrentPos = pos;
+              scrollToReviewQuestion(pos);
+              closeDrawer();
+            };
+            grid.appendChild(b);
+          });
+          return;
+        }
+
+        if (!current) {
+          $("#drawerTitle").textContent = "Вопросы";
+          return;
+        }
+        $("#drawerTitle").textContent = "Вопросы (тест)";
+        current.questions.forEach((item, pos) => {
+          const b = document.createElement("button");
+          b.textContent = pos + 1;
+          if (pos === testPos) b.classList.add("current");
+          const userPick = current.answers[pos];
+          if (userPick !== undefined) {
+            if (current.locked[pos]) {
+              b.classList.add(
+                userPick === item.correctIndex ? "correct" : "wrong",
+              );
+            } else {
+              b.classList.add("answered");
+            }
+          }
+          b.onclick = () => {
+            testPos = pos;
+            current.currentPos = pos;
+            saveCurrent();
+            renderTest();
+            closeDrawer();
+          };
+          grid.appendChild(b);
+        });
+      }
+
+      /* ============================================================
+   ЗАВЕРШЕНИЕ ТЕСТА
+   ============================================================ */
+      function finishTest(early = false) {
+        if (!current) return;
+        const total = current.questions.length;
+        let correctCount = 0;
+        const details = current.questions.map((item, pos) => {
+          const q = QUESTIONS.find((x) => x.id === item.qid);
+          const userOrig = current.answers[pos];
+          const isCorrect =
+            userOrig !== undefined && userOrig === item.correctIndex;
+          if (isCorrect) correctCount++;
+          return {
+            pos,
+            qid: item.qid,
+            text: q ? q.text : "(вопрос не найден)",
+            answers: q ? q.answers.slice() : [],
+            answersOrder: item.answersOrder.slice(),
+            correctIndex: item.correctIndex,
+            userAnswerIndex: userOrig === undefined ? null : userOrig,
+            status: userOrig === undefined ? "skip" : isCorrect ? "ok" : "bad",
+          };
+        });
+        const percent = total ? Math.round((correctCount / total) * 100) : 0;
+
+        const record = {
+          id: Date.now() + "-" + Math.floor(Math.random() * 10000),
+          mode: current.mode,
+          modeTitle: current.modeTitle,
+          startedAt: current.startedAt,
+          finishedAt: new Date().toISOString(),
+          total,
+          correct: correctCount,
+          percent,
+          early,
+          questions: details,
+        };
+        const history = loadJSON(LS_HISTORY, []);
+        history.unshift(record);
+        saveJSON(LS_HISTORY, history);
+
+        clearCurrent();
+        testFinished = true;
+
+        goHistory();
+      }
+
+      function finishEarly() {
+        if (!current) return;
+        if (
+          !confirm(
+            "Завершить тест досрочно? Неотвеченные вопросы будут отмечены как пропущенные.",
+          )
+        )
+          return;
+        finishTest(true);
+      }
+
+      /* ============================================================
+   ИСТОРИЯ
+   ============================================================ */
+      function goHistory() {
+        reviewRecord = null;
+        reviewMode = false;
+        showScreen("history");
+        renderHistory();
+      }
+
+      function renderHistory() {
+        const list = $("#historyList");
+        list.innerHTML = "";
+        const history = loadJSON(LS_HISTORY, []);
+        if (!history.length) {
+          list.innerHTML =
+            '<div class="empty">История пуста. Пройдите тест, чтобы увидеть результат.</div>';
+          return;
+        }
+        history.forEach((rec) => {
+          const row = document.createElement("div");
+          row.className = "result-row";
+          const dt = new Date(rec.finishedAt);
+          const dtStr = dt.toLocaleString("ru-RU");
+          const cls = rec.percent >= 60 ? "ok" : "bad";
+          row.innerHTML = `
+      <div>
+        <div style="font-weight:600">${escapeHtml(rec.modeTitle)}</div>
+        <div class="meta">Завершён: ${dtStr}${rec.early ? " • досрочно" : ""}</div>
+      </div>
+      <div class="row">
+        <div class="score ${cls}">${rec.correct}/${rec.total} • ${rec.percent}%</div>
+        <button data-id="${rec.id}">Посмотреть</button>
+      </div>`;
+          row.querySelector("button").onclick = () => openReview(rec.id);
+          list.appendChild(row);
+        });
+      }
+
+      /* ============================================================
+   ПРОСМОТР ЗАВЕРШЁННОГО ТЕСТА
+   ============================================================ */
+      function openReview(recId) {
+        const history = loadJSON(LS_HISTORY, []);
+        const rec = history.find((r) => r.id === recId);
+        if (!rec) return;
+        reviewRecord = rec;
+        reviewMode = true;
+        reviewCurrentPos = 0;
+
+        showScreen("review");
+        const dt = new Date(rec.finishedAt);
+        $("#reviewTitle").textContent =
+          `${rec.modeTitle} — ${rec.correct}/${rec.total} (${rec.percent}%) • завершён ${dt.toLocaleString("ru-RU")}${rec.early ? " • досрочно" : ""}`;
+
+        renderReviewList();
+        window.scrollTo({ top: 0, behavior: "instant" });
+      }
+
+      function renderReviewList() {
+        const rec = reviewRecord;
+        if (!rec) return;
+        const list = $("#reviewList");
+        list.innerHTML = "";
+        rec.questions.forEach((d) => {
+          const wrap = document.createElement("div");
+          wrap.className = "review-q";
+          wrap.dataset.pos = d.pos;
+          const statusTxt =
+            d.status === "ok"
+              ? "Верно"
+              : d.status === "bad"
+                ? "Неверно"
+                : "Не отвечено";
+          const statusCls =
+            d.status === "ok" ? "ok" : d.status === "bad" ? "bad" : "skip";
+          wrap.innerHTML = `<div class="rq-text">${d.pos + 1}. ${escapeHtml(d.text)} <span class="rq-status ${statusCls}">${statusTxt}</span></div>`;
+          const ans = document.createElement("div");
+          d.answersOrder.forEach((origIdx) => {
+            const div = document.createElement("div");
+            div.className = "answer locked";
+            const isUser = d.userAnswerIndex === origIdx;
+            const isCorrect = d.correctIndex === origIdx;
+            let mark = "",
+              cls = "";
+            if (isCorrect) {
+              cls = "correct";
+              mark = "✓";
+            } else if (isUser) {
+              cls = "wrong";
+              mark = "✕";
+            }
+            if (cls) div.classList.add(cls);
+            div.innerHTML = `<span class="mark">${mark}</span><span>${escapeHtml(d.answers[origIdx] || "")}</span>`;
+            ans.appendChild(div);
+          });
+          wrap.appendChild(ans);
+          list.appendChild(wrap);
+        });
+      }
+
+      function scrollToReviewQuestion(pos) {
+        const el = document.querySelector(
+          `#reviewList .review-q[data-pos="${pos}"]`,
+        );
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+        renderDrawerGrid();
+      }
+
+      /* ============================================================
+   ОЧИСТКА
+   ============================================================ */
+      function clearAll() {
+        if (
+          !confirm(
+            "Очистить все пользовательские параметры: историю, текущий незавершённый тест и настройки?",
+          )
+        )
+          return;
+        localStorage.removeItem(LS_HISTORY);
+        localStorage.removeItem(LS_CURRENT);
+        localStorage.removeItem(LS_SETTINGS);
+        current = null;
+        reviewRecord = null;
+        reviewMode = false;
+        settings = { answerMode: "afterFinish" };
+        syncSettingsUI();
+        renderHistory();
+        refreshChooseScreen();
+        renderDrawerGrid();
+        alert("Пользовательские параметры очищены.");
+      }
+
+      /* ============================================================
+   НАСТРОЙКИ
+   ============================================================ */
+      function syncSettingsUI() {
+        const map = {
+          afterFinish: $("#optAfterFinish"),
+          afterAnswer: $("#optAfterAnswer"),
+          allImmediately: $("#optAllImmediately"),
+        };
+        ANSWER_MODES.forEach((m) => {
+          map[m].checked = settings.answerMode === m;
+        });
+      }
+
+      function handleModeToggle(chosen, checked) {
+        if (checked) {
+          settings.answerMode = chosen;
+        } else {
+          if (settings.answerMode === chosen)
+            settings.answerMode = "afterFinish";
+        }
+        saveJSON(LS_SETTINGS, settings);
+        syncSettingsUI();
+        if (current && !testFinished && !reviewMode) renderTest();
+      }
+
+      /* ============================================================
+   ВЫБОР ТЕСТА
+   ============================================================ */
+      function refreshChooseScreen() {
+        current = loadJSON(LS_CURRENT, null);
+        const rc = $("#resume-card");
+        if (current && current.questions && current.questions.length) {
+          rc.style.display = "block";
+          const answered = Object.keys(current.answers || {}).length;
+          const dt = new Date(current.startedAt);
+          $("#resume-info").textContent =
+            `${current.modeTitle} • начат ${dt.toLocaleString("ru-RU")} • отвечено ${answered} из ${current.questions.length}`;
+        } else {
+          rc.style.display = "none";
+        }
+      }
+
+      /* ============================================================
+   ИНИЦИАЛИЗАЦИЯ
+   ============================================================ */
+      function init() {
+        syncSettingsUI();
+        $("#optAfterFinish").addEventListener("change", (e) =>
+          handleModeToggle("afterFinish", e.target.checked),
+        );
+        $("#optAfterAnswer").addEventListener("change", (e) =>
+          handleModeToggle("afterAnswer", e.target.checked),
+        );
+        $("#optAllImmediately").addEventListener("change", (e) =>
+          handleModeToggle("allImmediately", e.target.checked),
+        );
+
+        const fb = $("#fixedBlocks");
+        fb.innerHTML = "";
+        FIXED_BLOCKS.forEach((b) => {
+          const card = document.createElement("div");
+          card.className = "mode-card";
+          card.innerHTML = `<div class="title">${b.title}</div><div class="sub">${b.sub}</div>`;
+          card.onclick = () => startBlock(b);
+          fb.appendChild(card);
+        });
+
+        $("#btnRandom53").onclick = startRandom53;
+        $("#btnRandomAll").onclick = startRandomAll;
+
+        $("#btnResume").onclick = () => {
+          if (current) enterTest();
+        };
+        $("#btnAbandon").onclick = () => {
+          if (!current) return;
+          if (
+            !confirm(
+              "Завершить текущий тест досрочно и записать результат в историю?",
+            )
+          )
+            return;
+          finishTest(true);
+        };
+
+        $("#btnPrev").onclick = goPrev;
+        $("#btnNext").onclick = goNext;
+        $("#btnFinishEarly").onclick = finishEarly;
+
+        $("#btnClearAll").onclick = clearAll;
+        $("#btnCloseReview").onclick = () => {
+          goHistory();
+        };
+
+        $("#navChoose").onclick = () => {
+          reviewRecord = null;
+          reviewMode = false;
+          refreshChooseScreen();
+          showScreen("choose");
+        };
+        $("#navHistory").onclick = goHistory;
+
+        $("#railBtn").onclick = openDrawer;
+        $("#railClose").onclick = closeDrawer;
+        $("#drawerBackdrop").onclick = closeDrawer;
+
+        $("#drawerPrev").onclick = goPrev;
+        $("#drawerNext").onclick = goNext;
+
+        refreshChooseScreen();
+        showScreen("choose");
+      }
+
+      document.addEventListener("DOMContentLoaded", init);
+    </script>
+  </body>
+</html>
